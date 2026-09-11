@@ -14,7 +14,7 @@ export default function AuditTrailPage() {
     if (!bidId) return;
     
     // Default fetch to populate audit events
-    fetch(`http://localhost:8000/api/v1/bids/${bidId}/audit-log`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/audit-log`)
       .then(res => res.json())
       .then(data => {
         setEvents(data.events || []);

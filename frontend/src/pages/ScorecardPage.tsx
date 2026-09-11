@@ -17,7 +17,7 @@ export default function ScorecardPage() {
   useEffect(() => {
     if (!bidId) return;
     
-    fetch(`http://localhost:8000/api/v1/bids/${bidId}/scorecard`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/scorecard`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch scorecard");
         return res.json();
