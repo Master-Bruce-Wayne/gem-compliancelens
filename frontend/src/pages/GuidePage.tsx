@@ -15,7 +15,7 @@ export default function GuidePage() {
 
       <div className="space-y-8">
         {/* Step 1 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold text-xl">
               1
@@ -39,7 +39,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 2 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold text-xl">
               2
@@ -63,7 +63,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 3 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center font-bold text-xl">
               3
@@ -87,7 +87,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 4 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-bold text-xl">
               4
@@ -111,7 +111,7 @@ export default function GuidePage() {
         </div>
 
         {/* Step 5 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex gap-6">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col sm:flex-row gap-4 sm:gap-6">
           <div className="flex-shrink-0">
             <div className="w-12 h-12 bg-slate-100 text-slate-700 rounded-full flex items-center justify-center font-bold text-xl">
               5

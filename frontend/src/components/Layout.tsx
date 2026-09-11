@@ -32,18 +32,18 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="flex h-screen bg-background">
-      <aside className="w-64 bg-surface border-r border-border p-4 flex flex-col">
-        <div className="flex items-center gap-2 px-2 mb-8">
-          <div className="w-8 h-8 rounded bg-brand flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-semibold text-lg text-brand">ComplianceLens</span>
+    <div className="flex flex-col md:flex-row h-screen bg-background">
+      <aside className="w-full md:w-64 bg-surface border-b md:border-b-0 md:border-r border-border p-4 flex flex-col flex-none">
+        <div className="flex items-center gap-2 px-2 mb-4 md:mb-8">
+          <div className="w-8 h-8 rounded bg-brand flex items-center justify-center text-white font-bold flex-shrink-0">G</div>
+          <span className="font-semibold text-lg text-brand whitespace-nowrap">ComplianceLens</span>
         </div>
-        <nav className="flex-1 space-y-1">
+        <nav className="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0 snap-x">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path || (item.activeMatch && location.pathname === item.activeMatch);
             
             return item.disabled ? (
-              <div key={item.name} className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed">
+              <div key={item.name} className="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed whitespace-nowrap snap-start flex-shrink-0">
                 <item.icon className="w-5 h-5 opacity-50" />
                 {item.name}
               </div>
@@ -52,7 +52,7 @@ export default function Layout({ children }: LayoutProps) {
                 key={item.name}
                 to={item.path}
                 className={cn(
-                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  "flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap snap-start flex-shrink-0",
                   isActive ? "bg-brand text-white" : "text-textSecondary hover:bg-gray-100 hover:text-textPrimary"
                 )}
               >
@@ -63,7 +63,7 @@ export default function Layout({ children }: LayoutProps) {
           })}
         </nav>
       </aside>
-      <main className="flex-1 overflow-auto p-8">
+      <main className="flex-1 overflow-auto p-4 md:p-8">
         {children}
       </main>
     </div>
