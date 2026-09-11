@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { FileText, ClipboardCheck, History, Settings, ShieldCheck } from 'lucide-react';
+import { FileText, ClipboardCheck, History, Settings, ShieldCheck, HelpCircle } from 'lucide-react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -13,6 +13,7 @@ export default function Layout({ children }: LayoutProps) {
   const currentBidId = bidIdMatch ? bidIdMatch[1] : null;
 
   const navItems = [
+    { name: 'How to Use', icon: HelpCircle, path: '/guide', activeMatch: '/guide' },
     { name: 'Bid Detail', icon: FileText, path: '/bids', activeMatch: '/bids' },
     { 
       name: 'Scorecard', 

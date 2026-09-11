@@ -4,6 +4,7 @@ import BidDetailPage from './pages/BidDetailPage';
 import AuditTrailPage from './pages/AuditTrailPage';
 import SelfCheckPage from './pages/SelfCheckPage';
 import RulesConfigPage from './pages/RulesConfigPage';
+import GuidePage from './pages/GuidePage';
 import Layout from './components/Layout';
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          <Route path="/" element={<Navigate to="/bids" replace />} />
+          <Route path="/" element={<Navigate to="/guide" replace />} />
+          <Route path="/guide" element={<GuidePage />} />
           <Route path="/bids" element={<BidDetailPage />} />
           <Route path="/bids/:bidId/scorecard" element={<ScorecardPage />} />
           <Route path="/bids/:bidId/audit" element={<AuditTrailPage />} />
