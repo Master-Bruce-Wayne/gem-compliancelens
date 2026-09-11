@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { FileText, ClipboardCheck, History, Settings } from 'lucide-react';
-import { NavLink, useParams, useLocation } from 'react-router-dom';
+import { FileText, ClipboardCheck, History, Settings, ShieldCheck } from 'lucide-react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 interface LayoutProps {
@@ -27,6 +27,7 @@ export default function Layout({ children }: LayoutProps) {
       disabled: !currentBidId 
     },
     { name: 'Rules Config', icon: Settings, path: '/rules', disabled: true },
+    { name: 'Bidder Self-Check', icon: ShieldCheck, path: '/self-check' },
   ];
 
   return (

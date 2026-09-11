@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import ScorecardPage from './pages/ScorecardPage';
 import BidDetailPage from './pages/BidDetailPage';
+import AuditTrailPage from './pages/AuditTrailPage';
+import SelfCheckPage from './pages/SelfCheckPage';
 import Layout from './components/Layout';
 
 function App() {
@@ -11,7 +13,8 @@ function App() {
           <Route path="/" element={<Navigate to="/bids" replace />} />
           <Route path="/bids" element={<BidDetailPage />} />
           <Route path="/bids/:bidId/scorecard" element={<ScorecardPage />} />
-          {/* Add more routes as needed */}
+          <Route path="/bids/:bidId/audit" element={<AuditTrailPage />} />
+          <Route path="/self-check" element={<SelfCheckPage />} />
         </Routes>
       </Layout>
     </Router>
