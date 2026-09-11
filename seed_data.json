@@ -1,0 +1,155 @@
+{
+  "tenders": [
+    {
+      "id": "tender-cpcl-2026-0042",
+      "title": "Supply of Industrial Valves and Fittings — CPCL Refinery Unit 3",
+      "organization": "Chennai Petroleum Corporation Limited (CPCL)",
+      "category": "Industrial Equipment",
+      "status": "evaluation",
+      "rules": [
+        { "clause_type": "gst_active_and_filed", "threshold_value": null, "mandatory": true },
+        { "clause_type": "pan_valid", "threshold_value": null, "mandatory": true },
+        { "clause_type": "udyam_valid", "threshold_value": null, "mandatory": true },
+        { "clause_type": "not_debarred", "threshold_value": null, "mandatory": true },
+        { "clause_type": "mse_exemption", "threshold_value": null, "mandatory": false },
+        { "clause_type": "local_content_pct", "threshold_value": 35, "mandatory": true },
+        { "clause_type": "turnover_threshold_inr", "threshold_value": 5000000, "mandatory": true },
+        { "clause_type": "epfo_esic_compliance", "threshold_value": null, "mandatory": true }
+      ]
+    }
+  ],
+
+  "bidders": [
+    {
+      "id": "bidder-clean-pass-001",
+      "demo_profile_key": "clean_pass",
+      "legal_name": "Sundaram Precision Engineering Pvt Ltd",
+      "pan": "AABCS1234M",
+      "profile_narrative": "A genuine, fully compliant MSME bidder — every check should pass cleanly.",
+
+      "documents": [
+        { "doc_type": "pan", "extracted_fields": { "pan": "AABCS1234M", "name": "Sundaram Precision Engineering Pvt Ltd", "status": "Valid" } },
+        { "doc_type": "gst_certificate", "extracted_fields": { "gstin": "33AABCS1234M1Z5", "legal_name": "Sundaram Precision Engineering Pvt Ltd", "registration_date": "2019-04-12", "status": "Active" } },
+        { "doc_type": "udyam_certificate", "extracted_fields": { "udyam_number": "UDYAM-TN-08-0012345", "enterprise_category": "Small", "registration_date": "2020-01-15" } },
+        { "doc_type": "epfo_esic", "extracted_fields": { "epfo_establishment_id": "TN/CHN/0098765", "esic_registration": "51-00-1234567-000-1001", "status": "Active, contributions up to date" } }
+      ],
+
+      "mock_registry_responses": {
+        "udyam": { "udyam_number": "UDYAM-TN-08-0012345", "status": "Active", "enterprise_category": "Small", "registration_date": "2020-01-15", "last_updated": "2026-08-01" },
+        "gst": { "gstin": "33AABCS1234M1Z5", "status": "Active", "legal_name": "Sundaram Precision Engineering Pvt Ltd", "return_filing_status": { "GSTR-1": "Filed", "GSTR-3B": "Filed", "last_period_filed": "2026-08" } },
+        "pan": { "pan": "AABCS1234M", "status": "Valid", "name_match": true },
+        "epfo_esic": { "epfo_status": "Active", "esic_status": "Active", "contributions_current": true },
+        "nsic": { "registered": true, "nsic_registration_number": "NSIC-TN-99887", "valid_till": "2027-03-31" },
+        "dpiit_startup_india": { "recognized": false, "note": "Not applicable — bidder is an established MSME, not claiming Startup India benefits" },
+        "cppp_debarment": { "is_debarred": false, "checked_scope": "all organisations, all categories" }
+      },
+
+      "local_content_pct_declared": 42,
+      "annual_turnover_inr": 18500000,
+
+      "expected_evaluation": {
+        "overall_score": 96,
+        "risk_level": "low",
+        "verdict": "compliant",
+        "checks": [
+          { "rule_name": "GST active and returns filed", "status": "pass" },
+          { "rule_name": "PAN valid", "status": "pass" },
+          { "rule_name": "Udyam registration valid", "status": "pass" },
+          { "rule_name": "Not on debarment list", "status": "pass" },
+          { "rule_name": "Local content >= 35%", "status": "pass" },
+          { "rule_name": "Turnover threshold met", "status": "pass" },
+          { "rule_name": "EPFO/ESIC compliant", "status": "pass" }
+        ]
+      }
+    },
+
+    {
+      "id": "bidder-clear-fail-002",
+      "demo_profile_key": "clear_fail",
+      "legal_name": "Vishnu Traders and Fabricators",
+      "pan": "AABCV5678N",
+      "profile_narrative": "A bidder with a genuine, unambiguous disqualifying issue — appears on the debarment list and has an unfiled GST return.",
+
+      "documents": [
+        { "doc_type": "pan", "extracted_fields": { "pan": "AABCV5678N", "name": "Vishnu Traders and Fabricators", "status": "Valid" } },
+        { "doc_type": "gst_certificate", "extracted_fields": { "gstin": "27AABCV5678N1Z2", "legal_name": "Vishnu Traders and Fabricators", "registration_date": "2017-06-02", "status": "Active" } },
+        { "doc_type": "udyam_certificate", "extracted_fields": { "udyam_number": "UDYAM-MH-03-0054321", "enterprise_category": "Micro", "registration_date": "2018-11-20" } }
+      ],
+
+      "mock_registry_responses": {
+        "udyam": { "udyam_number": "UDYAM-MH-03-0054321", "status": "Active", "enterprise_category": "Micro", "registration_date": "2018-11-20", "last_updated": "2026-07-10" },
+        "gst": { "gstin": "27AABCV5678N1Z2", "status": "Active", "legal_name": "Vishnu Traders and Fabricators", "return_filing_status": { "GSTR-1": "Filed", "GSTR-3B": "Not Filed", "last_period_filed": "2026-04" } },
+        "pan": { "pan": "AABCV5678N", "status": "Valid", "name_match": true },
+        "epfo_esic": { "epfo_status": "Active", "esic_status": "Inactive", "contributions_current": false },
+        "nsic": { "registered": false },
+        "dpiit_startup_india": { "recognized": false },
+        "cppp_debarment": { "is_debarred": true, "debarment_reason": "Blacklisted by a different CPSE for supply of substandard goods (2025)", "debarment_period": "2025-03-01 to 2027-03-01", "checked_scope": "all organisations, all categories" }
+      },
+
+      "local_content_pct_declared": 20,
+      "annual_turnover_inr": 3200000,
+
+      "expected_evaluation": {
+        "overall_score": 28,
+        "risk_level": "high",
+        "verdict": "non_compliant",
+        "checks": [
+          { "rule_name": "GST active and returns filed", "status": "fail", "reason": "GSTR-3B not filed since April 2026" },
+          { "rule_name": "PAN valid", "status": "pass" },
+          { "rule_name": "Udyam registration valid", "status": "pass" },
+          { "rule_name": "Not on debarment list", "status": "fail", "reason": "Currently debarred by another CPSE until 2027-03-01" },
+          { "rule_name": "Local content >= 35%", "status": "fail", "reason": "Declared 20%, below the 35% threshold" },
+          { "rule_name": "Turnover threshold met", "status": "fail", "reason": "Turnover ₹32,00,000 below ₹50,00,000 threshold" },
+          { "rule_name": "EPFO/ESIC compliant", "status": "fail", "reason": "ESIC status inactive" }
+        ]
+      }
+    },
+
+    {
+      "id": "bidder-needs-review-003",
+      "demo_profile_key": "needs_review",
+      "legal_name": "Krishna Industrial Components LLP",
+      "pan": "AABCK9012P",
+      "profile_narrative": "A genuine, likely-compliant bidder whose data has real ambiguity — a recently lapsed-but-plausibly-renewed Udyam certificate and a borderline local content declaration. This bidder must NOT be auto-rejected; it should route to Needs Review.",
+
+      "documents": [
+        { "doc_type": "pan", "extracted_fields": { "pan": "AABCK9012P", "name": "Krishna Industrial Components LLP", "status": "Valid" } },
+        { "doc_type": "gst_certificate", "extracted_fields": { "gstin": "29AABCK9012P1Z8", "legal_name": "Krishna Industrial Components LLP", "registration_date": "2016-09-18", "status": "Active" } },
+        { "doc_type": "udyam_certificate", "extracted_fields": { "udyam_number": "UDYAM-KA-05-0067890", "enterprise_category": "Small", "registration_date": "2019-02-05", "note": "Document image shows a renewal stamp dated 2026-06, but OCR confidence on the renewal date is low" } }
+      ],
+
+      "mock_registry_responses": {
+        "udyam": { "udyam_number": "UDYAM-KA-05-0067890", "status": "Active", "enterprise_category": "Small", "registration_date": "2019-02-05", "last_updated": "2025-05-01", "note": "Registry timestamp older than the bidder's submitted renewal document — mismatch to flag for human review" },
+        "gst": { "gstin": "29AABCK9012P1Z8", "status": "Active", "legal_name": "Krishna Industrial Components LLP", "return_filing_status": { "GSTR-1": "Filed", "GSTR-3B": "Filed", "last_period_filed": "2026-08" } },
+        "pan": { "pan": "AABCK9012P", "status": "Valid", "name_match": true },
+        "epfo_esic": { "epfo_status": "Active", "esic_status": "Active", "contributions_current": true },
+        "nsic": { "registered": true, "nsic_registration_number": "NSIC-KA-44556", "valid_till": "2026-12-31" },
+        "dpiit_startup_india": { "recognized": false },
+        "cppp_debarment": { "is_debarred": false, "checked_scope": "all organisations, all categories" }
+      },
+
+      "local_content_pct_declared": 34.5,
+      "annual_turnover_inr": 6100000,
+
+      "expected_evaluation": {
+        "overall_score": 71,
+        "risk_level": "medium",
+        "verdict": "needs_review",
+        "checks": [
+          { "rule_name": "GST active and returns filed", "status": "pass" },
+          { "rule_name": "PAN valid", "status": "pass" },
+          { "rule_name": "Udyam registration valid", "status": "needs_review", "reason": "Submitted document shows a 2026-06 renewal stamp, but the registry record's last_updated timestamp is 2025-05-01 — mismatch requires manual confirmation, not an auto-fail" },
+          { "rule_name": "Not on debarment list", "status": "pass" },
+          { "rule_name": "Local content >= 35%", "status": "needs_review", "reason": "Declared 34.5%, within rounding distance of the 35% threshold — flagged rather than auto-failed" },
+          { "rule_name": "Turnover threshold met", "status": "pass" },
+          { "rule_name": "EPFO/ESIC compliant", "status": "pass" }
+        ]
+      }
+    }
+  ],
+
+  "users": [
+    { "email": "officer.demo@cpcl.gov.in", "role": "officer", "full_name": "Procurement Officer (Demo)" },
+    { "email": "bidder.demo@example.com", "role": "bidder", "full_name": "Bidder Self-Check (Demo)" }
+  ]
+}
