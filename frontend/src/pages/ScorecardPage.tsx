@@ -151,7 +151,7 @@ export default function ScorecardPage() {
         </div>
       </div>
 
-      <DecisionPanel evaluation={data} />
+      <DecisionPanel evaluation={{ ...data, evaluationId: bidId }} />
 
       {selectedCheck && checkDetail && (
         <>

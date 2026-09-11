@@ -10,14 +10,30 @@ export default function DecisionPanel({ evaluation }: { evaluation: any }) {
   const aiRecommendation = evaluation?.verdict === 'compliant' ? 'qualify' : 
                            evaluation?.verdict === 'needs_review' ? 'clarify' : 'disqualify';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (decision !== aiRecommendation && !note) {
       alert("A justification note is required when overriding the AI recommendation.");
       return;
     }
-    setSubmitted(true);
-    // In a real app, API call happens here
+    
+    try {
+      const response = await fetch(`http://localhost:8000/api/v1/bids/${evaluation.evaluationId}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bidId: evaluation.evaluationId, // Actually the evaluationId maps to bidId logic in this demo
+          decision: decision,
+          note: note || undefined,
+          officerId: "4329e27f-83a6-4242-9b93-eddb9597284e" // Hardcoded demo officer
+        })
+      });
+      
+      if (!response.ok) throw new Error("Failed to submit decision");
+      setSubmitted(true);
+    } catch (err) {
+      alert("Failed to save decision");
+    }
   };
 
   if (submitted) {

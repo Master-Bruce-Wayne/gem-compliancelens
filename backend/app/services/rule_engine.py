@@ -81,8 +81,8 @@ class RuleEngine:
                 if declared is None:
                     status = 'needs_review'
                     reason = "Local content not declared"
-                elif declared < rule.threshold_value:
-                    if (rule.threshold_value - float(declared)) <= 1.0:
+                elif float(declared) < float(rule.threshold_value):
+                    if (float(rule.threshold_value) - float(declared)) <= 1.0:
                         status = 'needs_review'
                         reason = f"Declared {declared}%, within rounding distance of the {rule.threshold_value}% threshold — flagged rather than auto-failed"
                     else:
@@ -97,7 +97,7 @@ class RuleEngine:
                 if turnover is None:
                     status = 'needs_review'
                     reason = "Turnover not declared"
-                elif turnover < rule.threshold_value:
+                elif float(turnover) < float(rule.threshold_value):
                     status = 'fail'
                     reason = f"Turnover ₹{turnover:,.0f} below ₹{rule.threshold_value:,.0f} threshold"
                     extracted_val = str(turnover)
