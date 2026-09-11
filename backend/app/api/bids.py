@@ -6,7 +6,8 @@ from app.db.session import get_db
 from app.db.models import Bidder, TenderRule, MockRegistryResponse, BidderDocument, Evaluation, EvaluationCheck, Decision, AuditLog
 from app.services.rule_engine import RuleEngine
 from app.services.explanation_service import ExplanationService
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
+from uuid import UUID
 from typing import List, Optional
 import uuid
 
@@ -14,8 +15,8 @@ router = APIRouter()
 explanation_service = ExplanationService()
 
 class EvaluateRequest(BaseModel):
-    bidderId: UUID4
-    tenderId: UUID4
+    bidderId: UUID
+    tenderId: UUID
 
 @router.post("/{id}/evaluate")
 async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = Depends(get_db)):
@@ -118,7 +119,7 @@ async def get_check_detail(id: uuid.UUID, checkId: uuid.UUID, db: AsyncSession =
 class DecisionRequest(BaseModel):
     decision: str
     note: Optional[str] = None
-    officerId: UUID4
+    officerId: UUID
 
 @router.post("/{id}/decision")
 async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession = Depends(get_db)):

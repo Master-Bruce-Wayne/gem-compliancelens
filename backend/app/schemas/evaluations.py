@@ -1,4 +1,5 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
+from uuid import UUID
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -10,7 +11,7 @@ class CheckResult(BaseModel):
     source: str
 
 class EvaluationResponse(BaseModel):
-    evaluationId: UUID4
+    evaluationId: UUID
     checks: List[CheckResult]
 
 class ScorecardResponse(BaseModel):
@@ -20,7 +21,7 @@ class ScorecardResponse(BaseModel):
     checks: List[CheckResult]
 
 class DecisionCreate(BaseModel):
-    bidId: UUID4
+    bidId: UUID
     decision: str
     note: Optional[str] = None
-    officerId: UUID4
+    officerId: UUID

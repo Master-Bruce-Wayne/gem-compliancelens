@@ -1,4 +1,5 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
+from uuid import UUID
 from typing import Optional, List
 from datetime import datetime
 
@@ -8,13 +9,13 @@ class TenderRuleBase(BaseModel):
     mandatory: bool = True
 
 class TenderRuleCreate(BaseModel):
-    tenderId: UUID4
+    tenderId: UUID
     clauses: List[TenderRuleBase]
 
 class TenderRuleResponse(BaseModel):
-    ruleSetId: UUID4
+    ruleSetId: UUID
     savedAt: datetime
     
 class TenderRuleListResponse(BaseModel):
-    ruleSetId: UUID4
+    ruleSetId: UUID
     clauses: List[TenderRuleBase]

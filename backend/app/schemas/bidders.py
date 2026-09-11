@@ -1,6 +1,7 @@
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
+from uuid import UUID
 from typing import Optional, List, Dict, Any
 
 class BidderProfileUpdate(BaseModel):
-    bidderId: UUID4
+    bidderId: UUID
     confirmedFields: Dict[str, Any]

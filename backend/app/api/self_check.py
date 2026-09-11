@@ -4,15 +4,16 @@ from sqlalchemy.future import select
 from app.db.session import get_db
 from app.db.models import Bidder, TenderRule, MockRegistryResponse, BidderDocument, SelfCheckSession
 from app.services.rule_engine import RuleEngine
-from pydantic import BaseModel, UUID4
+from pydantic import BaseModel
+from uuid import UUID
 from typing import List, Optional
 import uuid
 
 router = APIRouter()
 
 class SelfCheckRequest(BaseModel):
-    bidderId: UUID4
-    tenderId: UUID4
+    bidderId: UUID
+    tenderId: UUID
     documents: List[dict] # simplified
 
 @router.post("/evaluate")
