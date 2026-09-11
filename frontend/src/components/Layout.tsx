@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { FileText, ClipboardCheck, History, Settings } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useParams, useLocation } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
 interface LayoutProps {
@@ -8,11 +8,25 @@ interface LayoutProps {
 }
 
 export default function Layout({ children }: LayoutProps) {
+  const location = useLocation();
+  const bidIdMatch = location.pathname.match(/\/bids\/([^\/]+)/);
+  const currentBidId = bidIdMatch ? bidIdMatch[1] : null;
+
   const navItems = [
-    { name: 'Bid Detail', icon: FileText, path: '/bids/demo-123' },
-    { name: 'Scorecard', icon: ClipboardCheck, path: '/bids/demo-123/scorecard' },
-    { name: 'Audit Trail', icon: History, path: '/bids/demo-123/audit' },
-    { name: 'Rules', icon: Settings, path: '/tenders/demo-tender/rules' },
+    { name: 'Bid Detail', icon: FileText, path: '/bids', activeMatch: '/bids' },
+    { 
+      name: 'Scorecard', 
+      icon: ClipboardCheck, 
+      path: currentBidId ? `/bids/${currentBidId}/scorecard` : '#', 
+      disabled: !currentBidId 
+    },
+    { 
+      name: 'Audit Trail', 
+      icon: History, 
+      path: currentBidId ? `/bids/${currentBidId}/audit` : '#', 
+      disabled: !currentBidId 
+    },
+    { name: 'Rules Config', icon: Settings, path: '/rules', disabled: true },
   ];
 
   return (
@@ -23,19 +37,28 @@ export default function Layout({ children }: LayoutProps) {
           <span className="font-semibold text-lg text-brand">ComplianceLens</span>
         </div>
         <nav className="flex-1 space-y-1">
-          {navItems.map((item) => (
-            <NavLink
-              key={item.name}
-              to={item.path}
-              className={({ isActive }) => cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
-                isActive ? "bg-brand text-white" : "text-textSecondary hover:bg-gray-100 hover:text-textPrimary"
-              )}
-            >
-              <item.icon className="w-5 h-5" />
-              {item.name}
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            const isActive = location.pathname === item.path || (item.activeMatch && location.pathname === item.activeMatch);
+            
+            return item.disabled ? (
+              <div key={item.name} className="flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium text-gray-400 cursor-not-allowed">
+                <item.icon className="w-5 h-5 opacity-50" />
+                {item.name}
+              </div>
+            ) : (
+              <NavLink
+                key={item.name}
+                to={item.path}
+                className={cn(
+                  "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  isActive ? "bg-brand text-white" : "text-textSecondary hover:bg-gray-100 hover:text-textPrimary"
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                {item.name}
+              </NavLink>
+            );
+          })}
         </nav>
       </aside>
       <main className="flex-1 overflow-auto p-8">

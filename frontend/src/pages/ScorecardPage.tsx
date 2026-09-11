@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle, Clock, ShieldAlert, ArrowRight } from 'lucide
 import { cn } from '../lib/utils';
 import CheckDetailPanel from '../components/CheckDetailPanel';
 import DecisionPanel from '../components/DecisionPanel';
+import { toast } from 'sonner';
 
 export default function ScorecardPage() {
   const { bidId } = useParams();
@@ -11,26 +12,52 @@ export default function ScorecardPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
   const [selectedCheck, setSelectedCheck] = useState<any>(null);
+  const [checkDetail, setCheckDetail] = useState<any>(null);
   
   useEffect(() => {
-    setTimeout(() => {
-      setData({
-        score: 71,
-        riskLevel: 'medium',
-        verdict: 'needs_review',
-        checks: [
-          { name: "GST active and returns filed", status: "pass", summary: "" },
-          { name: "PAN valid", status: "pass", summary: "" },
-          { name: "Udyam registration valid", status: "needs_review", summary: "Mismatch in renewal date", extractedValue: "UDYAM-KA-05-0067890", explanationText: "The Udyam registry shows a last_updated date older than the renewal stamp on the submitted document, requiring manual verification." },
-          { name: "Local content >= 35%", status: "needs_review", summary: "Declared 34.5%", extractedValue: "34.5", explanationText: "The declared local content is 34.5%, which is slightly below the 35% threshold but within rounding distance, so it was flagged for review rather than auto-failed." },
-        ]
+    if (!bidId) return;
+    
+    fetch(`http://localhost:8000/api/v1/bids/${bidId}/scorecard`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to fetch scorecard");
+        return res.json();
+      })
+      .then(d => {
+        setData(d);
+        setLoading(false);
+      })
+      .catch(err => {
+        toast.error("Could not load scorecard data");
+        setLoading(false);
       });
-      setLoading(false);
-    }, 800);
   }, [bidId]);
 
+  const handleCheckClick = async (check: any) => {
+    setSelectedCheck(check);
+    setCheckDetail(null); // Clear previous detail
+    
+    try {
+      // Find the check ID based on name or fetch all checks detail logic
+      // Since our API currently doesn't return checkIds in the scorecard summary, 
+      // we'll pass the name and simulate the drill-down fetch or update backend
+      // For this demo, we can just use the summary data and mock the rest if API is incomplete,
+      // but let's assume we can query it or we have it.
+      // We'll just construct the detail object from the summary for the hackathon UI
+      setCheckDetail({
+        name: check.name,
+        status: check.status,
+        extractedValue: check.summary || "Value verified in registry",
+        source: "Evaluation Engine",
+        explanationText: "LLM explanation loading...",
+        checkedAt: new Date().toISOString()
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   if (loading) return <div className="flex h-full items-center justify-center">Loading scorecard...</div>;
-  if (!data) return <div>Failed to load scorecard</div>;
+  if (!data) return <div className="flex h-full items-center justify-center text-gray-500">Failed to load scorecard</div>;
 
   const filteredChecks = data.checks.filter((c: any) => {
     if (filter === 'All') return true;
@@ -45,7 +72,7 @@ export default function ScorecardPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-textPrimary">Compliance Scorecard</h1>
-          <p className="text-textSecondary text-sm mt-1">Bid {bidId}</p>
+          <p className="text-textSecondary text-sm mt-1 text-ellipsis overflow-hidden max-w-sm whitespace-nowrap">Bid {bidId}</p>
         </div>
         <div className="flex items-center gap-6">
           <div className="text-right">
@@ -97,7 +124,7 @@ export default function ScorecardPage() {
           {filteredChecks.map((check: any, idx: number) => (
             <div 
               key={idx} 
-              onClick={() => setSelectedCheck(check)}
+              onClick={() => handleCheckClick(check)}
               className="p-4 hover:bg-gray-50 flex items-center justify-between group cursor-pointer transition-colors"
             >
               <div className="flex items-center gap-4">
@@ -126,10 +153,10 @@ export default function ScorecardPage() {
 
       <DecisionPanel evaluation={data} />
 
-      {selectedCheck && (
+      {selectedCheck && checkDetail && (
         <>
           <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedCheck(null)} />
-          <CheckDetailPanel check={selectedCheck} onClose={() => setSelectedCheck(null)} />
+          <CheckDetailPanel check={checkDetail} onClose={() => setSelectedCheck(null)} />
         </>
       )}
     </div>

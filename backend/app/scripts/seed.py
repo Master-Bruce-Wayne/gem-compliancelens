@@ -26,7 +26,7 @@ async def seed_data(file_path: str):
         
         # Seed Tenders
         for t in data.get("tenders", []):
-            tender_id = uuid.UUID(t["id"].replace("tender-cpcl-2026-", "00000000-0000-0000-0000-00000000"))
+            tender_id = uuid.uuid5(uuid.NAMESPACE_OID, t["id"])
             tender = Tender(
                 id=tender_id,
                 title=t["title"],
@@ -46,7 +46,7 @@ async def seed_data(file_path: str):
 
         # Seed Bidders
         for b in data.get("bidders", []):
-            bidder_id = uuid.UUID(b["id"].replace("bidder-", "").ljust(32, '0')[:32])
+            bidder_id = uuid.uuid5(uuid.NAMESPACE_OID, b["id"])
             bidder = Bidder(
                 id=bidder_id,
                 legal_name=b["legal_name"],
