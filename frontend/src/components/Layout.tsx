@@ -26,7 +26,7 @@ export default function Layout({ children }: LayoutProps) {
       path: currentBidId ? `/bids/${currentBidId}/audit` : '#', 
       disabled: !currentBidId 
     },
-    { name: 'Rules Config', icon: Settings, path: '/rules', disabled: true },
+    { name: 'Rules Config', icon: Settings, path: '/rules' },
     { name: 'Bidder Self-Check', icon: ShieldCheck, path: '/self-check' },
   ];
 
