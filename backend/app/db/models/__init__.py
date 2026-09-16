@@ -3,7 +3,6 @@ from app.db.models.tenders import Tender
 from app.db.models.tender_rules import TenderRule
 from app.db.models.bidders import Bidder
 from app.db.models.bidder_documents import BidderDocument
-from app.db.models.mock_registry import MockRegistryResponse
 from app.db.models.evaluations import Evaluation
 from app.db.models.evaluation_checks import EvaluationCheck
 from app.db.models.decisions import Decision

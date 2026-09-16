@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 from app.db.session import get_db
-from app.db.models import Bidder, TenderRule, MockRegistryResponse, BidderDocument, Evaluation, EvaluationCheck, Decision, AuditLog
+from app.db.models import Bidder, TenderRule, BidderDocument, Evaluation, EvaluationCheck, Decision, AuditLog
 from app.services.rule_engine import RuleEngine
 from app.services.explanation_service import ExplanationService
 from pydantic import BaseModel
@@ -29,13 +29,11 @@ async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = D
     rules_result = await db.execute(select(TenderRule).where(TenderRule.tender_id == req.tenderId))
     rules = rules_result.scalars().all()
     
-    registry_result = await db.execute(select(MockRegistryResponse).where(MockRegistryResponse.bidder_id == req.bidderId))
-    registry_responses = registry_result.scalars().all()
     
     docs_result = await db.execute(select(BidderDocument).where(BidderDocument.bidder_id == req.bidderId))
     docs = docs_result.scalars().all()
     
-    engine_result = RuleEngine.evaluate(bidder, rules, registry_responses, docs)
+    engine_result = RuleEngine.evaluate(bidder, rules, docs)
     
     # Save evaluation
     eval_record = Evaluation(

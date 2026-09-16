@@ -1,16 +1,16 @@
-from app.db.models import Bidder, TenderRule, MockRegistryResponse, BidderDocument
+from app.db.models import Bidder, TenderRule, BidderDocument
 from typing import List, Dict, Any
 
 class RuleEngine:
     @staticmethod
-    def evaluate(bidder: Bidder, rules: List[TenderRule], registry_responses: List[MockRegistryResponse], documents: List[BidderDocument]) -> Dict[str, Any]:
+    def evaluate(bidder: Bidder, rules: List[TenderRule], documents: List[BidderDocument]) -> Dict[str, Any]:
         results = []
         overall_score = 100
         has_mandatory_fail = False
         has_needs_review = False
         
-        # Organize registry responses by type
-        registry_map = {r.registry_type: r.response_payload for r in registry_responses}
+        # Organize documents by type
+        doc_map = {d.doc_type: d for d in documents}
         
         for rule in rules:
             status = 'pass'
@@ -21,58 +21,48 @@ class RuleEngine:
 
             if rule.clause_type == 'gst_active_and_filed':
                 rule_name = "GST active and returns filed"
-                gst_data = registry_map.get('gst', {})
-                source = 'Simulated GST portal response'
-                if not gst_data:
+                gst_doc = doc_map.get('gst_certificate')
+                source = 'Uploaded GST Certificate OCR'
+                if not gst_doc:
+                    status = 'fail'
+                    reason = "GST Certificate not uploaded"
+                elif not gst_doc.extracted_fields or 'gstin' not in gst_doc.extracted_fields:
                     status = 'needs_review'
-                    reason = "GST registry data missing"
+                    reason = "Failed to extract GSTIN from document"
                 else:
-                    if gst_data.get('status') != 'Active':
-                        status = 'fail'
-                        reason = "GST status is not Active"
-                    else:
-                        returns = gst_data.get('return_filing_status', {})
-                        if returns.get('GSTR-3B') != 'Filed':
-                            status = 'fail'
-                            reason = f"GSTR-3B not filed since {returns.get('last_period_filed')}"
-                            extracted_val = "Not Filed"
+                    extracted_val = gst_doc.extracted_fields.get('gstin')
 
             elif rule.clause_type == 'pan_valid':
                 rule_name = "PAN valid"
-                pan_data = registry_map.get('pan', {})
-                source = 'Simulated PAN portal response'
-                if not pan_data:
-                    status = 'needs_review'
-                    reason = "PAN registry data missing"
-                elif pan_data.get('status') != 'Valid':
+                pan_doc = doc_map.get('pan')
+                source = 'Uploaded PAN Card OCR'
+                if not pan_doc:
                     status = 'fail'
-                    reason = "PAN is not valid"
+                    reason = "PAN Card not uploaded"
+                elif not pan_doc.extracted_fields or 'pan' not in pan_doc.extracted_fields:
+                    status = 'needs_review'
+                    reason = "Failed to extract PAN from document"
+                else:
+                    extracted_val = pan_doc.extracted_fields.get('pan')
 
             elif rule.clause_type == 'udyam_valid':
                 rule_name = "Udyam registration valid"
-                udyam_data = registry_map.get('udyam', {})
-                source = 'Simulated Udyam portal response'
-                if not udyam_data:
+                udyam_doc = doc_map.get('udyam_certificate')
+                source = 'Uploaded Udyam Certificate OCR'
+                if not udyam_doc:
+                    status = 'fail'
+                    reason = "Udyam Certificate not uploaded"
+                elif not udyam_doc.extracted_fields or 'udyam_registration_number' not in udyam_doc.extracted_fields:
                     status = 'needs_review'
-                    reason = "Udyam registry data missing"
+                    reason = "Failed to extract Udyam number from document"
                 else:
-                    # Check if note indicates human review needed
-                    if "note" in udyam_data and "mismatch" in udyam_data["note"].lower():
-                        status = 'needs_review'
-                        reason = udyam_data['note']
-                    elif udyam_data.get('status') != 'Active':
-                        status = 'fail'
-                        reason = "Udyam is not active"
+                    extracted_val = udyam_doc.extracted_fields.get('udyam_registration_number')
 
             elif rule.clause_type == 'not_debarred':
                 rule_name = "Not on debarment list"
-                debar_data = registry_map.get('cppp_debarment', {})
-                source = 'Simulated CPPP Debarment list'
-                if debar_data.get('is_debarred'):
-                    status = 'fail'
-                    reason = debar_data.get('debarment_reason', 'Currently debarred')
-                    if 'debarment_period' in debar_data:
-                        reason = f"Currently debarred by another CPSE until {debar_data['debarment_period'].split(' to ')[1]}"
+                source = 'Self-declaration'
+                status = 'needs_review'
+                reason = "Debarment requires manual cross-check on CPPP portal"
 
             elif rule.clause_type == 'local_content_pct':
                 rule_name = f"Local content >= {rule.threshold_value}%"
@@ -104,14 +94,14 @@ class RuleEngine:
 
             elif rule.clause_type == 'epfo_esic_compliance':
                 rule_name = "EPFO/ESIC compliant"
-                esic_data = registry_map.get('epfo_esic', {})
-                source = 'Simulated EPFO/ESIC portal response'
-                if not esic_data:
-                    status = 'needs_review'
-                    reason = "EPFO/ESIC data missing"
-                elif esic_data.get('esic_status') != 'Active' or not esic_data.get('contributions_current'):
+                esic_doc = doc_map.get('epfo_esic')
+                source = 'Uploaded EPFO/ESIC Statement OCR'
+                if not esic_doc:
                     status = 'fail'
-                    reason = "ESIC status inactive"
+                    reason = "EPFO/ESIC compliance document not uploaded"
+                else:
+                    status = 'needs_review'
+                    reason = "Requires manual verification on portal"
                     
             if status == 'fail' and rule.mandatory:
                 has_mandatory_fail = True

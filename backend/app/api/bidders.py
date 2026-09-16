@@ -33,3 +33,10 @@ async def get_bidder_documents(id: str, db: AsyncSession = Depends(get_db)):
         "fileUrl": doc.file_url,
         "createdAt": doc.created_at
     } for doc in documents]
+
+from app.db.models.bidders import Bidder
+@router.get("")
+async def get_bidders(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Bidder))
+    bidders = result.scalars().all()
+    return [{"id": str(b.id), "legal_name": b.legal_name, "pan": b.pan} for b in bidders]
