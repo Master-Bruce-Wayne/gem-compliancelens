@@ -19,4 +19,3 @@ class Bidder(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     documents = relationship("BidderDocument", back_populates="bidder")
-    mock_responses = relationship("MockRegistryResponse", back_populates="bidder")
