@@ -22,7 +22,7 @@ export default function RulesConfigPage() {
   ];
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${TENDER_ID}/rules`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${TENDER_ID}/officer/rules`)
       .then(res => res.json())
       .then(data => {
         // Map saved rules to our catalog state
@@ -70,7 +70,7 @@ export default function RulesConfigPage() {
     };
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${TENDER_ID}/rules`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${TENDER_ID}/officer/rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

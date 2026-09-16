@@ -37,14 +37,14 @@ export default function BidDetailPage() {
     setIsRunning(true);
     const bidId = crypto.randomUUID();
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/evaluate`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/officer/bids/${bidId}/evaluate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bidderId: selectedBidder, tenderId: TENDER_ID })
       });
       if (!response.ok) throw new Error("Evaluation failed");
       toast.success("Compliance evaluation complete!");
-      setTimeout(() => navigate(`/bids/${bidId}/scorecard`), 1000);
+      setTimeout(() => navigate(`/officer/bids/${bidId}/scorecard`), 1000);
     } catch (err) {
       toast.error("Failed to run compliance check.");
       setIsRunning(false);
