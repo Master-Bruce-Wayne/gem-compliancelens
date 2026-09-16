@@ -1,4 +1,3 @@
-version: '3.8'
 
 services:
   db:
@@ -46,3 +45,9 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+    driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1350

@@ -9,3 +9,4 @@ from app.db.models.evaluation_checks import EvaluationCheck
 from app.db.models.decisions import Decision
 from app.db.models.audit_log import AuditLog
 from app.db.models.self_check import SelfCheckSession
+from app.db.models.authenticity import DocumentAuthenticityCheck, DocumentHash

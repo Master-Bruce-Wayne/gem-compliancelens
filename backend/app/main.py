@@ -20,4 +20,6 @@ app.include_router(documents.router, prefix="/api/v1/documents", tags=["document
 app.include_router(mock_registry.router, prefix="/api/v1/mock-registry", tags=["mock-registry"])
 app.include_router(tenders.router, prefix="/api/v1/tenders", tags=["tenders"])
 app.include_router(bids.router, prefix="/api/v1/bids", tags=["bids"])
+app.include_router(bidders.router, prefix="/api/v1/bidders", tags=["bidders"])
 app.include_router(self_check.router, prefix="/api/v1/self-check", tags=["self-check"])
+from app.api import bidders
