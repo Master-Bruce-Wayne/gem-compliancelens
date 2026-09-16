@@ -3,6 +3,7 @@ import ScorecardPage from './pages/ScorecardPage';
 import BidDetailPage from './pages/BidDetailPage';
 import AuditTrailPage from './pages/AuditTrailPage';
 import SelfCheckPage from './pages/SelfCheckPage';
+import BidderSubmitPage from "./pages/BidderSubmitPage";
 import RulesConfigPage from './pages/RulesConfigPage';
 import GuidePage from './pages/GuidePage';
 import LoginPage from './pages/LoginPage';
@@ -48,7 +49,7 @@ function AppContent() {
             {/* Bidder Gateway */}
             <Route path="/bidder/guide" element={<ProtectedRoute allowedRole="bidder"><GuidePage /></ProtectedRoute>} />
             <Route path="/bidder/dashboard" element={<ProtectedRoute allowedRole="bidder"><SelfCheckPage /></ProtectedRoute>} />
-            {/* More bidder routes will be added here in Phase 2 */}
+            <Route path="/bidder/submit" element={<ProtectedRoute allowedRole="bidder"><BidderSubmitPage /></ProtectedRoute>} />
             
             {/* Fallback */}
             <Route path="*" element={<Navigate to="/login" replace />} />

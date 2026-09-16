@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     LLM_MODEL: str = "claude-3-5-sonnet-20240620"
     ENVIRONMENT: str = "development"
     MOCK_REGISTRY_MODE: bool = True
+    CLOUDINARY_URL: str = ""
 
     class Config:
         env_file = ".env"
