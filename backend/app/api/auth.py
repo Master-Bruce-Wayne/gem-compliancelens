@@ -53,7 +53,7 @@ async def register(user: UserCreate, db: AsyncSession = Depends(get_db)):
     # If bidder, also create a Bidder profile
     if user.role == 'bidder':
         from app.db.models.bidders import Bidder
-        new_bidder = Bidder(id=new_user.id, company_name=user.full_name)
+        new_bidder = Bidder(id=new_user.id, legal_name=user.full_name)
         db.add(new_bidder)
         await db.commit()
 
