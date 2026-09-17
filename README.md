@@ -1,5 +1,5 @@
 # 🏛️ GeM ComplianceLens
-**Smart India Hackathon (SIH) 26100 - AI-Powered Bid Compliance Verification for Government e-Marketplace (GeM)**
+**Smart India Hackathon (SIH) '26 - AI-Powered Bid Compliance Verification for Government e-Marketplace (GeM)**
 
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue?logo=react)](#)
 [![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](#)
@@ -17,6 +17,19 @@ Currently, this process is highly **document-intensive**, requiring procurement 
 **GeM ComplianceLens** is an end-to-end, AI-powered Bid Application Lifecycle platform. It automates the extraction and verification of statutory documents while keeping the final decision-making process strictly **deterministic** and fully auditable.
 
 Instead of relying on LLMs to make black-box decisions, our platform uses AI for what it does best (vision, OCR, explanation) and relies on a rigid, state-machine-backed Rule Engine for compliance evaluation.
+
+---
+
+## 📊 Current Project Status (MVP - 100% Completed)
+At this moment, the core MVP is fully developed, deployed, and operational. We have successfully implemented the end-to-end lifecycle for both Vendors and Procurement Officers:
+
+✅ **Fully Operational Features:**
+- **Role-Based Dashboards:** Distinct interfaces for Bidders (Vendors) and Procurement Officers.
+- **Rule Engine Execution:** Officers can dynamically create Tender rules (e.g., minimum turnover, GST compliance), and the backend strictly enforces them.
+- **Automated AI Extraction:** Documents uploaded by vendors are passed through our Python OCR pipeline to extract key metrics (PAN, GSTIN) automatically.
+- **Clarification Loop:** The complete workflow for an officer to pause an evaluation, request manual clarification/documents from a vendor, and receive their response.
+- **Manual Verification Bridge:** If the AI has low confidence in a blurry document, it safely degrades and forces a human officer to manually verify the document, recording the decision in the audit log.
+- **Cloud Infrastructure:** Integrated with Cloudinary for secure document storage and deployed live on Vercel (Frontend) and Render (Backend).
 
 ---
 
@@ -116,14 +129,22 @@ npm run dev
 
 ---
 
-## 🗺️ Production Roadmap (Beyond SIH)
-We have logged comprehensive architecture upgrade plans in our [GitHub Issues](https://github.com/Shubham15986/gem-compliancelens/issues). Highlights include:
+## 🗺️ Next Implementations (Future Roadmap)
+We have logged comprehensive architecture upgrade plans in our [GitHub Issues](https://github.com/Shubham15986/gem-compliancelens/issues). Our immediate next steps for scaling to a national level include:
 
-- **#12 - Maker/Checker Workflow:** Four-eyes principle requiring a Junior Officer to verify and a Senior Officer to approve.
-- **#13 - PII Encryption at Rest:** Column-level `pgcrypto` encryption for PAN and GSTIN data in the database.
-- **#14 - Immutable Blockchain Audit:** Syncing the PostgreSQL `audit_log` to an append-only ledger like Amazon QLDB.
-- **#15 - Cross-Bidder Collusion Detection:** Background graph-analytics to flag IP/MAC or stakeholder overlaps in competing bids.
-- **#17 - DigiLocker OAuth:** Direct integration with Govt. DigiLocker APIs to pull verified XML payloads, bypassing OCR completely.
+### 1. Security & Governance Upgrades
+- **Maker/Checker Workflow:** Implement a four-eyes principle requiring a Junior Officer to verify and a Senior Officer to approve high-value bids.
+- **PII Encryption at Rest:** Implement column-level `pgcrypto` encryption for sensitive PAN and GSTIN data in the database.
+- **Immutable Blockchain Audit:** Sync the PostgreSQL `audit_log` to an append-only ledger like Amazon QLDB to cryptographically guarantee that evaluation histories are tamper-proof.
+
+### 2. Advanced AI Integration
+- **Fine-Tuned LayoutLMv3:** Migrate from standard Tesseract OCR to a specialized LayoutLMv3 model fine-tuned specifically on Indian statutory documents (Udyam, GST, PAN) to handle severe document skew and low lighting.
+- **Cross-Bidder Collusion Detection:** Implement graph-analytics background workers to flag competing bids that share identical IP addresses, MAC addresses, or overlapping stakeholder names to prevent cartel bidding.
+
+### 3. Interoperability & DevOps
+- **DigiLocker OAuth Integration:** Allow bidders to authenticate via DigiLocker to fetch verified, digitally-signed XML payloads directly from government registries, bypassing the need for OCR entirely.
+- **AWS EC2 / ECS Migration:** Migrate the backend from Render to a dedicated AWS infrastructure to allow isolated Virtual Private Clouds (VPCs) and containerized GPU access for faster AI inference.
+- **Webhook Architecture:** Develop webhooks to push real-time status updates (Bid Qualified, Clarification Requested) directly into internal Government ERP systems (SAP, Oracle).
 
 ---
-*Built with ❤️ for Smart India Hackathon 2024.*
+*Built with ❤️ for Smart India Hackathon '26.*
