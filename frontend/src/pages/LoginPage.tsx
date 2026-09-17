@@ -35,8 +35,8 @@ export default function LoginPage() {
         localStorage.setItem('user', JSON.stringify(data.user));
         toast.success("Login successful!");
         setTimeout(() => {
-          if (data.user.role === 'officer') navigate('/officer/bids');
-          else navigate('/bidder/dashboard');
+          if (data.user.role === 'officer') navigate('/officer/tenders');
+          else navigate('/bidder/tenders');
         }, 1000);
       } else {
         toast.success("Registration successful! Please login.");
