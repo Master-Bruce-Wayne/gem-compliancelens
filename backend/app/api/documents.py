@@ -8,6 +8,9 @@ import cloudinary.uploader
 from typing import Optional
 from app.config import settings
 
+from app.services.ocr_service import OCRService
+import tempfile
+import shutil
 from app.services.forgery_service import ForgeryService
 from app.db.models.bidder_documents import BidderDocument
 from app.db.models.authenticity import DocumentAuthenticityCheck
@@ -53,24 +56,52 @@ async def upload_document(
             # Fallback if no cloudinary configured
             file_url = f"mock_url_{file.filename}"
             
-        # 2. Simulate OCR extraction based on docType
-        # In a full production build, this is where pdfplumber/pytesseract runs
-        extracted_fields = {}
-        if docType == 'pan':
-            extracted_fields = {"pan": "ABCDE1234F"}
-        elif docType == 'gst_certificate':
-            extracted_fields = {"gstin": "27ABCDE1234F1Z5"}
-        elif docType == 'udyam_certificate':
-            extracted_fields = {"udyam_registration_number": "UDYAM-MH-00-1234567"}
+        # 2. Real OCR extraction
+        import tempfile
+        import os
+        
+        # Save uploaded file temporarily for OCR processing
+        _, temp_path = tempfile.mkstemp(suffix=".pdf" if file.filename.lower().endswith(".pdf") else ".jpg")
+        try:
+            with open(temp_path, "wb") as temp_file:
+                temp_file.write(contents)
+            
+            ocr_result = OCRService.extract_fields(temp_path, docType)
+        finally:
+            os.remove(temp_path)
+            
+        if ocr_result["status"] == "extraction_failed":
+            # Mark document as failed, prompt re-upload
+            raise HTTPException(status_code=422, detail="Extraction failed. Please ensure the document is clear and readable.")
+            
+        extracted_fields = ocr_result["fields"]
+        confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
+        
+        # Determine if confirmation is needed (any medium confidence or missing expected fields)
+        needs_confirmation = False
+        if confidence_base == "medium":
+            needs_confirmation = True
+        
+        expected_fields = []
+        if docType == 'pan': expected_fields = ['pan']
+        elif docType == 'gst_certificate': expected_fields = ['gstin']
+        elif docType == 'udyam_certificate': expected_fields = ['udyam_registration_number']
+        
+        for field in expected_fields:
+            if field not in extracted_fields:
+                needs_confirmation = True
+        
+        final_status = "pending" if needs_confirmation else "done"
+
         
         # 3. Save to database
         new_doc = BidderDocument(
             bidder_id=uuid.UUID(bidderId),
             doc_type=docType,
             file_url=file_url,
-            ocr_status='done',
+            ocr_status=final_status,
             extracted_fields=extracted_fields,
-            confidence_score=95.0
+            confidence_score=95.0 if confidence_base == "high" else 70.0
         )
         db.add(new_doc)
         await db.commit()
@@ -145,3 +176,35 @@ async def get_authenticity(id: str, db: AsyncSession = Depends(get_db)):
             "checked_at": c.checked_at
         } for c in checks]
     }
+
+from pydantic import BaseModel
+class DocumentConfirmRequest(BaseModel):
+    confirmed_fields: dict
+    bidderId: str
+
+@router.post("/{id}/confirm")
+async def confirm_document(id: str, req: DocumentConfirmRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidderDocument).filter(BidderDocument.id == uuid.UUID(id)))
+    doc = result.scalars().first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+        
+    doc.confirmed_fields = req.confirmed_fields
+    doc.ocr_status = 'done'
+    
+    # Write to audit_log
+    from app.db.models.audit_log import AuditLog
+    audit = AuditLog(
+        bid_id=uuid.uuid4(), # Using dummy uuid for now since it's not tied to a bid yet
+        event_type='document_correction',
+        actor_id=uuid.UUID(req.bidderId),
+        details={
+            "document_id": id,
+            "original_fields": doc.extracted_fields,
+            "confirmed_fields": req.confirmed_fields
+        }
+    )
+    db.add(audit)
+    
+    await db.commit()
+    return {"status": "done", "confirmedFields": doc.confirmed_fields}

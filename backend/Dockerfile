@@ -5,6 +5,7 @@ WORKDIR /app
 # Install system dependencies for OCR and psycopg2
 RUN apt-get update && apt-get install -y \
     tesseract-ocr \
+    poppler-utils \
     libpq-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
