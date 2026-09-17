@@ -11,6 +11,7 @@ import OfficerTenderDetailPage from './pages/OfficerTenderDetailPage';
 import VendorTendersPage from './pages/VendorTendersPage';
 import VendorApplicationsListPage from "./pages/VendorApplicationsListPage";
 import VendorApplicationPage from './pages/VendorApplicationPage';
+import NotificationsPage from "./pages/NotificationsPage";
 
 // Protect routes based on role
 function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allowedRole: string }) {
