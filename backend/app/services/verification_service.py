@@ -23,35 +23,12 @@ class ManualBridgeProvider(VerificationProvider):
     async def verify_udyam(self, udyam: str) -> Dict[str, Any]:
         return {"status": "manual_verification_required", "reason": "No API available"}
 
-class SurepassProvider(VerificationProvider):
-    # Dummy implementations that fall back if API fails
-    async def verify_gstin(self, gstin: str) -> Dict[str, Any]:
-        try:
-            # Simulate API call
-            # async with httpx.AsyncClient() as client:
-            #    res = await client.post(...)
-            #    res.raise_for_status()
-            return {"status": "active", "filing_status": "regular"}
-        except Exception:
-            return {"status": "manual_verification_required"}
-            
-    async def verify_pan(self, pan: str) -> Dict[str, Any]:
-        return {"status": "active", "category": "Company"}
-        
-    async def verify_udyam(self, udyam: str) -> Dict[str, Any]:
-        return {"status": "active", "enterprise_type": "Micro"}
-
 class VerificationService:
     def __init__(self, db: AsyncSession):
         self.db = db
         self.ttl = timedelta(hours=24)
         
-        # Provider selection based on config (hardcoded to ManualBridge for now to ensure fallback works)
-        provider_name = getattr(settings, 'VERIFICATION_PROVIDER', 'manual')
-        if provider_name == 'surepass':
-            self.provider = SurepassProvider()
-        else:
-            self.provider = ManualBridgeProvider()
+        self.provider = ManualBridgeProvider()
             
     async def get_cached_result(self, check_type: str, identifier: str) -> Optional[Dict[str, Any]]:
         cutoff = datetime.now(timezone.utc) - self.ttl

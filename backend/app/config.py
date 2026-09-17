@@ -8,7 +8,6 @@ class Settings(BaseSettings):
     ANTHROPIC_API_KEY: str = ""
     LLM_MODEL: str = "claude-3-5-sonnet-20240620"
     ENVIRONMENT: str = "development"
-    MOCK_REGISTRY_MODE: bool = True
     CLOUDINARY_URL: str = ""
 
     class Config:

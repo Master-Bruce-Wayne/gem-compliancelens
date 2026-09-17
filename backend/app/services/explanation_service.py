@@ -19,7 +19,7 @@ class ExplanationService:
         """
         
         if not settings.ANTHROPIC_API_KEY:
-            return f"Mock Explanation: The {rule_name} check resulted in {status} based on {source}."
+            return f"System Explanation: The {rule_name} check resulted in {status} based on {source}."
 
         try:
             response = self.client.messages.create(

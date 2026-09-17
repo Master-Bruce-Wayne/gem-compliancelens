@@ -54,7 +54,7 @@ async def upload_document(
             file_url = upload_result.get("secure_url")
         else:
             # Fallback if no cloudinary configured
-            file_url = f"mock_url_{file.filename}"
+            raise HTTPException(status_code=500, detail="Cloudinary is not configured. Document storage is unavailable.")
             
         # 2. Real OCR extraction
         import tempfile
@@ -126,6 +126,8 @@ async def check_authenticity(id: str, db: AsyncSession = Depends(get_db)):
     doc = result.scalars().first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+    if str(doc.bidder_id) != req.bidderId:
+        raise HTTPException(status_code=403, detail="Access denied")
         
     service = ForgeryService(db)
     
@@ -188,6 +190,8 @@ async def confirm_document(id: str, req: DocumentConfirmRequest, db: AsyncSessio
     doc = result.scalars().first()
     if not doc:
         raise HTTPException(status_code=404, detail="Document not found")
+    if str(doc.bidder_id) != req.bidderId:
+        raise HTTPException(status_code=403, detail="Access denied")
         
     doc.confirmed_fields = req.confirmed_fields
     doc.ocr_status = 'done'
@@ -195,7 +199,7 @@ async def confirm_document(id: str, req: DocumentConfirmRequest, db: AsyncSessio
     # Write to audit_log
     from app.db.models.audit_log import AuditLog
     audit = AuditLog(
-        bid_id=uuid.uuid4(), # Using dummy uuid for now since it's not tied to a bid yet
+        bid_id=None,
         event_type='document_correction',
         actor_id=uuid.UUID(req.bidderId),
         details={

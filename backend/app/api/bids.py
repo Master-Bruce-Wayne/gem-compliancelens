@@ -354,7 +354,7 @@ async def record_manual_verification(checkId: uuid.UUID, req: ManualVerifyReq, d
         check.status = 'fail'
     
     audit = AuditLog(
-        bid_id=uuid.uuid4(), # using dummy as we don't readily have the bid_id here
+        bid_id=None,
         event_type='decision_submitted',
         actor_id=req.officerId,
         details={"action": "manual_verification", "check_id": str(checkId), "outcome": req.outcome}
@@ -363,3 +363,18 @@ async def record_manual_verification(checkId: uuid.UUID, req: ManualVerifyReq, d
     
     await db.commit()
     return {"status": "success"}
+
+@router.get("/{id}/clarifications")
+async def get_clarifications(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(ClarificationRequest)
+        .where(ClarificationRequest.bid_application_id == id)
+        .order_by(ClarificationRequest.created_at.desc())
+    )
+    reqs = result.scalars().all()
+    return [{
+        "id": r.id,
+        "message": r.message,
+        "status": r.status,
+        "createdAt": r.created_at
+    } for r in reqs]

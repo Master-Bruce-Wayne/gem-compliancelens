@@ -17,7 +17,7 @@ export default function ScorecardPage() {
   useEffect(() => {
     if (!bidId) return;
     
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/officer/bids/${bidId}/scorecard`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/scorecard`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to fetch scorecard");
         return res.json();
@@ -32,24 +32,29 @@ export default function ScorecardPage() {
       });
   }, [bidId]);
 
+  const fetchScorecard = () => {
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/scorecard`)
+      .then(res => res.json())
+      .then(d => {
+        setData(d);
+        setLoading(false);
+      });
+  };
+
   const handleCheckClick = async (check: any) => {
     setSelectedCheck(check);
-    setCheckDetail(null); // Clear previous detail
-    
+    setCheckDetail(null);
     try {
-      // Find the check ID based on name or fetch all checks detail logic
-      // Since our API currently doesn't return checkIds in the scorecard summary, 
-      // we'll pass the name and simulate the drill-down fetch or update backend
-      // For this demo, we can just use the summary data and mock the rest if API is incomplete,
-      // but let's assume we can query it or we have it.
-      // We'll just construct the detail object from the summary for the hackathon UI
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${bidId}/checks/${check.id}`);
+      const detail = await res.json();
       setCheckDetail({
-        name: check.name,
-        status: check.status,
-        extractedValue: check.summary || "Value verified in registry",
-        source: "Evaluation Engine",
-        explanationText: "LLM explanation loading...",
-        checkedAt: new Date().toISOString()
+        id: check.id,
+        name: detail.ruleName,
+        status: detail.status,
+        extractedValue: detail.extractedValue,
+        source: detail.source,
+        explanationText: detail.explanationText,
+        checkedAt: detail.checkedAt
       });
     } catch (err) {
       console.error(err);
@@ -156,7 +161,7 @@ export default function ScorecardPage() {
       {selectedCheck && checkDetail && (
         <>
           <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedCheck(null)} />
-          <CheckDetailPanel check={checkDetail} onClose={() => setSelectedCheck(null)} />
+          <CheckDetailPanel check={checkDetail} onClose={() => setSelectedCheck(null)} onVerificationSaved={fetchScorecard} />
         </>
       )}
     </div>
