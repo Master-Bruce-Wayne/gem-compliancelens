@@ -114,6 +114,8 @@ async def upload_document(
             "extractedFields": extracted_fields
         }
         
+    except HTTPException as he:
+        raise he
     except Exception as e:
         msg = str(e)
         if "api_key" in msg.lower() or "configure cloudinary" in msg.lower() or "invalid" in msg.lower():
