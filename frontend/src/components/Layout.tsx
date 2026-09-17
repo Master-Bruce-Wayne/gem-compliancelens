@@ -38,7 +38,7 @@ export default function Layout({ children }: LayoutProps) {
 
   const bidderNavItems = [
     { name: 'How to Use', icon: HelpCircle, path: '/bidder/guide' },
-    { name: 'My Dashboard', icon: ShieldCheck, path: '/bidder/dashboard' },
+    { name: 'My Dashboard', icon: ShieldCheck, path: '/bidder/submit' },
     { name: 'Submit Bid', icon: UploadCloud, path: '/bidder/submit' },
   ];
 

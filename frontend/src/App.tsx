@@ -48,7 +48,7 @@ function AppContent() {
 
             {/* Bidder Gateway */}
             <Route path="/bidder/guide" element={<ProtectedRoute allowedRole="bidder"><GuidePage /></ProtectedRoute>} />
-            <Route path="/bidder/dashboard" element={<ProtectedRoute allowedRole="bidder"><SelfCheckPage /></ProtectedRoute>} />
+            
             <Route path="/bidder/submit" element={<ProtectedRoute allowedRole="bidder"><BidderSubmitPage /></ProtectedRoute>} />
             
             {/* Fallback */}
