@@ -9,7 +9,7 @@ import Layout from './components/Layout';
 import OfficerTendersPage from './pages/OfficerTendersPage';
 import OfficerTenderDetailPage from './pages/OfficerTenderDetailPage';
 import VendorTendersPage from './pages/VendorTendersPage';
-import VendorApplicationsListPage from "./VendorApplicationsListPage";
+import VendorApplicationsListPage from "./pages/VendorApplicationsListPage";
 import VendorApplicationPage from './pages/VendorApplicationPage';
 
 // Protect routes based on role
