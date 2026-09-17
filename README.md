@@ -20,8 +20,8 @@ Instead of relying on LLMs to make black-box decisions, our platform uses AI for
 
 ---
 
-## 📊 Current Project Status (MVP - 100% Completed)
-At this moment, the core MVP is fully developed, deployed, and operational. We have successfully implemented the end-to-end lifecycle for both Vendors and Procurement Officers:
+## 📊 Current Project Status (Core MVP)
+Our core MVP is actively deployed and operational, successfully demonstrating the end-to-end lifecycle for both Vendors and Procurement Officers. While we are continuously refining edge cases, the foundational architecture is live:
 
 ✅ **Fully Operational Features:**
 - **Role-Based Dashboards:** Distinct interfaces for Bidders (Vendors) and Procurement Officers.
