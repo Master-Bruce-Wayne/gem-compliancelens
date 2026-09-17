@@ -161,11 +161,18 @@ async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = D
         bid.status = 'under_evaluation'
         
     for check in engine_result['checks']:
+        val = check.get('extracted_value')
+        val_str = None
+        if isinstance(val, dict) and 'value' in val:
+            val_str = str(val['value'])
+        elif val is not None:
+            val_str = str(val)
+
         chk_record = EvaluationCheck(
             evaluation_id=eval_record.id,
             rule_name=check['rule_name'],
             status=check['status'],
-            extracted_value=check['extracted_value'],
+            extracted_value=val_str,
             source=check['source']
         )
         db.add(chk_record)
