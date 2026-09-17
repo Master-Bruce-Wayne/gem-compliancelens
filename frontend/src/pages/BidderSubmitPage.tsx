@@ -26,7 +26,7 @@ export default function BidderSubmitPage() {
         body: formData
       });
       
-      if (!res.ok) throw new Error("Upload failed");
+      if (!res.ok) { const errData = await res.json().catch(() => ({})); throw new Error(errData.detail || "Upload failed"); }
       const data = await res.json();
       
       toast.success("Document securely uploaded & extracted!");
@@ -34,7 +34,7 @@ export default function BidderSubmitPage() {
       setFile(null);
       
     } catch (err) {
-      toast.error("Upload failed. Ensure Cloudinary is configured.");
+      toast.error(err instanceof Error ? err.message : "Upload failed. Ensure Cloudinary is configured.");
     } finally {
       setIsUploading(false);
     }

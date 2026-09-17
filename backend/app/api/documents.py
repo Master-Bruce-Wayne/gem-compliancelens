@@ -16,8 +16,17 @@ from sqlalchemy import select
 router = APIRouter()
 
 # Configure Cloudinary if URL is present
+import re
 if settings.CLOUDINARY_URL:
-    cloudinary.config(secure=True)
+    # Explicitly parse the URL in case it's not in os.environ but in pydantic settings
+    match = re.match(r"cloudinary://([^:]+):([^@]+)@(.+)", settings.CLOUDINARY_URL.strip('"\''))
+    if match:
+        cloudinary.config(
+            api_key=match.group(1),
+            api_secret=match.group(2),
+            cloud_name=match.group(3),
+            secure=True
+        )
 
 @router.post("/upload")
 async def upload_document(
@@ -75,7 +84,10 @@ async def upload_document(
         }
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        msg = str(e)
+        if "api_key" in msg.lower() or "configure cloudinary" in msg.lower() or "invalid" in msg.lower():
+            msg = f"Cloudinary error: {msg}. Please check your CLOUDINARY_URL format in Render (it should be cloudinary://API_KEY:API_SECRET@CLOUD_NAME)."
+        raise HTTPException(status_code=500, detail=msg)
 
 @router.post("/{id}/authenticity")
 async def check_authenticity(id: str, db: AsyncSession = Depends(get_db)):
