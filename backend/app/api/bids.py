@@ -275,6 +275,18 @@ async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession 
     if bid.status in ['qualified', 'disqualified']:
         raise HTTPException(status_code=409, detail="Decision is final")
         
+    # Check for pending manual verifications
+    checks_res = await db.execute(select(EvaluationCheck).where(EvaluationCheck.evaluation_id == bid.current_evaluation_id))
+    checks = checks_res.scalars().all()
+    pending = []
+    for c in checks:
+        if c.status == 'needs_review':
+            mv_res = await db.execute(select(ManualVerification).where(ManualVerification.evaluation_check_id == c.id))
+            if not mv_res.scalars().first():
+                pending.append(c.rule_name)
+    if pending:
+        raise HTTPException(status_code=400, detail={"message": "Pending manual verifications", "pending_checks": pending})
+        
     bid.status = 'qualified' if req.decision == 'compliant' else 'disqualified'
         
     decision = Decision(
@@ -312,3 +324,42 @@ async def get_audit_log(id: uuid.UUID, eventType: Optional[str] = None, db: Asyn
             for e in events
         ]
     }
+
+from app.db.models.manual_verifications import ManualVerification
+
+class ManualVerifyReq(BaseModel):
+    officerId: UUID
+    outcome: str
+    notes: Optional[str] = None
+
+@router.post("/checks/{checkId}/verify")
+async def record_manual_verification(checkId: uuid.UUID, req: ManualVerifyReq, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(EvaluationCheck).where(EvaluationCheck.id == checkId))
+    check = result.scalar_one_or_none()
+    if not check:
+        raise HTTPException(status_code=404, detail="Check not found")
+        
+    mv = ManualVerification(
+        evaluation_check_id=checkId,
+        officer_id=req.officerId,
+        outcome=req.outcome,
+        notes=req.notes
+    )
+    db.add(mv)
+    
+    # Update check status based on outcome
+    if req.outcome == 'verified':
+        check.status = 'pass'
+    elif req.outcome == 'not_verified':
+        check.status = 'fail'
+    
+    audit = AuditLog(
+        bid_id=uuid.uuid4(), # using dummy as we don't readily have the bid_id here
+        event_type='decision_submitted',
+        actor_id=req.officerId,
+        details={"action": "manual_verification", "check_id": str(checkId), "outcome": req.outcome}
+    )
+    db.add(audit)
+    
+    await db.commit()
+    return {"status": "success"}

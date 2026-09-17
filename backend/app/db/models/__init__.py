@@ -10,3 +10,6 @@ from app.db.models.audit_log import AuditLog
 from app.db.models.self_check import SelfCheckSession
 from app.db.models.authenticity import DocumentAuthenticityCheck, DocumentHash
 from app.db.models.bids import BidApplication, BidApplicationDocument, ClarificationRequest, ClarificationResponse
+from app.db.models.manual_verifications import ManualVerification
+from app.db.models.verification_results import VerificationResult
+from app.db.models.notifications import Notification
