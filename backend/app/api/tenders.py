@@ -25,7 +25,7 @@ async def create_tender(req: TenderCreateRequest, db: AsyncSession = Depends(get
         title=req.title,
         organization=req.organization,
         category=req.category,
-        description=req.description,
+        
         status='draft'
     )
     db.add(tender)
@@ -76,7 +76,7 @@ async def publish_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     if not rules_res.scalars().first():
         raise HTTPException(status_code=400, detail="Cannot publish tender without rules")
         
-    tender.status = 'published'
+    tender.status = 'open'
     await db.commit()
     return {"status": "success"}
 
@@ -98,7 +98,7 @@ async def get_tender_applications(id: uuid.UUID, status: Optional[str] = None, d
 
 @router.get("/open")
 async def get_open_tenders(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tender).where(Tender.status == 'published'))
+    result = await db.execute(select(Tender).where(Tender.status == 'open'))
     tenders = result.scalars().all()
     return [{
         "id": t.id,
