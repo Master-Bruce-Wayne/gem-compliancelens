@@ -10,6 +10,8 @@ export default function BidderSubmitPage() {
   const [pendingConfirmId, setPendingConfirmId] = useState<string | null>(null);
   const [confirmFields, setConfirmFields] = useState<any>({});
   const [isConfirming, setIsConfirming] = useState(false);
+  const [failCount, setFailCount] = useState(0);
+  const [isForcing, setIsForcing] = useState(false);
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : {};
@@ -28,15 +30,18 @@ export default function BidderSubmitPage() {
     fetchVault();
   }, []);
 
-  const handleUpload = async (e: React.FormEvent) => {
+  const handleUpload = async (e: React.FormEvent, forceManual = false) => {
     e.preventDefault();
     if (!file) return;
 
-    setIsUploading(true);
+    if (forceManual) setIsForcing(true);
+    else setIsUploading(true);
+    
     const formData = new FormData();
     formData.append('file', file);
     formData.append('docType', docType);
     formData.append('bidderId', user.id);
+    formData.append('force_manual', forceManual ? 'true' : 'false');
 
     try {
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/documents/upload`, {
@@ -44,24 +49,32 @@ export default function BidderSubmitPage() {
         body: formData
       });
       
-      if (!res.ok) { const errData = await res.json().catch(() => ({})); throw new Error(errData.detail || "Upload failed"); }
+      if (!res.ok) { 
+          const errData = await res.json().catch(() => ({})); 
+          if (errData.detail && errData.detail.error === 'OCR_REJECTED') {
+              setFailCount(prev => prev + 1);
+              throw new Error(errData.detail.message);
+          }
+          throw new Error(errData.detail || "Upload failed"); 
+      }
+      
       const data = await res.json();
       
-      toast.success("Document securely uploaded!");
-      setFile(null);
-      await fetchVault();
-      
-      // If pending confirmation
-      if (data.status === 'pending') {
-         setPendingConfirmId(data.documentId);
-         setConfirmFields(data.extractedFields || {});
-         toast("Please confirm the extracted fields for low-confidence data.");
+      if (forceManual) {
+          toast.success("Document submitted for Manual Review!");
+      } else {
+          toast.success("Document verified and added to Vault!");
       }
+      
+      setFile(null);
+      setFailCount(0);
+      await fetchVault();
       
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Upload failed.");
     } finally {
       setIsUploading(false);
+      setIsForcing(false);
     }
   };
 
@@ -100,42 +113,13 @@ export default function BidderSubmitPage() {
         <p className="text-gray-500 mt-1">Manage your centralized statutory documents. These will be attached to your bids.</p>
       </header>
 
-      {pendingConfirmId && (
-         <div className="bg-amber-50 border border-amber-200 p-6 rounded-xl shadow-sm mb-6">
-           <h3 className="font-semibold text-amber-900 flex items-center gap-2 mb-4">
-             <ShieldAlert size={20}/> Manual Confirmation Required
-           </h3>
-           <p className="text-amber-800 text-sm mb-4">
-             We couldn't extract all fields with high confidence. Please verify and correct the values below.
-           </p>
-           <div className="space-y-4 max-w-md">
-             {Object.keys(confirmFields).map(key => (
-               <div key={key}>
-                 <label className="block text-sm font-medium text-amber-900 capitalize mb-1">{key.replace('_', ' ')}</label>
-                 <input 
-                   type="text" 
-                   value={confirmFields[key]?.value || confirmFields[key] || ''}
-                   onChange={e => setConfirmFields({...confirmFields, [key]: { ...confirmFields[key], value: e.target.value }})}
-                   className="w-full p-2 border border-amber-300 rounded focus:ring-amber-500 focus:border-amber-500"
-                 />
-               </div>
-             ))}
-             <button 
-               onClick={submitConfirmation}
-               disabled={isConfirming}
-               className="bg-amber-600 text-white px-4 py-2 rounded font-medium hover:bg-amber-700 disabled:opacity-50 flex items-center gap-2"
-             >
-               {isConfirming && <Loader2 className="animate-spin w-4 h-4"/>} Confirm and Save
-             </button>
-           </div>
-         </div>
-      )}
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upload Form */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
           <h2 className="text-lg font-semibold mb-4">Upload New Document</h2>
-          <form onSubmit={handleUpload} className="space-y-4">
+          <form onSubmit={(e) => handleUpload(e, false)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
               <select 
@@ -168,12 +152,28 @@ export default function BidderSubmitPage() {
 
             <button
               type="submit"
-              disabled={isUploading || !file}
+              onClick={(e) => handleUpload(e, false)}
+              disabled={isUploading || isForcing || !file}
               className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 gap-2"
             >
               {isUploading && <Loader2 className="animate-spin w-4 h-4"/>}
               {isUploading ? 'Extracting via AI...' : 'Secure Upload'}
             </button>
+            
+            {failCount >= 3 && (
+                <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
+                    <p className="text-amber-800 text-sm mb-3 font-medium flex items-center gap-2"><ShieldAlert size={16}/> You have failed automated verification 3 times.</p>
+                    <button
+                      type="button"
+                      onClick={(e) => handleUpload(e, true)}
+                      disabled={isForcing || !file}
+                      className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 gap-2"
+                    >
+                      {isForcing && <Loader2 className="animate-spin w-4 h-4"/>}
+                      Force Upload (Requires Manual Officer Review)
+                    </button>
+                </div>
+            )}
           </form>
         </div>
 
@@ -227,18 +227,12 @@ export default function BidderSubmitPage() {
                       {doc.ocrStatus === 'done' ? (
                         <span className="text-green-600 flex items-center gap-1 font-medium"><CheckCircle className="w-3 h-3"/> Verified</span>
                       ) : (
-                        <span className="text-amber-600 flex items-center gap-1 font-medium"><AlertCircle className="w-3 h-3"/> Action Needed</span>
+                        <span className="text-amber-600 flex items-center gap-1 font-medium"><ShieldAlert className="w-3 h-3"/> Needs Manual Review</span>
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="text-right flex flex-col items-end">
-                   {doc.ocrStatus === 'pending' && (
-                     <button onClick={() => {
-                       setPendingConfirmId(doc.id);
-                       setConfirmFields(doc.extractedFields || {});
-                     }} className="text-sm text-blue-600 font-medium hover:underline">Confirm Data</button>
-                   )}
                 </div>
               </div>
             ))}

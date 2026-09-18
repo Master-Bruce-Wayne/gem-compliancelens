@@ -11,6 +11,8 @@ export default function VendorApplicationPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showManualReviewWarning, setShowManualReviewWarning] = useState(false);
+  const navigate = useNavigate();
   const [clarificationResponse, setClarificationResponse] = useState("");
 
   const fetchApp = async () => {
@@ -34,7 +36,14 @@ export default function VendorApplicationPage() {
     fetchApp();
   }, [appId]);
 
-  const attachAndSubmit = async () => {
+  const attachAndSubmit = async (forceSubmit = false) => {
+    const needsReviewDocs = docs.filter((d: any) => d.ocrStatus === 'pending');
+    if (needsReviewDocs.length > 0 && !forceSubmit) {
+        setShowManualReviewWarning(true);
+        return;
+    }
+    setShowManualReviewWarning(false);
+    
     setSubmitting(true);
     setError(null);
     
@@ -113,7 +122,7 @@ export default function VendorApplicationPage() {
           </div>
           {app.status === 'draft' ? (
              <button 
-                onClick={attachAndSubmit}
+                onClick={() => attachAndSubmit(false)}
                 disabled={submitting}
                 className="bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700 transition flex items-center gap-2 disabled:opacity-50"
               >
@@ -129,6 +138,32 @@ export default function VendorApplicationPage() {
             <div>
               <p className="font-semibold">Action Blocked</p>
               <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+                {showManualReviewWarning && (
+          <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-900 p-5 rounded-xl shadow-sm">
+            <h3 className="font-semibold text-amber-800 flex items-center gap-2 mb-2">
+              <ShieldAlert size={20}/> Warning: Manual Review Required
+            </h3>
+            <p className="text-sm mb-4">
+              One or more of your attached vault documents has been flagged for <strong>Manual Officer Review</strong>. 
+              This will significantly delay your bid evaluation. Do you have a clearer copy you'd like to try uploading now?
+            </p>
+            <div className="flex gap-4">
+              <button 
+                onClick={() => navigate('/vendor/documents')}
+                className="bg-amber-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-amber-700 transition"
+              >
+                Upload Clearer Copy
+              </button>
+              <button 
+                onClick={() => attachAndSubmit(true)}
+                className="bg-white border border-amber-300 text-amber-800 px-4 py-2 rounded text-sm font-medium hover:bg-amber-100 transition"
+              >
+                Proceed with Manual Review
+              </button>
             </div>
           </div>
         )}
@@ -188,7 +223,7 @@ export default function VendorApplicationPage() {
                     {doc.ocrStatus === 'done' ? (
                       <span className="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-100 px-2 py-1 rounded-full"><CheckCircle2 size={14}/> Verified</span>
                     ) : (
-                      <span className="flex items-center gap-1 text-amber-600 text-xs font-semibold bg-amber-100 px-2 py-1 rounded-full"><AlertCircle size={14}/> Action Required</span>
+                      <span className="flex items-center gap-1 text-amber-600 text-xs font-semibold bg-amber-100 px-2 py-1 rounded-full"><AlertCircle size={14}/> Needs Manual Review</span>
                     )}
                   </div>
                 </div>

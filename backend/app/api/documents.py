@@ -71,15 +71,17 @@ async def upload_document(
             os.remove(temp_path)
             
         if ocr_result["status"] == "extraction_failed":
-            # Mark document as failed, prompt re-upload
-            raise HTTPException(status_code=422, detail="Extraction failed. Please ensure the document is clear and readable.")
-            
-        extracted_fields = ocr_result["fields"]
-        confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
+            if not force_manual:
+                raise HTTPException(status_code=422, detail={"error": "OCR_REJECTED", "message": "Extraction failed. Please ensure the document is clear and readable."})
+            else:
+                extracted_fields = {}
+                confidence_base = "low"
+        else:
+            extracted_fields = ocr_result["fields"]
+            confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
         
-        # Determine if confirmation is needed (any medium confidence or missing expected fields)
         needs_confirmation = False
-        if confidence_base == "medium":
+        if confidence_base in ["medium", "low"]:
             needs_confirmation = True
         
         expected_fields = []
@@ -87,12 +89,20 @@ async def upload_document(
         elif docType == 'gst_certificate': expected_fields = ['gstin']
         elif docType == 'udyam_certificate': expected_fields = ['udyam_registration_number']
         
+        missing = []
         for field in expected_fields:
             if field not in extracted_fields:
+                missing.append(field)
                 needs_confirmation = True
         
-        final_status = "pending" if needs_confirmation else "done"
-
+        if needs_confirmation and not force_manual:
+            raise HTTPException(status_code=422, detail={
+                "error": "OCR_REJECTED", 
+                "message": f"The uploaded document is blurry or missing required fields. Missing: {', '.join(missing) if missing else 'None'}. Low confidence.",
+                "missing_fields": missing
+            })
+            
+        final_status = "pending" if (needs_confirmation or force_manual) else "done"
         
         # 3. Save to database
         new_doc = BidderDocument(
@@ -101,7 +111,7 @@ async def upload_document(
             file_url=file_url,
             ocr_status=final_status,
             extracted_fields=extracted_fields,
-            confidence_score=95.0 if confidence_base == "high" else 70.0
+            confidence_score=95.0 if confidence_base == "high" else (70.0 if confidence_base == "medium" else 40.0)
         )
         db.add(new_doc)
         await db.commit()
