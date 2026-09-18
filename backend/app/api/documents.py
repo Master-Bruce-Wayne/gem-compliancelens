@@ -36,6 +36,7 @@ async def upload_document(
     bidderId: str = Form(...),
     docType: str = Form(...),
     file: UploadFile = File(...),
+    force_manual: bool = Form(False),
     db: AsyncSession = Depends(get_db)
 ):
     try:
