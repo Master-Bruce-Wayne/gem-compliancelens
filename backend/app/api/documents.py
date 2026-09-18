@@ -82,9 +82,9 @@ async def upload_document(
             confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
         
         needs_confirmation = False
-        if confidence_base in ["medium", "low"]:
+        if confidence_base == "low":
             needs_confirmation = True
-        
+            
         expected_fields = []
         if docType == 'pan': expected_fields = ['pan']
         elif docType == 'gst_certificate': expected_fields = ['gstin']
