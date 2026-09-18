@@ -12,7 +12,6 @@ export default function VendorApplicationPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showManualReviewWarning, setShowManualReviewWarning] = useState(false);
-  const navigate = useNavigate();
   const [clarificationResponse, setClarificationResponse] = useState("");
 
   const fetchApp = async () => {
