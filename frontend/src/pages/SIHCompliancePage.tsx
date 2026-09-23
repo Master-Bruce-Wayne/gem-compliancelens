@@ -45,7 +45,7 @@ export default function SIHCompliancePage() {
       <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-bold text-xl text-slate-800">SIH 2024 <span className="text-sm font-medium text-slate-400 ml-2">| Compliance Matrix Flowchart</span></span>
+          <span className="font-bold text-xl text-slate-800">SIH 2026 <span className="text-sm font-medium text-slate-400 ml-2">| Compliance Matrix Flowchart</span></span>
         </div>
         <button 
           onClick={() => navigate('/')}
