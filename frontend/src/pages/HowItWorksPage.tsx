@@ -37,10 +37,34 @@ export default function HowItWorksPage() {
   ];
 
   const Roadmap = [
-    { title: 'Live Government APIs', desc: 'Swapping Demo Provider for Live OAuth keys (GSTN, MCA, DigiLocker).', icon: Database },
-    { title: 'Email/SMS Notifications', desc: 'Automated alerts for bidders on status changes.', icon: Bell },
-    { title: 'Deepfake Detection', desc: 'Advanced AI models to detect AI-generated synthetic documents.', icon: ShieldCheck },
-    { title: 'Multilingual UI', desc: 'Full localization (i18n) for Hindi and regional languages.', icon: Languages },
+    { 
+      title: 'Live Government APIs', 
+      desc: 'Swap Demo Provider for Live OAuth keys (GSTN, MCA, DigiLocker).', 
+      icon: Database,
+      issueId: 17,
+      limitation: 'Requires institutional partnership and secure API keys from Govt of India, unavailable during a public hackathon.'
+    },
+    { 
+      title: 'Multilingual UI (i18n)', 
+      desc: 'Full localization for Hindi and regional languages.', 
+      icon: Languages,
+      issueId: 19,
+      limitation: 'Architectural overhead. Requires massive translation dictionaries which distracts from the core AI extraction MVP.'
+    },
+    { 
+      title: 'Deepfake & AI Fraud', 
+      desc: 'Advanced ML models to detect synthetic generative documents.', 
+      icon: ShieldCheck,
+      issueId: 15,
+      limitation: 'Requires specialized GPU instances and large datasets of deepfake documents for training, constrained by free-tier hosting.'
+    },
+    { 
+      title: 'Database PII Encryption', 
+      desc: 'AES-256 encryption at rest for all bidder sensitive data.', 
+      icon: FileLock2,
+      issueId: 13,
+      limitation: 'Adds significant latency to the OCR pipeline. Deferred to production deployment.'
+    },
   ];
 
   const getBadgeColor = (status: string) => {
@@ -168,15 +192,34 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* Roadmap */}
-      <section className="bg-slate-900 text-white rounded-2xl p-8 shadow-lg">
-        <h2 className="text-2xl font-bold mb-6">What's Next (Post-SIH Roadmap)</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Roadmap & Limitations */}
+      <section className="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-lg">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h2 className="text-2xl font-bold">What's Next (Post-SIH Roadmap)</h2>
+          <a href="https://github.com/Shubham15986/gem-compliancelens/issues" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-1">
+            View Issue Tracker &rarr;
+          </a>
+        </div>
+        <p className="text-slate-400 mb-8 max-w-3xl">
+          While the core AI and Rule Engine are fully complete, the following features are officially tracked in our GitHub repository for post-hackathon implementation. We have explicitly documented the technical or institutional limitations that prevented them from being included in the MVP.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {Roadmap.map((item, idx) => (
-            <div key={idx} className="bg-slate-800 border border-slate-700 p-5 rounded-xl">
-              <item.icon className="w-8 h-8 text-blue-400 mb-3" />
-              <h3 className="font-semibold mb-2">{item.title}</h3>
-              <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+            <div key={idx} className="bg-slate-800 border border-slate-700 p-5 rounded-xl hover:border-blue-500/50 transition-colors relative group">
+              <div className="flex justify-between items-start mb-3">
+                <item.icon className="w-8 h-8 text-blue-400" />
+                <a href={`https://github.com/Shubham15986/gem-compliancelens/issues/${item.issueId}`} target="_blank" rel="noreferrer" className="bg-slate-700/50 text-slate-300 hover:text-white px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors">
+                  Issue #{item.issueId}
+                </a>
+              </div>
+              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+              <p className="text-slate-300 text-sm mb-4 leading-relaxed">{item.desc}</p>
+              
+              <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700">
+                <span className="text-amber-500 text-xs font-bold uppercase tracking-wider block mb-1">Limitation / Blocker</span>
+                <p className="text-slate-400 text-xs italic">{item.limitation}</p>
+              </div>
             </div>
           ))}
         </div>
