@@ -1,211 +1,347 @@
-import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { 
+  Building2, UserCheck, UploadCloud, FileSearch, ShieldCheck, 
+  Send, Bell, MessageSquare, Scale, Fingerprint, Database, AlertCircle, FileLock2, Languages
+} from 'lucide-react';
+import { cn } from '../lib/utils';
+import { useNavigate } from 'react-router-dom';
 
 export default function HowItWorksPage() {
+  const [activeTab, setActiveTab] = useState<'officer' | 'bidder'>('officer');
+  const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const navigate = useNavigate();
-  const user = localStorage.getItem('user');
-  const role = user ? JSON.parse(user).role : null;
-  const [activeTab, setActiveTab] = useState<'bidder' | 'officer'>('bidder');
+  
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const role = user?.role || 'officer';
+
+  const BidderSteps = [
+    { id: 1, title: 'Register & Log In', desc: 'Securely authenticate as a vendor on the platform.', detail: 'Vendors can seamlessly sign up to the portal. Uses secure JWT authentication simulating standard government SSO.', icon: UserCheck, status: 'Live' },
+    { id: 2, title: 'Browse Open Tenders', desc: 'View eligibility requirements and custom rules upfront before applying.', detail: 'Bidders can view all published tenders. Each tender clearly lists its mathematical compliance rules (like Local Content thresholds or Turnover requirements) configured by the Procurement Officer.', icon: Building2, status: 'Live' },
+    { id: 3, title: 'Upload Documents', desc: 'Securely upload PDFs and Images for automated processing.', detail: 'We built a secure Vault for bidders to drop their PAN, GSTIN, and Udyam certificates. The system natively accepts both PDFs and raw Images (JPG/PNG).', icon: UploadCloud, status: 'Live' },
+    { id: 4, title: 'Fetch via DigiLocker', desc: 'Pull verified documents directly from the government repository.', detail: 'Instead of manual uploads, bidders can click "Fetch via DigiLocker". This launches an OAuth consent screen to securely pull cryptographically signed documents directly from the source, bypassing OCR entirely.', icon: Database, status: 'Demo Mode' },
+    { id: 5, title: 'Real-time AI Extraction', desc: 'Instantly view OCR-extracted fields from your uploaded documents.', detail: 'The moment a file is uploaded, our Tesseract + pdfplumber AI engine scans the document, parses the unstructured text, and extracts the exact compliance variables needed. Missing required fields instantly trigger a rejection to prevent bad data.', icon: FileSearch, status: 'Live' },
+    { id: 6, title: 'Pre-Bid Readiness Score', desc: 'Check if you meet the specific tender requirements before submitting.', detail: 'Our platform generates a /100 Readiness Score on the Bidder dashboard, giving vendors a clear indicator of whether their Vault contains the necessary documents to pass the upcoming Rule Engine evaluation.', icon: ShieldCheck, status: 'Live' },
+    { id: 7, title: 'Submit Application', desc: 'Send your completed vault and compliance data for officer review.', detail: 'Once the Vault is ready, a single click packages the Bidder Profile and all attached documents into a frozen snapshot submitted directly to the Procurement Officer.', icon: Send, status: 'Live' },
+    { id: 8, title: 'Track Application Status', desc: 'Monitor where your bid is in the evaluation pipeline.', detail: 'The dashboard updates in real-time as the Officer evaluates the bid, changing status from Pending -> Under Review -> Clarification -> Accepted/Rejected.', icon: Bell, status: 'Live' },
+    { id: 9, title: 'Respond to Clarifications', desc: 'Directly answer queries from Procurement Officers.', detail: 'If the Officer flags a document (e.g. a blurry image), they can open a clarification loop. The Bidder can respond directly through the portal without needing external emails.', icon: MessageSquare, status: 'Live' },
+    { id: 10, title: 'Receive Final Decision', desc: 'Get a plain-language explanation of your qualification or disqualification.', detail: 'If disqualified, the Bidder doesn\'t just get a "Failed" badge. They receive the exact generated explanation of which rule they failed (e.g., "Your turnover of 4L is below the 5L threshold").', icon: Scale, status: 'Live' },
+  ];
+
+  const OfficerSteps = [
+    { id: 1, title: 'Log In to Dashboard', desc: 'Access the centralized procurement officer interface.', detail: 'Officers log into a specialized, high-security dashboard designed to evaluate hundreds of bids quickly and efficiently.', icon: UserCheck, status: 'Live' },
+    { id: 2, title: 'Configure Tender Rules', desc: 'Use the RulesConfig to set exact thresholds.', detail: 'Officers can dynamically build compliance requirements for a new tender using our Rules Engine UI. They can define mandatory flags, minimum turnover, local content percentages, and specific document requirements.', icon: Building2, status: 'Live' },
+    { id: 3, title: 'View Bid Queue', desc: 'Monitor all submitted applications for your active tenders.', detail: 'A streamlined Kanban-style table showing all bidders who have submitted their vaults, ordered by submission time.', icon: Database, status: 'Live' },
+    { id: 4, title: 'Automated Compliance Check', desc: 'The Rule Engine evaluates OCR data mathematically against your rules.', detail: 'Instead of manually reading documents, the Officer clicks "Evaluate". Our Abstract Syntax Tree (AST) deterministic engine calculates the exact pass/fail state for every rule simultaneously.', icon: FileSearch, status: 'Live' },
+    { id: 5, title: 'Review Scorecard', desc: 'Instantly see the overall Compliance Score and Risk Level.', detail: 'The engine generates a 0-100 Scorecard and a Low/Medium/High Risk level based on the evaluation, highlighting exactly what failed.', icon: ShieldCheck, status: 'Live' },
+    { id: 6, title: 'Drill-Down Explanations', desc: 'Click any check to see the plain-language reasoning and evidence.', detail: 'When an Officer clicks a failed check, they see exactly WHY it failed (e.g. "Vendor uploaded an expired GSTIN") and a side-by-side view of the uploaded document evidence.', icon: AlertCircle, status: 'Live' },
+    { id: 7, title: '1-Click Verification', desc: 'Cross-check flagged items with government portals manually if needed.', detail: 'If the OCR fails 3 times, the system gracefully degrades to manual review. The Officer can view the blurry document, manually verify it against the CPPP portal, and explicitly override the AI.', icon: UserCheck, status: 'Live' },
+    { id: 8, title: 'Document Forensics', desc: 'Review PDF Metadata, Cryptographic Hashes, and ELA image analysis.', detail: 'The system runs forensic checks in the background. Officers are alerted if the PDF was manipulated in Photoshop (Metadata), if the image pixels are edited (ELA), or if the file hash was reused by another bidder (Collusion).', icon: Fingerprint, status: 'Live' },
+    { id: 9, title: 'Clarification & Decision', desc: 'Request more info from the bidder or submit the final verdict.', detail: 'Officers can pause evaluation to ask the Bidder a direct question, or hit "Accept/Reject" to finalize the bid evaluation.', icon: Scale, status: 'Live' },
+    { id: 10, title: 'Immutable Audit Trail', desc: 'View the cryptographically chained timeline for CVC/CAG defensibility.', detail: 'Every single action (upload, evaluate, override, decision) writes a SHA-256 hash to a PostgreSQL pseudo-blockchain. This guarantees the evaluation history cannot be tampered with by malicious actors.', icon: FileLock2, status: 'Live' },
+  ];
+
+  const Roadmap = [
+    { 
+      title: 'Live Government APIs', 
+      desc: 'Swap Demo Provider for Live OAuth keys (GSTN, MCA, DigiLocker).', 
+      icon: Database,
+      issueId: 17,
+      limitation: 'Requires institutional partnership and secure API keys from Govt of India, unavailable during a public hackathon.'
+    },
+    { 
+      title: 'Multilingual UI (i18n)', 
+      desc: 'Full localization for Hindi and regional languages.', 
+      icon: Languages,
+      issueId: 19,
+      limitation: 'Architectural overhead. Requires massive translation dictionaries which distracts from the core AI extraction MVP.'
+    },
+    { 
+      title: 'Deepfake & AI Fraud', 
+      desc: 'Advanced ML models to detect synthetic generative documents.', 
+      icon: ShieldCheck,
+      issueId: 15,
+      limitation: 'Requires specialized GPU instances and large datasets of deepfake documents for training, constrained by free-tier hosting.'
+    },
+    { 
+      title: 'Database PII Encryption', 
+      desc: 'AES-256 encryption at rest for all bidder sensitive data.', 
+      icon: FileLock2,
+      issueId: 13,
+      limitation: 'Adds significant latency to the OCR pipeline. Deferred to production deployment.'
+    },
+  ];
+
+  const getBadgeColor = (status: string) => {
+    switch(status) {
+      case 'Live': return 'bg-green-100 text-green-800 border-green-200';
+      case 'Demo Mode': return 'bg-amber-100 text-amber-800 border-amber-200';
+      case 'Coming Soon': return 'bg-obsidian-800 border-white/10 text-blue-800 border-white/20';
+      default: return 'bg-slate-100 text-slate-100 border-white/10';
+    }
+  };
+
+  const steps = activeTab === 'officer' ? OfficerSteps : BidderSteps;
 
   return (
-    <div className="dark min-h-screen bg-obsidian-950 text-slate-200 antialiased selection:bg-slate-700 selection:text-white font-sans relative">
-      
-      <style dangerouslySetInnerHTML={{__html: `
-        .grid-subtle {
-          background-size: 32px 32px;
-          background-image: 
-            linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-        }
-        .hairline-b { border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
-        .hairline-t { border-top: 1px solid rgba(255, 255, 255, 0.06); }
-      `}} />
-
-      <div className="pointer-events-none fixed inset-0 z-0 grid-subtle"></div>
-      <div className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[420px] bg-gradient-to-b from-[#161f30]/35 via-transparent to-transparent z-0"></div>
-
-      {/* Header */}
-      <header className="sticky top-0 z-50 hairline-b bg-obsidian-950/90 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-8 h-8 rounded border border-white/15 bg-obsidian-850 flex items-center justify-center font-mono font-semibold text-sm text-slate-100 shadow-sm">
-              G
-            </div>
-            <div>
-              <div className="flex items-center space-x-2.5">
-                <span className="text-sm font-semibold tracking-tight text-white font-sans">GeM ComplianceLens</span>
-                <span className="font-mono text-[10px] tracking-wider uppercase px-1.5 py-0.5 rounded bg-surface-container text-slate-400 border border-white/10">v2.4-GovCore</span>
-              </div>
-              <p className="text-[11px] text-slate-400 font-normal">Official Specification & Governance Suite</p>
-            </div>
-          </div>
-          
-          <nav className="hidden md:flex items-center space-x-7 text-xs font-medium text-slate-400">
-            <a href="#journey" className="hover:text-slate-100 transition-colors duration-150">Bidder Journey</a>
-            <a href="#capabilities" className="hover:text-slate-100 transition-colors duration-150">Forensics & AST Engine</a>
-            <a href="#telemetry" className="hover:text-slate-100 transition-colors duration-150">Audit Trail</a>
-            <a href="/sih-compliance" className="hover:text-slate-100 transition-colors duration-150">SIH 2026 Flowchart</a>
-          </nav>
-
-          <div className="flex items-center space-x-4">
-            <div className="hidden lg:flex items-center space-x-2 px-2.5 py-1 rounded bg-surface-container border border-white/10 text-[11px] text-slate-300 font-mono">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              <span className="text-slate-400">Systems Nominal</span>
-              <span className="text-slate-600">//</span>
-              <span className="text-emerald-400 font-medium">CAG Defensible</span>
-            </div>
-            {user ? (
-              <button onClick={() => navigate(`/${role}/tenders`)} className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 transition-colors border border-white/15 shadow-sm">
-                <span>Access Console</span>
-                <span className="text-slate-400 font-mono text-[11px]">&rarr;</span>
-              </button>
-            ) : (
-              <>
-                <button onClick={() => navigate('/login')} className="text-xs font-medium text-slate-400 hover:text-slate-100 px-2 py-1.5 transition-colors">Log In</button>
-                <button onClick={() => navigate('/login')} className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 transition-colors border border-white/15 shadow-sm">
-                  <span>Register</span>
-                  <span className="text-slate-400 font-mono text-[11px]">&rarr;</span>
-                </button>
-              </>
-            )}
-          </div>
+    <div className="dark min-h-screen bg-obsidian-950 text-slate-300 grid-subtle">
+      {/* Top Navbar */}
+      <header className="bg-obsidian-900 border-b border-white/10 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded bg-emerald-500 text-obsidian-950 flex items-center justify-center text-white font-bold">G</div>
+          <span className="font-bold text-xl text-slate-100">GeM ComplianceLens <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
         </div>
-      </header>
-
-      <main className="relative z-10">
-        {/* Hero Section */}
-        <section className="pt-20 pb-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-          <div className="inline-flex items-center space-x-2 px-3 py-1 rounded border border-white/10 bg-obsidian-900 mb-6 text-xs text-slate-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-govgold"></span>
-            <span className="font-mono text-[11px] text-slate-300 tracking-wide">SMART INDIA HACKATHON 2026 // SIH-CORE-SPEC</span>
-            <span className="text-slate-600">|</span>
-            <span className="text-slate-400 text-[11px]">Government e-Marketplace (GeM)</span>
-          </div>
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-white max-w-4xl mx-auto leading-[1.12]">
-            Automated Compliance & Deterministic Forensics for Govt Procurement
-          </h1>
-          <p className="mt-5 text-sm sm:text-base text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed">
-            An AI-enabled integrated platform for automated bidder compliance evaluation. Extract unstructured fields with zero-hallucination AST rules, detect synthetic doc tampering, and cryptographically seal verdicts for CAG/CVC scrutiny.
-          </p>
-          
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <button onClick={() => navigate('/sih-compliance')} className="px-5 py-2.5 rounded bg-slate-100 hover:bg-white text-slate-900 font-medium text-xs sm:text-sm transition-colors shadow-sm flex items-center space-x-2">
-              <span>View SIH Flowchart</span>
-              <span className="font-mono text-xs">&rarr;</span>
+        {user ? (
+          <button 
+            onClick={() => navigate(`/${role}/tenders`)}
+            className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+          >
+            Go to Dashboard &rarr;
+          </button>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate('/login')}
+              className="text-slate-400 hover:text-white font-medium text-sm transition-colors"
+            >
+              Log In
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+            >
+              Register &rarr;
             </button>
           </div>
-
-          <div id="telemetry" className="mt-14 max-w-5xl mx-auto rounded border border-white/10 bg-obsidian-900 text-left overflow-hidden shadow-sm">
-            <div className="px-4 py-2 bg-obsidian-850 hairline-b flex items-center justify-between text-[11px] font-mono text-slate-400">
-              <div className="flex items-center space-x-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                <span className="text-slate-300 font-semibold uppercase tracking-wider">Telemetry Diagnostic Console</span>
-              </div>
-              <span className="text-slate-500">POLL: 250ms // STATUS: ACTIVE</span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5 font-mono">
-              <div className="p-4 sm:p-5">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">AST Rule Latency</div>
-                <div className="mt-1 flex items-baseline space-x-2">
-                  <span className="text-2xl font-semibold tabular-nums text-white">12.4<span className="text-sm font-normal text-slate-400">ms</span></span>
-                </div>
-                <div className="mt-2 text-[10px] text-slate-400 flex items-center space-x-1.5">
-                  <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
-                  <span>P99 Deterministic</span>
-                </div>
-              </div>
-              <div className="p-4 sm:p-5">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Tamper & ELA Detection</div>
-                <div className="mt-1 flex items-baseline space-x-2">
-                  <span className="text-2xl font-semibold tabular-nums text-white">99.4<span className="text-sm font-normal text-slate-400">%</span></span>
-                </div>
-                <div className="mt-2 text-[10px] text-slate-400 flex items-center space-x-1.5">
-                  <span className="w-1 h-1 rounded-full bg-slate-300"></span>
-                  <span>Forensic Yield</span>
-                </div>
-              </div>
-              <div className="p-4 sm:p-5">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Ledger Hash Integrity</div>
-                <div className="mt-1 flex items-baseline space-x-2">
-                  <span className="text-2xl font-semibold tabular-nums text-white">100<span className="text-sm font-normal text-slate-400">%</span></span>
-                </div>
-                <div className="mt-2 text-[10px] text-emerald-400 flex items-center space-x-1.5">
-                  <span className="w-1 h-1 rounded-full bg-emerald-400"></span>
-                  <span>SHA-256 Valid</span>
-                </div>
-              </div>
-              <div className="p-4 sm:p-5">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400 font-medium">GeM Tenders Evaluated</div>
-                <div className="mt-1 flex items-baseline space-x-2">
-                  <span className="text-2xl font-semibold tabular-nums text-white">4,812</span>
-                </div>
-                <div className="mt-2 text-[10px] text-slate-400 flex items-center space-x-1.5">
-                  <span className="w-1 h-1 rounded-full bg-govgold"></span>
-                  <span>Live Sandbox</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Journey Grid */}
-        <section id="journey" className="py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-          <div className="rounded border border-white/10 bg-obsidian-900 p-6 mb-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <div className="flex items-center space-x-2 mb-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-govgold"></span>
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">Workflow Specification</span>
-                </div>
-                <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">How It Works: {activeTab === 'officer' ? 'Officer' : 'Bidder'} Flow</h2>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">Multi-stage qualification with transparent deterministic checkpoints.</p>
-              </div>
-              <div className="inline-flex p-0.5 rounded border border-white/10 bg-obsidian-950 self-start md:self-auto">
-                <button onClick={() => setActiveTab('bidder')} className={`px-3 py-1 rounded text-xs font-medium border ${activeTab === 'bidder' ? 'text-white bg-slate-800 border-white/10' : 'text-slate-400 border-transparent hover:text-slate-200'}`}>Bidder / Vendor View</button>
-                <button onClick={() => setActiveTab('officer')} className={`px-3 py-1 rounded text-xs font-medium border ${activeTab === 'officer' ? 'text-white bg-slate-800 border-white/10' : 'text-slate-400 border-transparent hover:text-slate-200'}`}>Procurement Officer</button>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(step => (
-              <div key={step} className={`rounded border ${step === 10 ? 'border-govgold/30 hover:border-govgold/50' : 'border-white/10 hover:border-white/20'} bg-obsidian-900 p-4 flex flex-col justify-between transition-colors`}>
-                <div>
-                  <div className="flex items-center justify-between text-xs font-mono mb-3">
-                    <span className="text-govgold font-semibold">0{step}</span>
-                    <span className={`inline-flex items-center space-x-1 text-[10px] px-1.5 py-0.5 rounded border ${step === 10 ? 'text-govgold bg-govgold/10 border-govgold/30' : 'text-emerald-400 bg-emerald-950/40 border-emerald-800/40'}`}>
-                      <span className={`w-1 h-1 rounded-full ${step === 10 ? 'bg-govgold' : 'bg-emerald-400'}`}></span>
-                      <span>{step === 10 ? 'Verdict' : 'Active'}</span>
-                    </span>
-                  </div>
-                  <h3 className="text-xs font-semibold text-white tracking-tight">System Node {step}</h3>
-                  <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed">Processing component mapped to compliance flow architecture.</p>
-                </div>
-                <div className={`mt-4 pt-2.5 hairline-t flex items-center justify-between text-[10px] font-mono ${step === 10 ? 'text-govgold' : 'text-slate-500'}`}>
-                  <span>NODE-{step}X</span>
-                  <span>{step}/10</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-      </main>
+        )}
+      </header>
       
-      <footer className="mt-16 hairline-t bg-obsidian-950 py-10 px-4 sm:px-6 lg:px-8 text-xs text-slate-400">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-6 h-6 rounded border border-white/15 bg-obsidian-850 flex items-center justify-center font-mono font-medium text-xs text-slate-200">G</div>
-            <div>
-              <div className="text-xs font-semibold text-white">GeM ComplianceLens Platform</div>
-              <div className="text-[11px] text-slate-500 mt-0.5">Built for Smart India Hackathon 2026</div>
-            </div>
-          </div>
-          <div className="text-[11px] text-slate-500 font-mono">
-            © 2026 GeM ComplianceLens.
+      <div className="max-w-6xl mx-auto space-y-12 pb-20 px-4">
+      
+      {/* Hero Section */}
+      <section className="text-center pt-8 space-y-6">
+        <div className="w-16 h-16 mx-auto bg-emerald-500 text-obsidian-950 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-lg">
+          G
+        </div>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+          GeM ComplianceLens
+        </h1>
+        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+          An AI-enabled integrated platform for automated verification of bidder compliance in GeM procurement. 
+          Upload documents, extract fields via AI, and automatically evaluate bids against deterministic rules.
+        </p>
+        
+        <div className="flex items-center justify-center gap-4 pt-4">
+          {user ? (
+            <button 
+              onClick={() => navigate(`/${role}/tenders`)}
+              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+            >
+              Go to Dashboard &rarr;
+            </button>
+          ) : (
+            <>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bg-obsidian-900 hover:bg-obsidian-950 text-slate-300 border border-white/10 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+              >
+                Log In
+              </button>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+              >
+                Register &rarr;
+              </button>
+            </>
+          )}
+        </div>
+        
+        {/* Link to SIH Matrix */}
+        <div className="pt-8">
+          <button 
+            onClick={() => navigate('/sih-compliance')}
+            className="inline-flex items-center gap-2 text-champagne-400 hover:text-champagne-300 font-medium text-sm bg-obsidian-800 hover:bg-obsidian-800 border-white/10 px-4 py-2 rounded-full transition-colors border border-white/20"
+          >
+            <span className="flex h-2 w-2 relative">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-obsidian-8000"></span>
+            </span>
+            View SIH Requirements Matrix & Flowchart &rarr;
+          </button>
+        </div>
+      </section>
+
+      {/* Role Journey */}
+      <section id="how-it-works" className="bg-obsidian-900 border border-white/10 rounded-2xl p-6 md:p-10 shadow-sm relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+        
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <h2 className="text-2xl font-bold text-white">
+            How It Works: {activeTab === 'officer' ? 'Officer' : 'Bidder'} Journey
+          </h2>
+          <div className="flex bg-slate-100 p-1 rounded-lg">
+            <button 
+              onClick={() => setActiveTab('officer')}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'officer' ? "bg-obsidian-900 shadow-sm text-champagne-400" : "text-slate-500 hover:text-slate-300")}
+            >
+              Procurement Officer
+            </button>
+            <button 
+              onClick={() => setActiveTab('bidder')}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'bidder' ? "bg-obsidian-900 shadow-sm text-champagne-400" : "text-slate-500 hover:text-slate-300")}
+            >
+              Bidder / Vendor
+            </button>
           </div>
         </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
+          {steps.map((step, idx) => {
+            const isExpanded = expandedStep === step.id;
+            return (
+              <div 
+                key={step.id} 
+                onClick={() => setExpandedStep(isExpanded ? null : step.id)}
+                className={cn(
+                  "relative bg-obsidian-950 border rounded-xl p-5 transition-all cursor-pointer group",
+                  isExpanded ? "border-blue-300 shadow-md ring-2 ring-blue-100 bg-obsidian-900" : "border-white/10 hover:shadow-md hover:border-white/20"
+                )}
+              >
+                <div className="flex items-start justify-between mb-4">
+                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center transition-colors", isExpanded ? "bg-emerald-500 text-obsidian-950 text-white" : "bg-obsidian-800 border-white/10 text-champagne-400 group-hover:bg-emerald-500 text-obsidian-950 group-hover:text-white")}>
+                    <step.icon size={20} />
+                  </div>
+                  <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border", getBadgeColor(step.status))}>
+                    {step.status}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
+                  <span className={cn("text-sm", isExpanded ? "text-champagne-400 font-bold" : "text-slate-400")}>{idx + 1}.</span> {step.title}
+                </h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  {step.desc}
+                </p>
+                
+                {/* Expanded Details */}
+                {isExpanded && (
+                  <div className="mt-4 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <p className="text-sm text-slate-300 leading-relaxed bg-obsidian-800/50 p-3 rounded-lg border border-white/10">
+                      {step.detail}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* Feature Deep Dive */}
+      <section id="features" className="space-y-6">
+        <h2 className="text-2xl font-bold text-white">Platform Capabilities Explained</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          
+          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
+              <Database className="w-5 h-5 text-champagne-400" /> Deterministic Rule Engine
+            </h3>
+            <p className="text-sm text-slate-400">
+              Unlike other platforms that use hallucination-prone LLMs to make final decisions, our AI is strictly limited to <strong>Data Extraction</strong>. The actual Pass/Fail verdicts are calculated mathematically by an Abstract Syntax Tree (AST) Rule Engine, guaranteeing that the same input always gives the exact same output.
+            </p>
+          </div>
+          
+          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
+              <Fingerprint className="w-5 h-5 text-champagne-400" /> Layered Document Forensics
+            </h3>
+            <p className="text-sm text-slate-400">
+              We go beyond basic OCR text matching. We analyze the hidden <strong>PDF Metadata</strong> to catch Adobe Photoshop manipulation. We run <strong>Error Level Analysis (ELA)</strong> on image pixels. We check cryptographic hashes to detect bidders sharing identical fake documents to simulate competition.
+            </p>
+          </div>
+
+          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
+              <Scale className="w-5 h-5 text-champagne-400" /> Three-State Verdict System
+            </h3>
+            <p className="text-sm text-slate-400">
+              Ambiguous edge cases are never auto-rejected. The system categorizes results into: <strong>Compliant</strong>, <strong>Non-Compliant</strong>, and <strong>Needs Review</strong>. If the AI cannot read a blurry document after 3 strikes, it degrades gracefully to the manual review queue, ensuring zero operational downtime.
+            </p>
+          </div>
+
+          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
+              <FileLock2 className="w-5 h-5 text-champagne-400" /> Immutable Pseudo-Blockchain
+            </h3>
+            <p className="text-sm text-slate-400">
+              For complete CVC/CAG defensibility, every action is logged into an immutable <strong>Cryptographic Hash Chain</strong> within our database. Each event computes a SHA-256 hash using the previous row's hash. If a malicious insider alters a record, the chain breaks instantly.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      {/* Roadmap & Limitations */}
+      <section className="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-lg" id="roadmap">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+          <h2 className="text-2xl font-bold">What's Next (Post-SIH Roadmap)</h2>
+          <a href="https://github.com/Shubham15986/gem-compliancelens/issues" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-1">
+            View Issue Tracker &rarr;
+          </a>
+        </div>
+        <p className="text-slate-400 mb-8 max-w-3xl">
+          While the core AI and Rule Engine are fully complete, the following features are officially tracked in our GitHub repository for post-hackathon implementation. We have explicitly documented the technical or institutional limitations that prevented them from being included in the MVP.
+        </p>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {Roadmap.map((item, idx) => (
+            <div key={idx} className="bg-slate-800 border border-slate-700 p-5 rounded-xl hover:border-blue-500/50 transition-colors relative group">
+              <div className="flex justify-between items-start mb-3">
+                <item.icon className="w-8 h-8 text-blue-400" />
+                <a href={`https://github.com/Shubham15986/gem-compliancelens/issues/${item.issueId}`} target="_blank" rel="noreferrer" className="bg-slate-700/50 text-slate-300 hover:text-white px-2.5 py-1 rounded text-xs font-mono font-medium transition-colors">
+                  Issue #{item.issueId}
+                </a>
+              </div>
+              <h3 className="font-bold text-lg mb-2">{item.title}</h3>
+              <p className="text-slate-300 text-sm mb-4 leading-relaxed">{item.desc}</p>
+              
+              <div className="bg-slate-900/50 rounded-lg p-3 border border-slate-700">
+                <span className="text-amber-500 text-xs font-bold uppercase tracking-wider block mb-1">Limitation / Blocker</span>
+                <p className="text-slate-400 text-xs italic">{item.limitation}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+      {/* Footer CTA */}
+      <footer className="mt-16 pt-12 pb-8 border-t border-white/10 text-center">
+        <h2 className="text-2xl font-bold text-white mb-6">Ready to experience GeM ComplianceLens?</h2>
+        {user ? (
+          <button 
+            onClick={() => navigate(`/${role}/tenders`)}
+            className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+          >
+            Go to Dashboard &rarr;
+          </button>
+        ) : (
+          <div className="flex items-center justify-center gap-4">
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-obsidian-900 hover:bg-obsidian-950 text-slate-300 border border-white/10 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+            >
+              Log In
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+            >
+              Register &rarr;
+            </button>
+          </div>
+        )}
       </footer>
+
+    </div>
     </div>
   );
 }
