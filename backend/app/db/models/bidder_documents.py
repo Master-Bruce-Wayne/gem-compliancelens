@@ -11,7 +11,7 @@ class BidderDocument(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     bidder_id = Column(UUID(as_uuid=True), ForeignKey("bidders.id"))
-    doc_type = Column(Enum('pan', 'gst_certificate', 'udyam_certificate', 'epfo_esic', 'other', name='doc_type_enum'))
+    doc_type = Column(Enum('pan', 'gst_certificate', 'udyam_certificate', 'epfo_esic', 'startup_india', 'nsic_certificate', 'oem_authorization', 'other', name='doc_type_enum'))
     file_url = Column(String, nullable=True)
     ocr_status = Column(Enum('pending', 'processing', 'done', 'failed', name='ocr_status_enum'))
     extracted_fields = Column(JSONB, nullable=True)

@@ -143,7 +143,7 @@ async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = D
     )
     docs = docs_result.scalars().all()
     
-    engine_result = RuleEngine.evaluate(bidder, rules, docs)
+    engine_result = await RuleEngine.evaluate(bidder, rules, docs, db)
     
     eval_record = Evaluation(
         bid_id=id, # using bid_id as bid_application.id

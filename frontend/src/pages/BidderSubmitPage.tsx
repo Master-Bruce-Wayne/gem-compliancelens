@@ -320,6 +320,9 @@ export default function BidderSubmitPage() {
                 <option value="gst_certificate">GST Registration</option>
                 <option value="udyam_certificate">Udyam/MSME Certificate</option>
                 <option value="epfo_esic">EPFO/ESIC Compliance</option>
+                <option value="startup_india">Startup India (DIPP)</option>
+                <option value="nsic_certificate">NSIC Certificate</option>
+                <option value="oem_authorization">OEM Authorization</option>
               </select>
             </div>
             
