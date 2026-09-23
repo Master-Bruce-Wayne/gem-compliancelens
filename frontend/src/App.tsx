@@ -36,15 +36,15 @@ function AppContent() {
       {isStandalonePage ? (
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<HowItWorksPage />} />
+          <Route path="/how-it-works" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       ) : (
         <Layout>
           <Routes>
             {/* Common / Redirects */}
-            
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
             
             {/* Officer Gateway */}
             <Route path="/officer/guide" element={<ProtectedRoute allowedRole="officer"><GuidePage /></ProtectedRoute>} />

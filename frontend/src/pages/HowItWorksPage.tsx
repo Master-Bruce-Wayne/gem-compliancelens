@@ -10,6 +10,10 @@ export default function HowItWorksPage() {
   const [activeTab, setActiveTab] = useState<'officer' | 'bidder'>('officer');
   const [expandedStep, setExpandedStep] = useState<number | null>(null);
   const navigate = useNavigate();
+  
+  const userStr = localStorage.getItem('user');
+  const user = userStr ? JSON.parse(userStr) : null;
+  const role = user?.role || 'officer';
 
   const BidderSteps = [
     { id: 1, title: 'Register & Log In', desc: 'Securely authenticate as a vendor on the platform.', detail: 'Vendors can seamlessly sign up to the portal. Uses secure JWT authentication simulating standard government SSO.', icon: UserCheck, status: 'Live' },
@@ -87,12 +91,29 @@ export default function HowItWorksPage() {
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
           <span className="font-bold text-xl text-slate-800">GeM ComplianceLens <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
         </div>
-        <button 
-          onClick={() => navigate('/login')}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
-        >
-          Access Platform &rarr;
-        </button>
+        {user ? (
+          <button 
+            onClick={() => navigate(`/${role}/tenders`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+          >
+            Go to Dashboard &rarr;
+          </button>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => navigate('/login')}
+              className="text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors"
+            >
+              Log In
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+            >
+              Register &rarr;
+            </button>
+          </div>
+        )}
       </header>
       
       <div className="max-w-6xl mx-auto space-y-12 pb-20 px-4">
@@ -103,44 +124,63 @@ export default function HowItWorksPage() {
           G
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
-          How GeM ComplianceLens Works
+          GeM ComplianceLens
         </h1>
         <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
-          An AI-enabled integrated platform for automated verification of bidder compliance in GeM procurement.
+          An AI-enabled integrated platform for automated verification of bidder compliance in GeM procurement. 
+          Upload documents, extract fields via AI, and automatically evaluate bids against deterministic rules.
         </p>
         
         <div className="flex items-center justify-center gap-4 pt-4">
-          <button 
-            onClick={() => setActiveTab('officer')}
-            className={cn(
-              "px-6 py-3 rounded-lg font-medium transition-all shadow-sm border",
-              activeTab === 'officer' 
-                ? "bg-slate-900 text-white border-slate-900" 
-                : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200"
-            )}
-          >
-            I'm a Procurement Officer
-          </button>
-          <button 
-            onClick={() => setActiveTab('bidder')}
-            className={cn(
-              "px-6 py-3 rounded-lg font-medium transition-all shadow-sm border",
-              activeTab === 'bidder' 
-                ? "bg-slate-900 text-white border-slate-900" 
-                : "bg-white text-slate-700 hover:bg-slate-50 border-slate-200"
-            )}
-          >
-            I'm a Bidder
-          </button>
+          {user ? (
+            <button 
+              onClick={() => navigate(`/${role}/tenders`)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+            >
+              Go to Dashboard &rarr;
+            </button>
+          ) : (
+            <>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+              >
+                Log In
+              </button>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+              >
+                Register &rarr;
+              </button>
+            </>
+          )}
         </div>
       </section>
 
       {/* Role Journey */}
-      <section className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm relative overflow-hidden">
+      <section id="how-it-works" className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-8">
-          The {activeTab === 'officer' ? 'Officer' : 'Bidder'} Journey
-        </h2>
+        
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <h2 className="text-2xl font-bold text-slate-900">
+            How It Works: {activeTab === 'officer' ? 'Officer' : 'Bidder'} Journey
+          </h2>
+          <div className="flex bg-slate-100 p-1 rounded-lg">
+            <button 
+              onClick={() => setActiveTab('officer')}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'officer' ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}
+            >
+              Procurement Officer
+            </button>
+            <button 
+              onClick={() => setActiveTab('bidder')}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'bidder' ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}
+            >
+              Bidder / Vendor
+            </button>
+          </div>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
           {steps.map((step, idx) => {
@@ -184,7 +224,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Feature Deep Dive */}
-      <section className="space-y-6">
+      <section id="features" className="space-y-6">
         <h2 className="text-2xl font-bold text-slate-900">Platform Capabilities Explained</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
@@ -228,7 +268,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Roadmap & Limitations */}
-      <section className="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-lg">
+      <section className="bg-slate-900 text-white rounded-2xl p-6 md:p-8 shadow-lg" id="roadmap">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">What's Next (Post-SIH Roadmap)</h2>
           <a href="https://github.com/Shubham15986/gem-compliancelens/issues" target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-1">
@@ -259,6 +299,33 @@ export default function HowItWorksPage() {
           ))}
         </div>
       </section>
+      {/* Footer CTA */}
+      <footer className="mt-16 pt-12 pb-8 border-t border-slate-200 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">Ready to experience GeM ComplianceLens?</h2>
+        {user ? (
+          <button 
+            onClick={() => navigate(`/${role}/tenders`)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+          >
+            Go to Dashboard &rarr;
+          </button>
+        ) : (
+          <div className="flex items-center justify-center gap-4">
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+            >
+              Log In
+            </button>
+            <button 
+              onClick={() => navigate('/login')}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+            >
+              Register &rarr;
+            </button>
+          </div>
+        )}
+      </footer>
 
     </div>
     </div>
