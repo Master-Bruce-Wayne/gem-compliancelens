@@ -29,21 +29,22 @@ function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allo
 
 function AppContent() {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/login';
+  const isStandalonePage = ['/', '/login', '/how-it-works'].includes(location.pathname);
 
   return (
     <>
-      {isAuthPage ? (
+      {isStandalonePage ? (
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<HowItWorksPage />} />
+          <Route path="/how-it-works" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       ) : (
         <Layout>
           <Routes>
             {/* Common / Redirects */}
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
             
             {/* Officer Gateway */}
             <Route path="/officer/guide" element={<ProtectedRoute allowedRole="officer"><GuidePage /></ProtectedRoute>} />

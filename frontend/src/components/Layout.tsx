@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { FileText, ClipboardCheck, History, Settings, ShieldCheck, HelpCircle, LogOut, UploadCloud, Search, Bell } from 'lucide-react';
+import { FileText, ClipboardCheck, History, Settings, ShieldCheck, HelpCircle, LogOut, UploadCloud, Search, Bell, Home } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
 
@@ -16,17 +16,17 @@ export default function Layout({ children }: LayoutProps) {
   const role = user?.role || 'officer';
 
   const officerNavItems = [
-    { name: 'How to Use', icon: HelpCircle, path: '/officer/guide' },
-    { name: 'How It Works', icon: ShieldCheck, path: '/how-it-works' },
+    { name: 'Home', icon: Home, path: '/' },
     { name: 'Dashboard', icon: FileText, path: '/officer/tenders' },
+    { name: 'How to Use', icon: HelpCircle, path: '/officer/guide' },
   ];
 
   const bidderNavItems = [
-    { name: 'How to Use', icon: HelpCircle, path: '/bidder/guide' },
-    { name: 'How It Works', icon: ShieldCheck, path: '/how-it-works' },
+    { name: 'Home', icon: Home, path: '/' },
     { name: 'Browse Tenders', icon: Search, path: '/bidder/tenders' },
     { name: 'My Applications', icon: FileText, path: '/bidder/applications' },
     { name: 'My Vault', icon: UploadCloud, path: '/bidder/submit' },
+    { name: 'How to Use', icon: HelpCircle, path: '/bidder/guide' },
   ];
 
   const navItems = role === 'officer' ? officerNavItems : bidderNavItems;
