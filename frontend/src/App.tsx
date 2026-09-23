@@ -13,6 +13,7 @@ import VendorApplicationsListPage from "./pages/VendorApplicationsListPage";
 import VendorApplicationPage from './pages/VendorApplicationPage';
 import NotificationsPage from "./pages/NotificationsPage";
 import HowItWorksPage from './pages/HowItWorksPage';
+import SIHCompliancePage from './pages/SIHCompliancePage';
 
 // Protect routes based on role
 function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allowedRole: string }) {
@@ -29,7 +30,7 @@ function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allo
 
 function AppContent() {
   const location = useLocation();
-  const isStandalonePage = ['/', '/login', '/how-it-works'].includes(location.pathname);
+  const isStandalonePage = ['/', '/login', '/how-it-works', '/sih-compliance'].includes(location.pathname);
 
   return (
     <>
@@ -37,6 +38,7 @@ function AppContent() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<HowItWorksPage />} />
+          <Route path="/sih-compliance" element={<SIHCompliancePage />} />
           <Route path="/how-it-works" element={<Navigate to="/" replace />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
