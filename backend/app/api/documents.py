@@ -240,18 +240,11 @@ async def delete_document(id: str, bidderId: str, db: AsyncSession = Depends(get
         
     await db.delete(doc)
     
-    # Write to audit_log
-    from app.db.models.audit_log import AuditLog
-    audit = AuditLog(
-        bid_id=None,
-        event_type='document_deleted',
-        actor_id=uuid.UUID(bidderId),
-        details={
-            "document_id": id,
-            "doc_type": doc.doc_type
-        }
+    from app.services.audit_service import AuditService
+    await AuditService.log_event(
+        db, 'document_deleted', uuid.UUID(bidderId), 
+        {"document_id": id, "doc_type": doc.doc_type}
     )
-    db.add(audit)
     
     await db.commit()
     return {"status": "deleted"}
@@ -299,19 +292,16 @@ async def digilocker_pull(req: DigiLockerPullRequest, db: AsyncSession = Depends
     )
     db.add(new_doc)
     
-    from app.db.models.audit_log import AuditLog
-    audit = AuditLog(
-        bid_id=None,
-        event_type='document_upload',  # Keep same as before for consistency or add 'document_pulled'
-        actor_id=uuid.UUID(req.bidderId),
-        details={
+    from app.services.audit_service import AuditService
+    await AuditService.log_event(
+        db, 'document_upload', uuid.UUID(req.bidderId), 
+        {
             "document_id": str(new_doc.id),
             "source": "digilocker",
             "request_id": req.requestId,
             "signature_valid": pulled_data["digitalSignatureValid"]
         }
     )
-    db.add(audit)
     
     await db.commit()
     await db.refresh(new_doc)
