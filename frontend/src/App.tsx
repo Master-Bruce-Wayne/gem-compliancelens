@@ -12,6 +12,7 @@ import VendorTendersPage from './pages/VendorTendersPage';
 import VendorApplicationsListPage from "./pages/VendorApplicationsListPage";
 import VendorApplicationPage from './pages/VendorApplicationPage';
 import NotificationsPage from "./pages/NotificationsPage";
+import HowItWorksPage from './pages/HowItWorksPage';
 
 // Protect routes based on role
 function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allowedRole: string }) {
@@ -41,6 +42,7 @@ function AppContent() {
         <Layout>
           <Routes>
             {/* Common / Redirects */}
+            <Route path="/how-it-works" element={<HowItWorksPage />} />
             <Route path="/" element={<Navigate to="/login" replace />} />
             
             {/* Officer Gateway */}

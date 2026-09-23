@@ -17,11 +17,13 @@ export default function Layout({ children }: LayoutProps) {
 
   const officerNavItems = [
     { name: 'How to Use', icon: HelpCircle, path: '/officer/guide' },
+    { name: 'How It Works', icon: ShieldCheck, path: '/how-it-works' },
     { name: 'Dashboard', icon: FileText, path: '/officer/tenders' },
   ];
 
   const bidderNavItems = [
     { name: 'How to Use', icon: HelpCircle, path: '/bidder/guide' },
+    { name: 'How It Works', icon: ShieldCheck, path: '/how-it-works' },
     { name: 'Browse Tenders', icon: Search, path: '/bidder/tenders' },
     { name: 'My Applications', icon: FileText, path: '/bidder/applications' },
     { name: 'My Vault', icon: UploadCloud, path: '/bidder/submit' },
