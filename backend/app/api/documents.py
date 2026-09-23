@@ -225,3 +225,30 @@ async def confirm_document(id: str, req: DocumentConfirmRequest, db: AsyncSessio
     
     await db.commit()
     return {"status": "done", "confirmedFields": doc.confirmed_fields}
+
+@router.delete("/{id}")
+async def delete_document(id: str, bidderId: str, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidderDocument).filter(BidderDocument.id == uuid.UUID(id)))
+    doc = result.scalars().first()
+    if not doc:
+        raise HTTPException(status_code=404, detail="Document not found")
+    if str(doc.bidder_id) != bidderId:
+        raise HTTPException(status_code=403, detail="Access denied")
+        
+    await db.delete(doc)
+    
+    # Write to audit_log
+    from app.db.models.audit_log import AuditLog
+    audit = AuditLog(
+        bid_id=None,
+        event_type='document_deleted',
+        actor_id=uuid.UUID(bidderId),
+        details={
+            "document_id": id,
+            "doc_type": doc.doc_type
+        }
+    )
+    db.add(audit)
+    
+    await db.commit()
+    return {"status": "deleted"}

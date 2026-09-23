@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { UploadCloud, CheckCircle, ShieldAlert, FileText, ChevronRight, AlertCircle, Loader2 } from 'lucide-react';
+import { UploadCloud, CheckCircle, ShieldAlert, FileText, ChevronRight, AlertCircle, Loader2, X, Eye } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
 
 export default function BidderSubmitPage() {
@@ -12,6 +12,8 @@ export default function BidderSubmitPage() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [failCount, setFailCount] = useState(0);
   const [isForcing, setIsForcing] = useState(false);
+  const [previewDoc, setPreviewDoc] = useState<any>(null);
+  const [duplicateConfirm, setDuplicateConfirm] = useState<{file: File, docType: string, isForcing: boolean} | null>(null);
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : {};
@@ -30,20 +32,43 @@ export default function BidderSubmitPage() {
     fetchVault();
   }, []);
 
-  const handleUpload = async (e: React.FormEvent, forceManual = false) => {
-    e.preventDefault();
-    if (!file) return;
+  const handleUpload = async (e: React.FormEvent | null, forceManual = false, skipDuplicateCheck = false) => {
+    if (e) e.preventDefault();
+    
+    const targetFile = duplicateConfirm ? duplicateConfirm.file : file;
+    const targetDocType = duplicateConfirm ? duplicateConfirm.docType : docType;
+    const targetForce = duplicateConfirm ? duplicateConfirm.isForcing : forceManual;
+    
+    if (!targetFile) return;
 
-    if (forceManual) setIsForcing(true);
+    // Duplicate Check
+    if (!skipDuplicateCheck) {
+        const existing = uploadedDocs.find(d => d.docType === targetDocType);
+        if (existing) {
+            setDuplicateConfirm({ file: targetFile, docType: targetDocType, isForcing: targetForce });
+            return;
+        }
+    }
+
+    if (targetForce) setIsForcing(true);
     else setIsUploading(true);
     
     const formData = new FormData();
-    formData.append('file', file);
-    formData.append('docType', docType);
+    formData.append('file', targetFile);
+    formData.append('docType', targetDocType);
     formData.append('bidderId', user.id);
-    formData.append('force_manual', forceManual ? 'true' : 'false');
+    formData.append('force_manual', targetForce ? 'true' : 'false');
 
     try {
+      if (duplicateConfirm) {
+          const existing = uploadedDocs.find(d => d.docType === targetDocType);
+          if (existing) {
+              await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/documents/${existing.id}?bidderId=${user.id}`, {
+                  method: 'DELETE'
+              });
+          }
+      }
+
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/documents/upload`, {
         method: 'POST',
         body: formData
@@ -60,7 +85,7 @@ export default function BidderSubmitPage() {
       
       const data = await res.json();
       
-      if (forceManual) {
+      if (targetForce) {
           toast.success("Document submitted for Manual Review!");
       } else {
           toast.success("Document verified and added to Vault!");
@@ -68,6 +93,7 @@ export default function BidderSubmitPage() {
       
       setFile(null);
       setFailCount(0);
+      setDuplicateConfirm(null);
       await fetchVault();
       
     } catch (err) {
@@ -107,6 +133,88 @@ export default function BidderSubmitPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 p-4">
       <Toaster position="bottom-right" />
+
+      {/* Duplicate Confirmation Modal */}
+      {duplicateConfirm && (
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative">
+            <h3 className="text-lg font-bold text-slate-900 mb-2">Replace Existing Document?</h3>
+            <p className="text-slate-600 mb-6 text-sm">
+              You already have a <strong>{duplicateConfirm.docType.replace('_', ' ').toUpperCase()}</strong> in your vault. 
+              Are you sure you want to replace it? The existing document will be archived.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => setDuplicateConfirm(null)}
+                className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleUpload(null, duplicateConfirm.isForcing, true)}
+                className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700"
+              >
+                Yes, Replace
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Document Preview Modal */}
+      {previewDoc && (
+        <div className="fixed inset-0 bg-slate-900/70 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex justify-between items-center p-4 border-b border-slate-200">
+              <h3 className="text-lg font-bold text-slate-900 uppercase">
+                {previewDoc.docType.replace('_', ' ')}
+              </h3>
+              <button onClick={() => setPreviewDoc(null)} className="text-slate-400 hover:text-slate-600">
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div className="flex flex-col md:flex-row h-full overflow-hidden">
+              <div className="flex-1 bg-slate-100 p-4 flex items-center justify-center overflow-auto">
+                 {previewDoc.fileUrl ? (
+                   previewDoc.fileUrl.toLowerCase().endsWith('.pdf') ? (
+                     <iframe src={previewDoc.fileUrl} className="w-full h-[60vh] md:h-full border-0 rounded shadow-sm" />
+                   ) : (
+                     <img src={previewDoc.fileUrl} alt="Document" className="max-w-full max-h-[60vh] md:max-h-full object-contain rounded shadow-sm" />
+                   )
+                 ) : (
+                   <div className="text-slate-400">No preview available</div>
+                 )}
+              </div>
+              
+              <div className="w-full md:w-80 border-l border-slate-200 p-6 bg-slate-50 overflow-y-auto">
+                 <h4 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                   <CheckCircle className="w-5 h-5 text-green-500" /> Extracted Credentials
+                 </h4>
+                 
+                 {previewDoc.extractedFields && Object.keys(previewDoc.extractedFields).length > 0 ? (
+                   <div className="space-y-4">
+                     {Object.entries(previewDoc.extractedFields).map(([key, data]: [string, any]) => (
+                       <div key={key} className="bg-white p-3 rounded border border-slate-200 shadow-sm">
+                         <div className="text-xs text-slate-500 uppercase font-semibold mb-1">{key.replace('_', ' ')}</div>
+                         <div className="font-medium text-slate-900">{typeof data === 'object' ? data.value : data}</div>
+                       </div>
+                     ))}
+                   </div>
+                 ) : (
+                   <div className="text-sm text-slate-500 italic">No fields extracted.</div>
+                 )}
+                 
+                 <div className="mt-6 pt-4 border-t border-slate-200">
+                    <div className="text-xs text-slate-500 mb-1">Status</div>
+                    <div className="font-semibold capitalize text-slate-900">{previewDoc.ocrStatus}</div>
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       
       <header>
         <h1 className="text-2xl font-bold text-gray-900">My Document Vault</h1>
@@ -214,7 +322,7 @@ export default function BidderSubmitPage() {
         ) : (
           <div className="space-y-3">
             {uploadedDocs.map((doc, i) => (
-              <div key={i} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50">
+              <div key={i} onClick={() => setPreviewDoc(doc)} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg bg-slate-50 hover:bg-white hover:shadow-md transition cursor-pointer group">
                 <div className="flex items-center gap-4">
                   <div className="bg-blue-100 p-2 rounded-lg text-blue-700">
                     <FileText className="w-6 h-6" />
@@ -233,6 +341,9 @@ export default function BidderSubmitPage() {
                   </div>
                 </div>
                 <div className="text-right flex flex-col items-end">
+                  <div className="text-blue-600 opacity-0 group-hover:opacity-100 transition flex items-center gap-1 text-sm font-medium">
+                    <Eye size={16} /> View
+                  </div>
                 </div>
               </div>
             ))}
