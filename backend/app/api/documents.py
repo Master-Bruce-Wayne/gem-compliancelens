@@ -252,3 +252,64 @@ async def delete_document(id: str, bidderId: str, db: AsyncSession = Depends(get
     
     await db.commit()
     return {"status": "deleted"}
+
+from pydantic import BaseModel
+
+class DigiLockerInitiateRequest(BaseModel):
+    bidderId: str
+    docType: str
+
+class DigiLockerPullRequest(BaseModel):
+    bidderId: str
+    requestId: str
+
+@router.post("/digilocker/initiate")
+async def digilocker_initiate(req: DigiLockerInitiateRequest):
+    from app.services.digilocker_provider import get_digilocker_provider
+    provider = get_digilocker_provider()
+    res = await provider.initiate_consent(req.bidderId, req.docType)
+    return res
+
+@router.post("/digilocker/pull")
+async def digilocker_pull(req: DigiLockerPullRequest, db: AsyncSession = Depends(get_db)):
+    from app.services.digilocker_provider import get_digilocker_provider
+    provider = get_digilocker_provider()
+    pulled_data = await provider.pull_document(req.requestId)
+    
+    # Simulate a document for the pipeline (we use an existing dummy or just empty for demo)
+    doc_type = "pan" if "pan" in pulled_data["docType"].lower() else "other"
+    
+    # We would normally write rawDocumentBase64 to a file and run OCR, 
+    # but for demo, we can just seed the extracted_fields.
+    extracted_fields = {"pan": {"value": "ABCDE1234F", "confidence": "high"}} if doc_type == "pan" else {}
+    
+    new_doc = BidderDocument(
+        bidder_id=uuid.UUID(req.bidderId),
+        doc_type=doc_type,
+        file_url=pulled_data["uri"],
+        ocr_status="done",
+        extracted_fields=extracted_fields,
+        confidence_score=100.0,
+        source="digilocker",
+        digilocker_request_id=req.requestId,
+        digital_signature_valid=pulled_data["digitalSignatureValid"]
+    )
+    db.add(new_doc)
+    
+    from app.db.models.audit_log import AuditLog
+    audit = AuditLog(
+        bid_id=None,
+        event_type='document_upload',  # Keep same as before for consistency or add 'document_pulled'
+        actor_id=uuid.UUID(req.bidderId),
+        details={
+            "document_id": str(new_doc.id),
+            "source": "digilocker",
+            "request_id": req.requestId,
+            "signature_valid": pulled_data["digitalSignatureValid"]
+        }
+    )
+    db.add(audit)
+    
+    await db.commit()
+    await db.refresh(new_doc)
+    return {"status": "done", "documentId": str(new_doc.id), "fileUrl": pulled_data["uri"]}
