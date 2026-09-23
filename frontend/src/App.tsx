@@ -29,7 +29,7 @@ function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allo
 
 function AppContent() {
   const location = useLocation();
-  const isStandalonePage = ['/login', '/how-it-works'].includes(location.pathname);
+  const isStandalonePage = ['/', '/login', '/how-it-works'].includes(location.pathname);
 
   return (
     <>
