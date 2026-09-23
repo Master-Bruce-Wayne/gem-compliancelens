@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, ForeignKey, Enum, Numeric
+from sqlalchemy import Column, String, ForeignKey, Enum, Numeric, Boolean
 from sqlalchemy.dialects.postgresql import UUID, JSONB
 from app.db.session import Base
 import uuid
@@ -17,6 +17,9 @@ class BidderDocument(Base):
     extracted_fields = Column(JSONB, nullable=True)
     confirmed_fields = Column(JSONB, nullable=True)
     confidence_score = Column(Numeric, nullable=True)
+    source = Column(Enum('upload', 'digilocker', name='doc_source_enum'), server_default='upload')
+    digilocker_request_id = Column(String, nullable=True)
+    digital_signature_valid = Column(Boolean, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     bidder = relationship("Bidder", back_populates="documents")

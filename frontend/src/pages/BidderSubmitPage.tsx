@@ -14,6 +14,10 @@ export default function BidderSubmitPage() {
   const [isForcing, setIsForcing] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [duplicateConfirm, setDuplicateConfirm] = useState<{file: File, docType: string, isForcing: boolean} | null>(null);
+  
+  // DigiLocker State
+  const [showDigilockerModal, setShowDigilockerModal] = useState(false);
+  const [isDigilockerPulling, setIsDigilockerPulling] = useState(false);
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : {};
@@ -124,6 +128,37 @@ export default function BidderSubmitPage() {
     }
   };
 
+
+  const handleDigilockerPull = async () => {
+    setIsDigilockerPulling(true);
+    try {
+      // 1. Initiate
+      const initRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/documents/digilocker/initiate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bidderId: user.id, docType })
+      });
+      if (!initRes.ok) throw new Error("Failed to initiate DigiLocker connection");
+      const initData = await initRes.json();
+      
+      // 2. Pull
+      const pullRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/documents/digilocker/pull`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bidderId: user.id, requestId: initData.requestId })
+      });
+      if (!pullRes.ok) throw new Error("Failed to pull document from DigiLocker");
+      
+      toast.success("Document successfully pulled from DigiLocker!");
+      setShowDigilockerModal(false);
+      await fetchVault();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "DigiLocker pull failed.");
+    } finally {
+      setIsDigilockerPulling(false);
+    }
+  };
+
   const calculatePreScore = () => {
     if (uploadedDocs.length === 0) return 0;
     const verified = uploadedDocs.filter(d => d.ocrStatus === 'done').length;
@@ -133,6 +168,52 @@ export default function BidderSubmitPage() {
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20 p-4">
       <Toaster position="bottom-right" />
+
+            {/* DigiLocker Modal */}
+      {showDigilockerModal && (
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative border-t-4 border-[#005a9e]">
+            <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
+              <img src="https://cdnbbsr.s3waas.gov.in/s3621bf66ddb7c962aa0d22ac97d69b793/uploads/2022/07/2022070183.png" alt="DigiLocker" className="h-6" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              DigiLocker
+            </h3>
+            <span className="inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-1 rounded-md mb-4 border border-amber-200">
+              Demo Mode — Partner Integration Pending
+            </span>
+            
+            <p className="text-slate-600 mb-6 text-sm">
+              You are about to authorize <strong>GeM ComplianceLens</strong> to access your <strong>{docType.replace('_', ' ').toUpperCase()}</strong> from your DigiLocker account.
+            </p>
+            
+            <div className="bg-slate-50 p-4 rounded-lg mb-6 text-xs text-slate-500 border border-slate-200">
+              <p className="mb-2"><strong>Data to be shared:</strong></p>
+              <ul className="list-disc pl-4 space-y-1">
+                <li>Document Issuer Name</li>
+                <li>Digital Signature Validity</li>
+                <li>Document Data Payload</li>
+              </ul>
+            </div>
+            
+            <div className="flex gap-3 justify-end">
+              <button 
+                onClick={() => setShowDigilockerModal(false)}
+                disabled={isDigilockerPulling}
+                className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded"
+              >
+                Deny
+              </button>
+              <button 
+                onClick={handleDigilockerPull}
+                disabled={isDigilockerPulling}
+                className="bg-[#005a9e] text-white px-4 py-2 rounded font-medium hover:bg-[#004780] flex items-center gap-2"
+              >
+                {isDigilockerPulling && <Loader2 className="animate-spin w-4 h-4"/>}
+                Allow & Pull Document
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Duplicate Confirmation Modal */}
       {duplicateConfirm && (
@@ -258,15 +339,25 @@ export default function BidderSubmitPage() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              onClick={(e) => handleUpload(e, false)}
-              disabled={isUploading || isForcing || !file}
-              className="w-full flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 gap-2"
-            >
-              {isUploading && <Loader2 className="animate-spin w-4 h-4"/>}
-              {isUploading ? 'Extracting via AI...' : 'Secure Upload'}
-            </button>
+            <div className="flex gap-2 w-full">
+              <button
+                type="submit"
+                onClick={(e) => handleUpload(e, false)}
+                disabled={isUploading || isForcing || !file}
+                className="flex-1 flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 gap-2"
+              >
+                {isUploading && <Loader2 className="animate-spin w-4 h-4"/>}
+                {isUploading ? 'Extracting via AI...' : 'Secure Upload'}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setShowDigilockerModal(true)}
+                className="flex-1 flex justify-center items-center py-2.5 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 gap-2"
+              >
+                Fetch via DigiLocker
+              </button>
+            </div>
             
             {failCount >= 3 && (
                 <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
@@ -328,7 +419,14 @@ export default function BidderSubmitPage() {
                     <FileText className="w-6 h-6" />
                   </div>
                   <div>
-                    <div className="text-sm font-semibold uppercase">{doc.docType.replace('_', ' ')}</div>
+                    <div className="text-sm font-semibold uppercase flex items-center gap-2">
+                        {doc.docType.replace('_', ' ')}
+                        {doc.source === 'digilocker' && (
+                            <span className="text-[10px] bg-[#e6f0fa] text-[#005a9e] border border-[#b3d4f5] px-1.5 py-0.5 rounded-full font-bold">
+                                via DigiLocker
+                            </span>
+                        )}
+                    </div>
                     <div className="text-xs text-slate-500 flex gap-2 items-center mt-1">
                       <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
                       <span>•</span>
