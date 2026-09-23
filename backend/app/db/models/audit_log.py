@@ -14,3 +14,5 @@ class AuditLog(Base):
     actor_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
     details = Column(JSONB)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    previous_hash = Column(String(64), nullable=True)
+    hash = Column(String(64), nullable=True)
