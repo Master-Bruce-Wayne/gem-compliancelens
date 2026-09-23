@@ -76,25 +76,25 @@ export default function HowItWorksPage() {
     switch(status) {
       case 'Live': return 'bg-green-100 text-green-800 border-green-200';
       case 'Demo Mode': return 'bg-amber-100 text-amber-800 border-amber-200';
-      case 'Coming Soon': return 'bg-obsidian-800 border-white/10 text-blue-800 border-white/20';
-      default: return 'bg-slate-100 text-slate-100 border-white/10';
+      case 'Coming Soon': return 'bg-blue-100 text-blue-800 border-blue-200';
+      default: return 'bg-slate-100 text-slate-800 border-slate-200';
     }
   };
 
   const steps = activeTab === 'officer' ? OfficerSteps : BidderSteps;
 
   return (
-    <div className="dark min-h-screen bg-obsidian-950 text-slate-300 grid-subtle">
+    <div className="min-h-screen bg-slate-50">
       {/* Top Navbar */}
-      <header className="bg-obsidian-900 border-b border-white/10 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-emerald-500 text-obsidian-950 flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-bold text-xl text-slate-100">GeM ComplianceLens <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
+          <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
+          <span className="font-bold text-xl text-slate-800">GeM ComplianceLens <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
         </div>
         {user ? (
           <button 
             onClick={() => navigate(`/${role}/tenders`)}
-            className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
           >
             Go to Dashboard &rarr;
           </button>
@@ -102,13 +102,13 @@ export default function HowItWorksPage() {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => navigate('/login')}
-              className="text-slate-400 hover:text-white font-medium text-sm transition-colors"
+              className="text-slate-600 hover:text-slate-900 font-medium text-sm transition-colors"
             >
               Log In
             </button>
             <button 
               onClick={() => navigate('/login')}
-              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm transition-colors shadow-sm"
             >
               Register &rarr;
             </button>
@@ -120,13 +120,13 @@ export default function HowItWorksPage() {
       
       {/* Hero Section */}
       <section className="text-center pt-8 space-y-6">
-        <div className="w-16 h-16 mx-auto bg-emerald-500 text-obsidian-950 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-lg">
+        <div className="w-16 h-16 mx-auto bg-blue-600 rounded-2xl flex items-center justify-center text-white font-bold text-3xl shadow-lg">
           G
         </div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
           GeM ComplianceLens
         </h1>
-        <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto">
+        <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
           An AI-enabled integrated platform for automated verification of bidder compliance in GeM procurement. 
           Upload documents, extract fields via AI, and automatically evaluate bids against deterministic rules.
         </p>
@@ -135,7 +135,7 @@ export default function HowItWorksPage() {
           {user ? (
             <button 
               onClick={() => navigate(`/${role}/tenders`)}
-              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
             >
               Go to Dashboard &rarr;
             </button>
@@ -143,13 +143,13 @@ export default function HowItWorksPage() {
             <>
               <button 
                 onClick={() => navigate('/login')}
-                className="bg-obsidian-900 hover:bg-obsidian-950 text-slate-300 border border-white/10 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+                className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
               >
                 Log In
               </button>
               <button 
                 onClick={() => navigate('/login')}
-                className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-lg"
               >
                 Register &rarr;
               </button>
@@ -161,11 +161,11 @@ export default function HowItWorksPage() {
         <div className="pt-8">
           <button 
             onClick={() => navigate('/sih-compliance')}
-            className="inline-flex items-center gap-2 text-champagne-400 hover:text-champagne-300 font-medium text-sm bg-obsidian-800 hover:bg-obsidian-800 border-white/10 px-4 py-2 rounded-full transition-colors border border-white/20"
+            className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-full transition-colors border border-blue-200"
           >
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-obsidian-8000"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
             </span>
             View SIH Requirements Matrix & Flowchart &rarr;
           </button>
@@ -173,23 +173,23 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Role Journey */}
-      <section id="how-it-works" className="bg-obsidian-900 border border-white/10 rounded-2xl p-6 md:p-10 shadow-sm relative overflow-hidden">
+      <section id="how-it-works" className="bg-white border border-slate-200 rounded-2xl p-6 md:p-10 shadow-sm relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-2xl font-bold text-slate-900">
             How It Works: {activeTab === 'officer' ? 'Officer' : 'Bidder'} Journey
           </h2>
           <div className="flex bg-slate-100 p-1 rounded-lg">
             <button 
               onClick={() => setActiveTab('officer')}
-              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'officer' ? "bg-obsidian-900 shadow-sm text-champagne-400" : "text-slate-500 hover:text-slate-300")}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'officer' ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}
             >
               Procurement Officer
             </button>
             <button 
               onClick={() => setActiveTab('bidder')}
-              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'bidder' ? "bg-obsidian-900 shadow-sm text-champagne-400" : "text-slate-500 hover:text-slate-300")}
+              className={cn("px-4 py-2 rounded-md text-sm font-bold transition-all", activeTab === 'bidder' ? "bg-white shadow-sm text-blue-600" : "text-slate-500 hover:text-slate-700")}
             >
               Bidder / Vendor
             </button>
@@ -204,29 +204,29 @@ export default function HowItWorksPage() {
                 key={step.id} 
                 onClick={() => setExpandedStep(isExpanded ? null : step.id)}
                 className={cn(
-                  "relative bg-obsidian-950 border rounded-xl p-5 transition-all cursor-pointer group",
-                  isExpanded ? "border-blue-300 shadow-md ring-2 ring-blue-100 bg-obsidian-900" : "border-white/10 hover:shadow-md hover:border-white/20"
+                  "relative bg-slate-50 border rounded-xl p-5 transition-all cursor-pointer group",
+                  isExpanded ? "border-blue-300 shadow-md ring-2 ring-blue-100 bg-white" : "border-slate-200 hover:shadow-md hover:border-blue-200"
                 )}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center transition-colors", isExpanded ? "bg-emerald-500 text-obsidian-950 text-white" : "bg-obsidian-800 border-white/10 text-champagne-400 group-hover:bg-emerald-500 text-obsidian-950 group-hover:text-white")}>
+                  <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center transition-colors", isExpanded ? "bg-blue-600 text-white" : "bg-blue-100 text-blue-600 group-hover:bg-blue-600 group-hover:text-white")}>
                     <step.icon size={20} />
                   </div>
                   <span className={cn("text-xs font-bold px-2.5 py-1 rounded-full border", getBadgeColor(step.status))}>
                     {step.status}
                   </span>
                 </div>
-                <h3 className="font-semibold text-white mb-1 flex items-center gap-2">
-                  <span className={cn("text-sm", isExpanded ? "text-champagne-400 font-bold" : "text-slate-400")}>{idx + 1}.</span> {step.title}
+                <h3 className="font-semibold text-slate-900 mb-1 flex items-center gap-2">
+                  <span className={cn("text-sm", isExpanded ? "text-blue-600 font-bold" : "text-slate-400")}>{idx + 1}.</span> {step.title}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-relaxed">
                   {step.desc}
                 </p>
                 
                 {/* Expanded Details */}
                 {isExpanded && (
-                  <div className="mt-4 pt-4 border-t border-white/5 animate-in fade-in slide-in-from-top-2 duration-200">
-                    <p className="text-sm text-slate-300 leading-relaxed bg-obsidian-800/50 p-3 rounded-lg border border-white/10">
+                  <div className="mt-4 pt-4 border-t border-slate-100 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <p className="text-sm text-slate-700 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100">
                       {step.detail}
                     </p>
                   </div>
@@ -239,41 +239,41 @@ export default function HowItWorksPage() {
 
       {/* Feature Deep Dive */}
       <section id="features" className="space-y-6">
-        <h2 className="text-2xl font-bold text-white">Platform Capabilities Explained</h2>
+        <h2 className="text-2xl font-bold text-slate-900">Platform Capabilities Explained</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
-            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-              <Database className="w-5 h-5 text-champagne-400" /> Deterministic Rule Engine
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
+              <Database className="w-5 h-5 text-blue-600" /> Deterministic Rule Engine
             </h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600">
               Unlike other platforms that use hallucination-prone LLMs to make final decisions, our AI is strictly limited to <strong>Data Extraction</strong>. The actual Pass/Fail verdicts are calculated mathematically by an Abstract Syntax Tree (AST) Rule Engine, guaranteeing that the same input always gives the exact same output.
             </p>
           </div>
           
-          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
-            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-              <Fingerprint className="w-5 h-5 text-champagne-400" /> Layered Document Forensics
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
+              <Fingerprint className="w-5 h-5 text-blue-600" /> Layered Document Forensics
             </h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600">
               We go beyond basic OCR text matching. We analyze the hidden <strong>PDF Metadata</strong> to catch Adobe Photoshop manipulation. We run <strong>Error Level Analysis (ELA)</strong> on image pixels. We check cryptographic hashes to detect bidders sharing identical fake documents to simulate competition.
             </p>
           </div>
 
-          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
-            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-              <Scale className="w-5 h-5 text-champagne-400" /> Three-State Verdict System
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
+              <Scale className="w-5 h-5 text-blue-600" /> Three-State Verdict System
             </h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600">
               Ambiguous edge cases are never auto-rejected. The system categorizes results into: <strong>Compliant</strong>, <strong>Non-Compliant</strong>, and <strong>Needs Review</strong>. If the AI cannot read a blurry document after 3 strikes, it degrades gracefully to the manual review queue, ensuring zero operational downtime.
             </p>
           </div>
 
-          <div className="bg-obsidian-900 border border-white/10 p-6 rounded-xl shadow-sm">
-            <h3 className="font-bold text-lg text-white mb-2 flex items-center gap-2">
-              <FileLock2 className="w-5 h-5 text-champagne-400" /> Immutable Pseudo-Blockchain
+          <div className="bg-white border border-slate-200 p-6 rounded-xl shadow-sm">
+            <h3 className="font-bold text-lg text-slate-900 mb-2 flex items-center gap-2">
+              <FileLock2 className="w-5 h-5 text-blue-600" /> Immutable Pseudo-Blockchain
             </h3>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600">
               For complete CVC/CAG defensibility, every action is logged into an immutable <strong>Cryptographic Hash Chain</strong> within our database. Each event computes a SHA-256 hash using the previous row's hash. If a malicious insider alters a record, the chain breaks instantly.
             </p>
           </div>
@@ -314,12 +314,12 @@ export default function HowItWorksPage() {
         </div>
       </section>
       {/* Footer CTA */}
-      <footer className="mt-16 pt-12 pb-8 border-t border-white/10 text-center">
-        <h2 className="text-2xl font-bold text-white mb-6">Ready to experience GeM ComplianceLens?</h2>
+      <footer className="mt-16 pt-12 pb-8 border-t border-slate-200 text-center">
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">Ready to experience GeM ComplianceLens?</h2>
         {user ? (
           <button 
             onClick={() => navigate(`/${role}/tenders`)}
-            className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
           >
             Go to Dashboard &rarr;
           </button>
@@ -327,13 +327,13 @@ export default function HowItWorksPage() {
           <div className="flex items-center justify-center gap-4">
             <button 
               onClick={() => navigate('/login')}
-              className="bg-obsidian-900 hover:bg-obsidian-950 text-slate-300 border border-white/10 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+              className="bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
             >
               Log In
             </button>
             <button 
               onClick={() => navigate('/login')}
-              className="bg-emerald-500 text-obsidian-950 hover:bg-emerald-400 text-obsidian-950 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-bold transition-colors shadow-sm"
             >
               Register &rarr;
             </button>

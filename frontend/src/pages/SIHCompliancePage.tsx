@@ -33,19 +33,19 @@ export default function SIHCompliancePage() {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case 'Complete': return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-      case 'Semi-Complete': return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
-      default: return 'bg-slate-100 text-slate-300 border-white/10';
+      case 'Complete': return 'bg-green-100 text-green-700 border-green-200';
+      case 'Semi-Complete': return 'bg-amber-100 text-amber-700 border-amber-200';
+      default: return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
   return (
-    <div className="dark min-h-screen bg-obsidian-950 text-slate-300 font-sans grid-subtle">
+    <div className="min-h-screen bg-slate-50 font-sans">
       {/* Top Navbar */}
-      <header className="bg-obsidian-900 border-b border-white/10 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+      <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded bg-emerald-500 text-obsidian-950 flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-bold text-xl text-slate-100">SIH 2026 <span className="text-sm font-medium text-slate-400 ml-2">| Compliance Matrix Flowchart</span></span>
+          <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
+          <span className="font-bold text-xl text-slate-800">SIH 2026 <span className="text-sm font-medium text-slate-400 ml-2">| Compliance Matrix Flowchart</span></span>
         </div>
         <button 
           onClick={() => navigate('/')}
@@ -59,8 +59,8 @@ export default function SIHCompliancePage() {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <h1 className="text-4xl font-extrabold text-white">Prototype vs Requirements</h1>
-          <p className="text-lg text-slate-400">
+          <h1 className="text-4xl font-extrabold text-slate-900">Prototype vs Requirements</h1>
+          <p className="text-lg text-slate-600">
             An interactive flowchart mapping the 14 Smart India Hackathon problem statement requirements directly to our working GeM ComplianceLens prototype.
           </p>
         </div>
@@ -69,8 +69,8 @@ export default function SIHCompliancePage() {
           
           {/* Main Requirements Flowchart */}
           <div className="lg:col-span-3 space-y-6">
-            <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
-              <Search className="w-6 h-6 text-champagne-400" /> The 14 Expected Solutions
+            <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+              <Search className="w-6 h-6 text-blue-600" /> The 14 Expected Solutions
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -80,16 +80,16 @@ export default function SIHCompliancePage() {
                   onClick={() => setSelectedReq(selectedReq === req.id ? null : req.id)}
                   className={cn(
                     "p-5 rounded-xl border transition-all cursor-pointer relative overflow-hidden",
-                    selectedReq === req.id ? "bg-obsidian-900 border-champagne-400/50 shadow-md ring-2 ring-blue-50" : "bg-obsidian-900 border-white/10 hover:border-champagne-400/30 hover:shadow-sm"
+                    selectedReq === req.id ? "bg-white border-blue-400 shadow-md ring-2 ring-blue-50" : "bg-white border-slate-200 hover:border-blue-300 hover:shadow-sm"
                   )}
                 >
-                  {selectedReq === req.id && <div className="absolute top-0 left-0 w-1 h-full bg-obsidian-8000"></div>}
+                  {selectedReq === req.id && <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>}
                   
                   <div className="flex justify-between items-start mb-3">
                     <span className="flex items-center justify-center w-6 h-6 rounded-full bg-slate-100 text-slate-500 text-xs font-bold shrink-0 mr-3">
                       {req.id}
                     </span>
-                    <h3 className={cn("font-bold text-sm flex-1", selectedReq === req.id ? "text-champagne-300" : "text-white")}>
+                    <h3 className={cn("font-bold text-sm flex-1", selectedReq === req.id ? "text-blue-700" : "text-slate-900")}>
                       {req.title}
                     </h3>
                     <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ml-2", getStatusColor(req.status))}>
@@ -105,11 +105,11 @@ export default function SIHCompliancePage() {
                     <div className="pl-9 mt-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
                       <div>
                         <span className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">How it Works</span>
-                        <p className="text-sm text-slate-300 leading-relaxed bg-obsidian-800/50 p-3 rounded-lg border border-white/10">{req.details}</p>
+                        <p className="text-sm text-slate-700 leading-relaxed bg-blue-50/50 p-3 rounded-lg border border-blue-100">{req.details}</p>
                       </div>
                       <div>
                         <span className="text-xs font-bold text-amber-500 uppercase tracking-wider block mb-1">Post-SIH Limitation</span>
-                        <p className="text-xs text-slate-400 italic bg-amber-50/50 p-3 rounded-lg border border-amber-100">{req.limit}</p>
+                        <p className="text-xs text-slate-600 italic bg-amber-50/50 p-3 rounded-lg border border-amber-100">{req.limit}</p>
                       </div>
                     </div>
                   )}
