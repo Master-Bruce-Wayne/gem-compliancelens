@@ -89,6 +89,9 @@ async def upload_document(
         if docType == 'pan': expected_fields = ['pan']
         elif docType == 'gst_certificate': expected_fields = ['gstin']
         elif docType == 'udyam_certificate': expected_fields = ['udyam_registration_number']
+        elif docType == 'startup_india': expected_fields = ['dipp_number']
+        elif docType == 'nsic_certificate': expected_fields = ['nsic_registration']
+        elif docType == 'oem_authorization': expected_fields = ['authorization_reference']
         
         missing = []
         for field in expected_fields:

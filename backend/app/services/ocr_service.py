@@ -11,6 +11,8 @@ class OCRService:
         'gstin': r'\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]',
         'pan': r'[A-Z]{5}\d{4}[A-Z]',
         'udyam': r'UDYAM-[A-Z]{2}-\d{2}-\d{7}',
+        'startup_dipp': r'DIPP\d{1,10}',
+        'nsic_id': r'NSIC/[A-Z]+/\d+',
         'date': r'(\d{2}/\d{2}/\d{4}|\d{2}-\d{2}-\d{4}|\d{2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s+\d{4})'
     }
 
@@ -78,6 +80,25 @@ class OCRService:
             match = re.search(cls.PATTERNS['udyam'], text)
             if match:
                 fields['udyam_registration_number'] = {"value": match.group(0), "confidence": confidence_base}
+                
+        elif doc_type == 'startup_india':
+            match = re.search(cls.PATTERNS['startup_dipp'], text)
+            if match:
+                fields['dipp_number'] = {"value": match.group(0), "confidence": confidence_base}
+                
+        elif doc_type == 'nsic_certificate':
+            match = re.search(cls.PATTERNS['nsic_id'], text)
+            if match:
+                fields['nsic_registration'] = {"value": match.group(0), "confidence": confidence_base}
+                
+        elif doc_type == 'oem_authorization':
+            # Less standardized format, we extract any dates and potentially an auth code
+            auth_match = re.search(r'(?i)(?:authorization code|auth no|ref no)[:\-\s]*([A-Z0-9\-\/]+)', text)
+            if auth_match:
+                fields['authorization_reference'] = {"value": auth_match.group(1).strip(), "confidence": confidence_base}
+            else:
+                # If we couldn't find a specific code, we can just pass if we found dates or text
+                fields['authorization_reference'] = {"value": "MANUAL_CHECK_REQUIRED", "confidence": "low"}
                 
         # Dates (extract all found dates, could be refined)
         dates = re.findall(cls.PATTERNS['date'], text)

@@ -1,9 +1,11 @@
 from app.db.models import Bidder, TenderRule, BidderDocument
 from typing import List, Dict, Any
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, text
 
 class RuleEngine:
     @staticmethod
-    def evaluate(bidder: Bidder, rules: List[TenderRule], documents: List[BidderDocument]) -> Dict[str, Any]:
+    async def evaluate(bidder: Bidder, rules: List[TenderRule], documents: List[BidderDocument], db: AsyncSession = None) -> Dict[str, Any]:
         results = []
         overall_score = 100
         has_mandatory_fail = False
