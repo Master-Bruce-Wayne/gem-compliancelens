@@ -106,9 +106,11 @@ async def submit_bid(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
 
 @router.get("/mine")
 async def get_my_bids(bidderId: UUID, db: AsyncSession = Depends(get_db)):
+    from app.db.models.decisions import Decision
     result = await db.execute(
-        select(BidApplication, Tender)
+        select(BidApplication, Tender, Decision)
         .join(Tender, Tender.id == BidApplication.tender_id)
+        .outerjoin(Decision, Decision.evaluation_id == BidApplication.current_evaluation_id)
         .where(BidApplication.bidder_id == bidderId)
     )
     bids = result.all()
@@ -116,8 +118,9 @@ async def get_my_bids(bidderId: UUID, db: AsyncSession = Depends(get_db)):
         "id": b.id,
         "tenderName": t.title,
         "status": b.status,
-        "submittedAt": b.submitted_at
-    } for b, t in bids]
+        "submittedAt": b.submitted_at,
+        "declineReason": d.note if d else None
+    } for b, t, d in bids]
 
 class EvaluateRequest(BaseModel):
     officerId: UUID
@@ -274,6 +277,9 @@ class DecisionRequest(BaseModel):
 
 @router.post("/{id}/decision")
 async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession = Depends(get_db)):
+    if req.decision == 'non_compliant' and not req.note:
+        raise HTTPException(status_code=400, detail={"message": "A mandatory description of reasoning is required when declining a bid."})
+
     result = await db.execute(select(BidApplication).where(BidApplication.id == id))
     bid = result.scalar_one_or_none()
     if not bid or not bid.current_evaluation_id:

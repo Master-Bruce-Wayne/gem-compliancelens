@@ -119,17 +119,17 @@ export default function DecisionPanel({ evaluation }: { evaluation: any }) {
           })}
         </div>
 
-        {decision && (decision !== aiRecommendation || decision === 'clarify') && (
+        {decision && (decision !== aiRecommendation || decision === 'clarify' || decision === 'disqualify') && (
           <div className="mb-6 animate-in fade-in slide-in-from-top-2">
             <label className="flex items-center gap-2 text-sm font-medium mb-2 text-needsReviewText">
               <AlertTriangle className="w-4 h-4" />
-              {decision === 'clarify' ? 'Clarification message to vendor' : 'Justification required (override)'}
+              {decision === 'clarify' ? 'Clarification message to vendor' : decision === 'disqualify' ? 'Mandatory reasoning for disqualification' : 'Justification required (override)'}
             </label>
             <textarea 
               required
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder={decision === 'clarify' ? "Enter questions for the vendor..." : "Explain why you are overriding the AI recommendation..."}
+              placeholder={decision === 'clarify' ? "Enter questions for the vendor..." : decision === 'disqualify' ? "Explain the specific reasons for rejecting this bid..." : "Explain why you are overriding the AI recommendation..."}
               className="w-full border border-slate-300 rounded-lg p-3 text-sm focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
               rows={3}
             />
@@ -139,7 +139,7 @@ export default function DecisionPanel({ evaluation }: { evaluation: any }) {
         <div className="flex justify-end">
           <button 
             type="submit" 
-            disabled={!decision || (decision !== aiRecommendation && !note) || submitting}
+            disabled={!decision || ((decision !== aiRecommendation || decision === 'clarify' || decision === 'disqualify') && !note) || submitting}
             className="px-6 py-2 bg-brand text-white rounded-lg font-medium disabled:opacity-50 hover:bg-brandHover transition-colors flex items-center gap-2"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
