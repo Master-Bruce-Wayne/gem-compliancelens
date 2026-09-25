@@ -1,6 +1,18 @@
 version: '3.8'
 
 services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: gemuser
+      POSTGRES_PASSWORD: gempass
+      POSTGRES_DB: gem_compliance
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
   backend:
     build: ./backend
     ports:
@@ -10,4 +22,9 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - CLOUDINARY_URL=${CLOUDINARY_URL}
       - DIGILOCKER_MODE=stub
+    depends_on:
+      - db
     restart: always
+
+volumes:
+  postgres_data:

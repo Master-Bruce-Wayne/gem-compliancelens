@@ -4,7 +4,7 @@ import sys
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from app.db.session import SessionLocal
+from app.db.session import AsyncSessionLocal
 from app.db.models.users import User
 from app.db.models.tenders import Tender
 from app.db.models.tender_rules import TenderRule
@@ -13,7 +13,7 @@ from passlib.context import CryptContext
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 async def init_db():
-    async with SessionLocal() as db:
+    async with AsyncSessionLocal() as db:
         # Create default officer
         hashed_password = pwd_context.hash("Officer@Demo123")
         officer = User(
