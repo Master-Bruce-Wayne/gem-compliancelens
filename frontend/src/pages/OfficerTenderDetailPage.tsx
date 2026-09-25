@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FileText, Users, Search, AlertCircle, Settings, CheckCircle2 } from 'lucide-react';
+import { FileText, Users, Search, AlertCircle, Settings, CheckCircle2, Check, X } from 'lucide-react';
+import { toast, Toaster } from 'sonner';
 
 export default function OfficerTenderDetailPage() {
   const { tenderId } = useParams();
   const navigate = useNavigate();
   const [tender, setTender] = useState<any>(null);
-  const [applications, setApplications] = useState([]);
+  const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchTenderData = () => {
     Promise.all([
       fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}`).then(r => r.json()),
       fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}/applications`).then(r => r.json())
@@ -18,6 +19,10 @@ export default function OfficerTenderDetailPage() {
       setApplications(appsData);
       setLoading(false);
     });
+  };
+
+  useEffect(() => {
+    fetchTenderData();
   }, [tenderId]);
 
   const handleEvaluate = async (appId: string) => {
@@ -37,10 +42,29 @@ export default function OfficerTenderDetailPage() {
     }
   };
 
+  const handleAccess = async (appId: string, action: 'grant' | 'deny') => {
+    const userStr = localStorage.getItem('user');
+    const officerId = userStr ? JSON.parse(userStr).id : "";
+    
+    const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${appId}/${action}-access`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ officerId })
+    });
+    
+    if (res.ok) {
+      toast.success(`Access ${action}ed successfully.`);
+      fetchTenderData(); // Refresh list
+    } else {
+      toast.error(`Failed to ${action} access.`);
+    }
+  };
+
   if (loading) return <div className="p-8 text-center text-slate-500">Loading tender details...</div>;
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto p-4">
+      <Toaster position="bottom-right" />
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
         <div className="flex justify-between items-start">
           <div>
@@ -49,6 +73,7 @@ export default function OfficerTenderDetailPage() {
               <span className="flex items-center gap-1"><FileText size={16}/> {tender.category}</span>
               <span className="flex items-center gap-1"><Users size={16}/> {tender.organization}</span>
               <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold uppercase">{tender.status}</span>
+              {tender.access_type === 'private' && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase">PRIVATE</span>}
             </div>
           </div>
           <button 
@@ -61,7 +86,7 @@ export default function OfficerTenderDetailPage() {
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div className="p-4 border-b border-slate-200 bg-slate-50">
+        <div className="p-4 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
           <h2 className="text-lg font-semibold">Bid Applications Queue</h2>
         </div>
         
@@ -87,6 +112,8 @@ export default function OfficerTenderDetailPage() {
                       app.status === 'under_evaluation' ? 'bg-blue-100 text-blue-700' :
                       app.status === 'qualified' ? 'bg-green-100 text-green-700' :
                       app.status === 'clarification_requested' ? 'bg-purple-100 text-purple-700' :
+                      app.status === 'access_pending' ? 'bg-orange-100 text-orange-700' :
+                      app.status === 'access_denied' ? 'bg-red-100 text-red-700' :
                       'bg-slate-100 text-slate-700'
                     }`}>
                       {app.status.replace('_', ' ').toUpperCase()}
@@ -98,6 +125,17 @@ export default function OfficerTenderDetailPage() {
                   <td className="px-6 py-4 text-right">
                     {app.status === 'draft' ? (
                       <span className="text-slate-400">Not Submitted</span>
+                    ) : app.status === 'access_denied' ? (
+                      <span className="text-red-500">Access Denied</span>
+                    ) : app.status === 'access_pending' ? (
+                      <div className="flex justify-end gap-2">
+                        <button onClick={() => handleAccess(app.id, 'grant')} className="bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded flex items-center gap-1 transition">
+                          <Check size={14} /> Grant
+                        </button>
+                        <button onClick={() => handleAccess(app.id, 'deny')} className="bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded flex items-center gap-1 transition">
+                          <X size={14} /> Deny
+                        </button>
+                      </div>
                     ) : (
                       <button 
                         onClick={() => handleEvaluate(app.id)}
