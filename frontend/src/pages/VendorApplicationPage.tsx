@@ -68,6 +68,24 @@ export default function VendorApplicationPage() {
     fetchApp();
   }, [appId]);
 
+  const handleWithdraw = async () => {
+    if (!window.confirm("Are you sure you want to withdraw this application? This action cannot be undone.")) return;
+    
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${appId}/withdraw`, {
+        method: "POST"
+      });
+      if (!res.ok) throw new Error("Failed to withdraw application");
+      toast.success("Application withdrawn successfully");
+      await fetchApp();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const attachAndSubmit = async (forceSubmit = false) => {
     // Check missing required docs first
     const requiredTypes = tenderRules
@@ -173,6 +191,15 @@ export default function VendorApplicationPage() {
               >
                 {submitting ? <Loader2 className="animate-spin" size={18} /> : <Play size={18} />}
                 Submit Application
+              </button>
+          ) : !['qualified', 'disqualified', 'withdrawn', 'draft'].includes(app.status) ? (
+             <button 
+                onClick={handleWithdraw}
+                disabled={submitting}
+                className="bg-red-50 text-red-600 border border-red-200 px-6 py-2 rounded shadow-sm hover:bg-red-100 transition flex items-center gap-2 disabled:opacity-50 font-medium"
+              >
+                {submitting ? <Loader2 className="animate-spin" size={18} /> : <X size={18} />}
+                Withdraw Application
               </button>
           ) : null}
         </div>

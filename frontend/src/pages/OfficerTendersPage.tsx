@@ -11,12 +11,15 @@ export default function OfficerTendersPage() {
   const [newTitle, setNewTitle] = useState('');
   const [newOrg, setNewOrg] = useState('Ministry of Defence');
   const [newCategory, setNewCategory] = useState('IT Equipment');
+  const [newClosingDate, setNewClosingDate] = useState('');
+  const [newEstValue, setNewEstValue] = useState('');
+  const [newEmdAmount, setNewEmdAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/open`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders`)
       .then(res => res.json())
       .then(data => {
         setTenders(data);
@@ -35,7 +38,10 @@ export default function OfficerTendersPage() {
       body: JSON.stringify({
         title: newTitle,
         organization: newOrg,
-        category: newCategory
+        category: newCategory,
+        closing_date: newClosingDate ? new Date(newClosingDate).toISOString() : null,
+        est_value: newEstValue ? parseFloat(newEstValue) : null,
+        emd_amount: newEmdAmount ? parseFloat(newEmdAmount) : null
       })
     });
     
@@ -75,6 +81,7 @@ export default function OfficerTendersPage() {
                 <th className="px-6 py-4">Tender Title</th>
                 <th className="px-6 py-4">Organization</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Bids</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -84,12 +91,18 @@ export default function OfficerTendersPage() {
                   <td className="px-6 py-4 font-medium flex items-center gap-3">
                     <FileText className="text-slate-400" size={18} />
                     <div>
-                      {t.title}
+                      <div className="flex items-center gap-2">
+                         {t.title}
+                         {t.access_type === 'private' && <span className="bg-amber-100 text-amber-700 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold">Private</span>}
+                      </div>
                       {t.tender_no && <div className="text-xs text-slate-500 font-mono mt-0.5">{t.tender_no}</div>}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-slate-600">{t.organization}</td>
                   <td className="px-6 py-4 text-slate-600">{t.category}</td>
+                  <td className="px-6 py-4 text-slate-600 font-medium">
+                     {t.bidsCount || 0}
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => navigate(`/officer/tenders/${t.id}`)}
@@ -154,6 +167,39 @@ export default function OfficerTendersPage() {
                   <option value="Services">Services</option>
                   <option value="General">General</option>
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Closing Date</label>
+                  <input 
+                    type="datetime-local" 
+                    value={newClosingDate} 
+                    onChange={e => setNewClosingDate(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Estimated Value (₹)</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 485000000"
+                    value={newEstValue} 
+                    onChange={e => setNewEstValue(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">EMD Guarantee Amount (₹)</label>
+                <input 
+                  type="number" 
+                  placeholder="e.g. 250000"
+                  value={newEmdAmount} 
+                  onChange={e => setNewEmdAmount(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
               </div>
 
               <div className="pt-2 flex justify-end gap-3">

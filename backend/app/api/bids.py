@@ -174,6 +174,20 @@ async def get_my_bids(bidderId: UUID, db: AsyncSession = Depends(get_db)):
 class EvaluateRequest(BaseModel):
     officerId: UUID
 
+@router.post("/{id}/withdraw")
+async def withdraw_bid(id: UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidApplication).where(BidApplication.id == id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    if app.status in ['qualified', 'disqualified', 'withdrawn']:
+        raise HTTPException(status_code=400, detail="Cannot withdraw at this stage")
+        
+    app.status = 'withdrawn'
+    await db.commit()
+    return {"status": "success"}
+
 @router.post("/{id}/evaluate")
 async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(BidApplication).where(BidApplication.id == id))
