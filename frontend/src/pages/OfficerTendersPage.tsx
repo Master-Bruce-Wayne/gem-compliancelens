@@ -16,7 +16,7 @@ export default function OfficerTendersPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/open`)
+    fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders`)
       .then(res => res.json())
       .then(data => {
         setTenders(data);
@@ -75,6 +75,7 @@ export default function OfficerTendersPage() {
                 <th className="px-6 py-4">Tender Title</th>
                 <th className="px-6 py-4">Organization</th>
                 <th className="px-6 py-4">Category</th>
+                <th className="px-6 py-4">Bids</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
@@ -84,12 +85,18 @@ export default function OfficerTendersPage() {
                   <td className="px-6 py-4 font-medium flex items-center gap-3">
                     <FileText className="text-slate-400" size={18} />
                     <div>
-                      {t.title}
+                      <div className="flex items-center gap-2">
+                         {t.title}
+                         {t.access_type === 'private' && <span className="bg-amber-100 text-amber-700 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold">Private</span>}
+                      </div>
                       {t.tender_no && <div className="text-xs text-slate-500 font-mono mt-0.5">{t.tender_no}</div>}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-slate-600">{t.organization}</td>
                   <td className="px-6 py-4 text-slate-600">{t.category}</td>
+                  <td className="px-6 py-4 text-slate-600 font-medium">
+                     {t.bidsCount || 0}
+                  </td>
                   <td className="px-6 py-4 text-right">
                     <button 
                       onClick={() => navigate(`/officer/tenders/${t.id}`)}

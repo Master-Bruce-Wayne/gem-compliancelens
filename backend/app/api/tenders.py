@@ -95,6 +95,30 @@ async def publish_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     await db.commit()
     return {"status": "success"}
 
+@router.get("")
+async def get_all_tenders(db: AsyncSession = Depends(get_db)):
+    from sqlalchemy import func
+    
+    # Left join with BidApplication to get count
+    query = select(
+        Tender,
+        func.count(BidApplication.id).label('bids_count')
+    ).outerjoin(BidApplication, BidApplication.tender_id == Tender.id).group_by(Tender.id)
+    
+    result = await db.execute(query)
+    rows = result.all()
+    
+    return [{
+        "id": row.Tender.id,
+        "tender_no": row.Tender.tender_no,
+        "title": row.Tender.title,
+        "organization": row.Tender.organization,
+        "category": row.Tender.category,
+        "status": row.Tender.status,
+        "access_type": row.Tender.access_type,
+        "bidsCount": row.bids_count
+    } for row in rows]
+
 @router.get("/{id}/applications")
 async def get_tender_applications(id: uuid.UUID, status: Optional[str] = None, db: AsyncSession = Depends(get_db)):
     query = select(BidApplication).where(BidApplication.tender_id == id)
