@@ -180,6 +180,28 @@ async def search_tender(tender_no: str, db: AsyncSession = Depends(get_db)):
         "title": tender.title,
         "organization": tender.organization,
         "category": tender.category,
+        "access_type": tender.access_type,
+        "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,
+        "est_value": float(tender.est_value) if tender.est_value else None,
+        "emd_amount": float(tender.emd_amount) if tender.emd_amount else None
+    }
+
+@router.get("/{id}")
+async def get_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Tender).where(Tender.id == id))
+    tender = result.scalar_one_or_none()
+    if not tender:
+        raise HTTPException(status_code=404, detail="Tender not found")
+        
+    rules_res = await db.execute(select(TenderRule).where(TenderRule.tender_id == id))
+    rules = rules_res.scalars().all()
+    
+    return {
+        "id": tender.id,
+        "tender_no": tender.tender_no,
+        "title": tender.title,
+        "organization": tender.organization,
+        "category": tender.category,
         "status": tender.status,
         "access_type": tender.access_type,
         "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,

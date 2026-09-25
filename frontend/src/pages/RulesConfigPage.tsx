@@ -129,7 +129,7 @@ export default function RulesConfigPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Tender Rule Configuration</h1>
-          <p className="text-slate-500 text-sm mt-1">Configure eligibility clauses for: <strong>{tender.title}</strong></p>
+          <p className="text-slate-500 text-sm mt-1">Configure eligibility clauses for: <strong>{tender?.title}</strong></p>
         </div>
         <button 
           onClick={handleSave}
