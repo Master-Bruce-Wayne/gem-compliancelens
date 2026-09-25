@@ -1,10 +1,22 @@
-import anthropic
+import urllib.request
+import urllib.parse
+import json
 from app.config import settings
 
 class ExplanationService:
     def __init__(self):
-        self.client = anthropic.Anthropic(api_key=settings.ANTHROPIC_API_KEY)
-        self.model = settings.LLM_MODEL
+        self.api_key = settings.GEMINI_API_KEY
+        self.model_name = settings.LLM_MODEL
+        
+        if self.api_key and self.api_key != "your-key-here":
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.api_key)
+                self.model = genai.GenerativeModel(self.model_name)
+            except ImportError:
+                self.model = None
+        else:
+            self.model = None
 
     def generate_explanation(self, rule_name: str, status: str, extracted_value: str, source: str) -> str:
         prompt = f"""
@@ -18,27 +30,21 @@ class ExplanationService:
         Do not change the status or make a judgment. Only explain what was found.
         """
         
-        if not settings.ANTHROPIC_API_KEY or settings.ANTHROPIC_API_KEY == "your-key-here":
-            # Issue 34 Implementation: Use free Pollinations.ai API if no paid key is available
-            import urllib.request
-            import urllib.parse
-            import json
+        if not self.model:
+            # Fallback to free unauthenticated API if Gemini API Key isn't configured
             try:
                 data = json.dumps({"messages": [{"role": "user", "content": prompt}]}).encode("utf-8")
                 req = urllib.request.Request("https://text.pollinations.ai/", data=data, headers={"Content-Type": "application/json"})
                 response = urllib.request.urlopen(req, timeout=10)
                 return response.read().decode("utf-8").strip()
-            except Exception as e:
+            except Exception:
                 return f"System Explanation: The {rule_name} check resulted in {status} based on {source}."
 
         try:
-            response = self.client.messages.create(
-                model=self.model,
-                max_tokens=100,
-                messages=[
-                    {"role": "user", "content": prompt}
-                ]
+            response = self.model.generate_content(
+                prompt,
+                generation_config={"max_output_tokens": 100}
             )
-            return response.content[0].text
+            return response.text.strip()
         except Exception as e:
             return f"Error generating explanation: {str(e)}"
