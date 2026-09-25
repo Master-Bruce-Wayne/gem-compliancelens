@@ -43,7 +43,7 @@ export default function Layout({ children }: LayoutProps) {
       <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shrink-0 z-10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-bold text-xl text-slate-800 hidden sm:block">GeM ComplianceLens</span>
+          <span className="font-bold text-xl text-slate-800 hidden sm:block">GemOne</span>
         </div>
         
         <div className="flex items-center gap-4">

@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api import documents, tenders, bids, self_check, auth, bidders, clarifications, notifications
 
-app = FastAPI(title="GeM ComplianceLens API", version="1.0.0")
+app = FastAPI(title="GemOne API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
