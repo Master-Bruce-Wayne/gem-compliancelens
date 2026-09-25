@@ -89,7 +89,7 @@ export default function HowItWorksPage() {
       <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded bg-blue-600 flex items-center justify-center text-white font-bold">G</div>
-          <span className="font-bold text-xl text-slate-800">GeM ComplianceLens <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
+          <span className="font-bold text-xl text-slate-800">GemOne <span className="text-sm font-medium text-slate-400 ml-2">| Platform Tour</span></span>
         </div>
         {user ? (
           <button 
@@ -124,7 +124,7 @@ export default function HowItWorksPage() {
           G
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight">
-          GeM ComplianceLens
+          GemOne
         </h1>
         <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto">
           An AI-enabled integrated platform for automated verification of bidder compliance in GeM procurement. 
@@ -315,7 +315,7 @@ export default function HowItWorksPage() {
       </section>
       {/* Footer CTA */}
       <footer className="mt-16 pt-12 pb-8 border-t border-slate-200 text-center">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6">Ready to experience GeM ComplianceLens?</h2>
+        <h2 className="text-2xl font-bold text-slate-900 mb-6">Ready to experience GemOne?</h2>
         {user ? (
           <button 
             onClick={() => navigate(`/${role}/tenders`)}

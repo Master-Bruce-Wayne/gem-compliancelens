@@ -186,7 +186,7 @@ export default function BidderSubmitPage() {
             </span>
             
             <p className="text-slate-600 mb-6 text-sm">
-              You are about to authorize <strong>GeM ComplianceLens</strong> to access your <strong>{docType.replace('_', ' ').toUpperCase()}</strong> from your DigiLocker account.
+              You are about to authorize <strong>GemOne</strong> to access your <strong>{docType.replace('_', ' ').toUpperCase()}</strong> from your DigiLocker account.
             </p>
             
             <div className="bg-slate-50 p-4 rounded-lg mb-6 text-xs text-slate-500 border border-slate-200">

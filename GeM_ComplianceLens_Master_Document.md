@@ -1,4 +1,4 @@
-# GeM ComplianceLens
+# GemOne
 ## Master Project Document
 **SIH 26100 — AI-Powered Integrated Bid Compliance Verification Platform for GeM Procurement**
 *Ministry of Petroleum & Natural Gas · Chennai Petroleum Corporation Limited (CPCL) · Theme: Smart Automation*
@@ -25,7 +25,7 @@ When a company bids on a government tender through GeM, a procurement officer ha
 
 ## 2. Our Idea
 **Elevator pitch:**
-GeM ComplianceLens is one screen that does the checking automatically. Officers upload or select a bidder's documents, and the system verifies them against real government sources, then shows a plain-language Compliance Scorecard — a score, a risk level, and a clear Compliant / Non-Compliant / Needs Review status for every requirement, each with evidence and a reason. The officer always makes the final call — the tool just makes that call faster, easier, and defensible later.
+GemOne is one screen that does the checking automatically. Officers upload or select a bidder's documents, and the system verifies them against real government sources, then shows a plain-language Compliance Scorecard — a score, a risk level, and a clear Compliant / Non-Compliant / Needs Review status for every requirement, each with evidence and a reason. The officer always makes the final call — the tool just makes that call faster, easier, and defensible later.
 
 **Key innovation — why this is different:**
 - **Explains every answer:** Plain-language reasoning with sourced evidence, not a black-box score. 
@@ -155,4 +155,4 @@ Reduces manual review time from 45–90 minutes down to 10–15 minutes per bidd
 ---
 
 ## 13. 5-Slide Pitch & Demo Walkthrough
-*See companion files: `GeM_ComplianceLens_PPT_Script.md` and `GeM_ComplianceLens_Demo_Showcase_Workflow.md`*
+*See companion files: `GeM_GemOne_PPT_Script.md` and `GeM_GemOne_Demo_Showcase_Workflow.md`*

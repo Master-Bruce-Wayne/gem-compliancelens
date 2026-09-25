@@ -1,4 +1,4 @@
-# 🏛️ GeM ComplianceLens
+# 🏛️ GemOne
 **Smart India Hackathon (SIH) '26 - AI-Powered Bid Compliance Verification for Government e-Marketplace (GeM)**
 
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue?logo=react)](#)
@@ -13,8 +13,8 @@ Government procurement through the **Government e-Marketplace (GeM)** involves v
 
 Currently, this process is highly **document-intensive**, requiring procurement officers to manually cross-check information across multiple government portals. This results in significant manual effort, longer evaluation cycles, and high vulnerability to human error and forged documents.
 
-## 💡 Our Solution: GeM ComplianceLens
-**GeM ComplianceLens** is an end-to-end, AI-powered Bid Application Lifecycle platform. It automates the extraction and verification of statutory documents while keeping the final decision-making process strictly **deterministic** and fully auditable.
+## 💡 Our Solution: GemOne
+**GemOne** is an end-to-end, AI-powered Bid Application Lifecycle platform. It automates the extraction and verification of statutory documents while keeping the final decision-making process strictly **deterministic** and fully auditable.
 
 Instead of relying on LLMs to make black-box decisions, our platform uses AI for what it does best (vision, OCR, explanation) and relies on a rigid, state-machine-backed Rule Engine for compliance evaluation.
 
