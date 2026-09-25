@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import DocumentUploader from '../components/DocumentUploader';
 import { Upload, CheckCircle2, AlertCircle, Play, FileText, Loader2, MessageSquare } from 'lucide-react';
 
 export default function VendorApplicationPage() {
@@ -13,21 +14,53 @@ export default function VendorApplicationPage() {
   const [error, setError] = useState<string | null>(null);
   const [showManualReviewWarning, setShowManualReviewWarning] = useState(false);
   const [clarificationResponse, setClarificationResponse] = useState("");
+  const [tenderRules, setTenderRules] = useState<any[]>([]);
+  
+  const ruleToDocMap: Record<string, {value: string, label: string}> = {
+    'gst_active_and_filed': {value: 'gst_certificate', label: 'GST Registration'},
+    'pan_valid': {value: 'pan', label: 'PAN Card'},
+    'udyam_valid': {value: 'udyam_certificate', label: 'Udyam/MSME Certificate'},
+    'epfo_esic_compliance': {value: 'epfo_esic', label: 'EPFO/ESIC Compliance'},
+    'mse_exemption': {value: 'udyam_certificate', label: 'MSE Exemption (Udyam)'}
+  };
 
   const fetchApp = async () => {
     const userStr = localStorage.getItem('user');
     const bidderId = userStr ? JSON.parse(userStr).id : "";
     
-    const [bidsRes, docsRes, clarifRes] = await Promise.all([
-      fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/mine?bidderId=${bidderId}`).then(r => r.json()),
-      fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bidders/${bidderId}/documents`).then(r => r.json()),
-      fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${appId}/clarifications`).then(r => r.json()).catch(() => [])
-    ]);
-    
-    const currentApp = bidsRes.find((b: any) => b.id === appId);
-    setApp(currentApp);
-    setDocs(docsRes);
-    setClarifications(clarifRes);
+    try {
+      const [bidsRes, docsRes, clarifRes] = await Promise.all([
+        fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/mine?bidderId=${bidderId}`).then(r => r.json()),
+        fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bidders/${bidderId}/documents`).then(r => r.json()),
+        fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${appId}/clarifications`).then(r => r.json()).catch(() => [])
+      ]);
+      
+      const currentApp = bidsRes.find((b: any) => b.id === appId);
+      setApp(currentApp);
+      setDocs(docsRes || []);
+      setClarifications(clarifRes || []);
+
+      if (currentApp) {
+        // Fetch tender rules to know what is required
+        const tRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${currentApp.tender_id || currentApp.tenderId || "null"}`);
+        if (tRes.ok) {
+           const tData = await tRes.json();
+           setTenderRules(tData.rules || []);
+        } else {
+           // Fallback if not found directly by ID (maybe tender_id wasn't in the object, try open tenders list)
+           const oRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/open`);
+           const oData = await oRes.json();
+           const tenderMatch = oData.find((t: any) => t.title === currentApp.tenderName);
+           if (tenderMatch) {
+              const trRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderMatch.id}`);
+              const trData = await trRes.json();
+              setTenderRules(trData.rules || []);
+           }
+        }
+      }
+    } catch (err) {
+      console.error(err);
+    }
     setLoading(false);
   };
 
@@ -35,7 +68,38 @@ export default function VendorApplicationPage() {
     fetchApp();
   }, [appId]);
 
+  const handleWithdraw = async () => {
+    if (!window.confirm("Are you sure you want to withdraw this application? This action cannot be undone.")) return;
+    
+    setSubmitting(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids/${appId}/withdraw`, {
+        method: "POST"
+      });
+      if (!res.ok) throw new Error("Failed to withdraw application");
+      toast.success("Application withdrawn successfully");
+      await fetchApp();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const attachAndSubmit = async (forceSubmit = false) => {
+    // Check missing required docs first
+    const requiredTypes = tenderRules
+      .filter(r => ruleToDocMap[r.clauseType])
+      .map(r => ruleToDocMap[r.clauseType].value);
+    
+    const vaultTypes = docs.map((d: any) => d.docType);
+    const missing = requiredTypes.filter(rt => !vaultTypes.includes(rt));
+
+    if (missing.length > 0 && !forceSubmit) {
+       setError("Your vault is missing required documents for this tender. Please upload them below.");
+       return;
+    }
+
     const needsReviewDocs = docs.filter((d: any) => d.ocrStatus === 'pending');
     if (needsReviewDocs.length > 0 && !forceSubmit) {
         setShowManualReviewWarning(true);
@@ -128,6 +192,15 @@ export default function VendorApplicationPage() {
                 {submitting ? <Loader2 className="animate-spin" size={18} /> : <Play size={18} />}
                 Submit Application
               </button>
+          ) : !['qualified', 'disqualified', 'withdrawn', 'draft'].includes(app.status) ? (
+             <button 
+                onClick={handleWithdraw}
+                disabled={submitting}
+                className="bg-red-50 text-red-600 border border-red-200 px-6 py-2 rounded shadow-sm hover:bg-red-100 transition flex items-center gap-2 disabled:opacity-50 font-medium"
+              >
+                {submitting ? <Loader2 className="animate-spin" size={18} /> : <X size={18} />}
+                Withdraw Application
+              </button>
           ) : null}
         </div>
         
@@ -211,36 +284,60 @@ export default function VendorApplicationPage() {
 
         <div className="border-t border-slate-200 pt-6">
           <h2 className="text-lg font-semibold mb-4">Attached Vault Documents</h2>
-          <p className="text-sm text-slate-500 mb-4">
-            {app.status === 'draft' ? "The following documents from your vault will be attached to this bid upon submission." : "Documents attached to this bid."}
-          </p>
           
-          {docs.length === 0 ? (
-            <div className="bg-slate-50 p-4 rounded text-center text-slate-500 text-sm">
-              Your vault is empty. Please upload documents in your vault first.
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {docs.map((doc: any) => (
-                <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
-                  <div className="flex items-center gap-3">
-                    <FileText className="text-slate-400" size={20} />
-                    <div>
-                      <p className="font-medium text-sm uppercase">{doc.docType.replace('_', ' ')}</p>
-                      <p className="text-xs text-slate-500">Uploaded: {new Date(doc.createdAt).toLocaleDateString()}</p>
-                    </div>
-                  </div>
-                  <div>
-                    {doc.ocrStatus === 'done' ? (
-                      <span className="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-100 px-2 py-1 rounded-full"><CheckCircle2 size={14}/> Verified</span>
-                    ) : (
-                      <span className="flex items-center gap-1 text-amber-600 text-xs font-semibold bg-amber-100 px-2 py-1 rounded-full"><AlertCircle size={14}/> Needs Manual Review</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          {(() => {
+             const requiredTypes = tenderRules.filter(r => ruleToDocMap[r.clauseType]).map(r => ruleToDocMap[r.clauseType]);
+             const vaultTypes = docs.map((d: any) => d.docType);
+             const missingDocs = requiredTypes.filter(rt => !vaultTypes.includes(rt.value));
+             
+             return (
+               <>
+                 <p className="text-sm text-slate-500 mb-4">
+                   {app.status === 'draft' ? "The following documents from your vault will be attached to this bid upon submission." : "Documents attached to this bid."}
+                 </p>
+                 
+                 {docs.length === 0 ? (
+                   <div className="bg-slate-50 p-4 rounded text-center text-slate-500 text-sm mb-4 border border-slate-200">
+                     Your vault is empty. Upload the required documents below to proceed.
+                   </div>
+                 ) : (
+                   <div className="space-y-3 mb-6">
+                     {docs.map((doc: any) => (
+                       <div key={doc.id} className="flex items-center justify-between p-3 border border-slate-200 rounded-lg bg-slate-50">
+                         <div className="flex items-center gap-3">
+                           <FileText className="text-slate-400" size={20} />
+                           <div>
+                             <p className="font-medium text-sm uppercase">{doc.docType.replace('_', ' ')}</p>
+                             <p className="text-xs text-slate-500">
+                               Uploaded: {new Date(doc.createdAt).toLocaleDateString()}
+                               {doc.isTemporary && <span className="ml-2 text-amber-600 font-semibold">(Temporary)</span>}
+                             </p>
+                           </div>
+                         </div>
+                         <div>
+                           {doc.ocrStatus === 'done' ? (
+                             <span className="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-100 px-2 py-1 rounded-full"><CheckCircle2 size={14}/> Verified</span>
+                           ) : (
+                             <span className="flex items-center gap-1 text-amber-600 text-xs font-semibold bg-amber-100 px-2 py-1 rounded-full"><AlertCircle size={14}/> Needs Manual Review</span>
+                           )}
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 )}
+
+                 {app.status === 'draft' && missingDocs.length > 0 && (
+                   <div className="mt-8 pt-6 border-t border-slate-200">
+                     <DocumentUploader 
+                       bidderId={JSON.parse(localStorage.getItem('user') || '{}').id} 
+                       allowedDocTypes={missingDocs}
+                       onUploadComplete={fetchApp}
+                     />
+                   </div>
+                 )}
+               </>
+             );
+          })()}
         </div>
       </div>
     </div>

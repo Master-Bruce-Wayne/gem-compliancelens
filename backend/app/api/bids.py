@@ -174,6 +174,20 @@ async def get_my_bids(bidderId: UUID, db: AsyncSession = Depends(get_db)):
 class EvaluateRequest(BaseModel):
     officerId: UUID
 
+@router.post("/{id}/withdraw")
+async def withdraw_bid(id: UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidApplication).where(BidApplication.id == id))
+    app = result.scalar_one_or_none()
+    if not app:
+        raise HTTPException(status_code=404, detail="Application not found")
+        
+    if app.status in ['qualified', 'disqualified', 'withdrawn']:
+        raise HTTPException(status_code=400, detail="Cannot withdraw at this stage")
+        
+    app.status = 'withdrawn'
+    await db.commit()
+    return {"status": "success"}
+
 @router.post("/{id}/evaluate")
 async def evaluate_bid(id: uuid.UUID, req: EvaluateRequest, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(BidApplication).where(BidApplication.id == id))
@@ -253,11 +267,19 @@ async def get_scorecard(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     checks_result = await db.execute(select(EvaluationCheck).where(EvaluationCheck.evaluation_id == eval_record.id))
     checks = checks_result.scalars().all()
     
+    docs_result = await db.execute(
+        select(BidderDocument)
+        .join(BidApplicationDocument, BidApplicationDocument.document_id == BidderDocument.id)
+        .where(BidApplicationDocument.bid_application_id == id)
+    )
+    docs = docs_result.scalars().all()
+    
     return {
         "score": eval_record.overall_score,
         "riskLevel": eval_record.risk_level,
         "verdict": eval_record.verdict,
-        "checks": [{"id": c.id, "name": c.rule_name, "status": c.status, "summary": c.extracted_value} for c in checks]
+        "checks": [{"id": c.id, "name": c.rule_name, "status": c.status, "summary": c.extracted_value} for c in checks],
+        "documents": [{"id": str(d.id), "docType": d.doc_type, "fileUrl": d.file_url, "manualReviewRequested": d.manual_review_requested, "manualReviewMessage": d.manual_review_message} for d in docs]
     }
 
 @router.get("/{id}/checks/{checkId}")

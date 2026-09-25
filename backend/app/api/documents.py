@@ -37,6 +37,9 @@ async def upload_document(
     docType: str = Form(...),
     file: UploadFile = File(...),
     force_manual: bool = Form(False),
+    manual_review_requested: bool = Form(False),
+    manual_review_message: str = Form(""),
+    save_to_vault: bool = Form(True),
     db: AsyncSession = Depends(get_db)
 ):
     try:
@@ -106,7 +109,10 @@ async def upload_document(
                 "missing_fields": missing
             })
             
-        final_status = "pending" if (needs_confirmation or force_manual) else "done"
+        if manual_review_requested:
+            final_status = "pending"
+        else:
+            final_status = "pending" if (needs_confirmation or force_manual) else "done"
         
         # 3. Save to database
         new_doc = BidderDocument(
@@ -115,7 +121,10 @@ async def upload_document(
             file_url=file_url,
             ocr_status=final_status,
             extracted_fields=extracted_fields,
-            confidence_score=95.0 if confidence_base == "high" else (70.0 if confidence_base == "medium" else 40.0)
+            confidence_score=95.0 if confidence_base == "high" else (70.0 if confidence_base == "medium" else 40.0),
+            manual_review_requested=manual_review_requested,
+            manual_review_message=manual_review_message,
+            is_temporary=not save_to_vault
         )
         db.add(new_doc)
         await db.commit()

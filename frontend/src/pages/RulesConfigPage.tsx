@@ -25,6 +25,8 @@ export default function RulesConfigPage() {
     { type: 'turnover_threshold_inr', label: 'Minimum Turnover (INR)', category: 'Financial', requiresThreshold: true },
   ];
 
+  const [accessType, setAccessType] = useState('public');
+
   useEffect(() => {
     if (!tenderId) return;
 
@@ -35,6 +37,7 @@ export default function RulesConfigPage() {
       })
       .then(data => {
         setTender(data);
+        setAccessType(data.access_type || 'public');
         const savedRules = data.rules || [];
         const stateRules = catalog.map(c => {
           const saved = savedRules.find((sr: any) => sr.clauseType === c.type);
@@ -81,6 +84,14 @@ export default function RulesConfigPage() {
     };
 
     try {
+      // 1. Update access_type
+      await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ access_type: accessType })
+      });
+
+      // 2. Save Rules
       const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}/rules`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -118,7 +129,7 @@ export default function RulesConfigPage() {
       <header className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-slate-900">Tender Rule Configuration</h1>
-          <p className="text-slate-500 text-sm mt-1">Configure eligibility clauses for: <strong>{tender.title}</strong></p>
+          <p className="text-slate-500 text-sm mt-1">Configure eligibility clauses for: <strong>{tender?.title}</strong></p>
         </div>
         <button 
           onClick={handleSave}
@@ -129,6 +140,37 @@ export default function RulesConfigPage() {
           Save & Publish
         </button>
       </header>
+
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden mb-6">
+        <div className="bg-slate-50 p-4 font-semibold text-slate-700 flex items-center gap-2 border-b border-slate-200">
+          <Settings className="w-4 h-4 text-slate-400" />
+          Access Control
+        </div>
+        <div className="p-4 flex gap-6">
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input 
+              type="radio" 
+              name="access_type" 
+              value="public" 
+              checked={accessType === 'public'} 
+              onChange={() => setAccessType('public')}
+              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="font-medium text-slate-700">Public (Open Marketplace)</span>
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input 
+              type="radio" 
+              name="access_type" 
+              value="private" 
+              checked={accessType === 'private'} 
+              onChange={() => setAccessType('private')}
+              className="w-4 h-4 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="font-medium text-slate-700">Private (Requires Access Request)</span>
+          </label>
+        </div>
+      </div>
 
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
         {categories.map((cat, idx) => (

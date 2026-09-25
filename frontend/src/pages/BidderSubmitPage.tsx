@@ -12,6 +12,8 @@ export default function BidderSubmitPage() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [failCount, setFailCount] = useState(0);
   const [isForcing, setIsForcing] = useState(false);
+  const [manualReviewRequested, setManualReviewRequested] = useState(false);
+  const [manualReviewMessage, setManualReviewMessage] = useState("");
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [duplicateConfirm, setDuplicateConfirm] = useState<{file: File, docType: string, isForcing: boolean} | null>(null);
   
@@ -62,6 +64,8 @@ export default function BidderSubmitPage() {
     formData.append('docType', targetDocType);
     formData.append('bidderId', user.id);
     formData.append('force_manual', targetForce ? 'true' : 'false');
+    formData.append('manual_review_requested', manualReviewRequested ? 'true' : 'false');
+    formData.append('manual_review_message', manualReviewMessage);
 
     try {
       if (duplicateConfirm) {
@@ -342,7 +346,30 @@ export default function BidderSubmitPage() {
               </div>
             </div>
 
-            <div className="flex gap-2 w-full">
+            <div className="flex items-center gap-2 mt-2">
+              <input 
+                type="checkbox" 
+                id="manualReviewReq" 
+                checked={manualReviewRequested}
+                onChange={(e) => setManualReviewRequested(e.target.checked)}
+                className="rounded border-slate-300"
+              />
+              <label htmlFor="manualReviewReq" className="text-sm text-slate-700">This is an equivalent document (Request Manual Review)</label>
+            </div>
+            {manualReviewRequested && (
+              <div className="mt-1">
+                <label className="block text-sm font-medium text-slate-700 mb-1">Message for Officer</label>
+                <textarea 
+                  value={manualReviewMessage}
+                  onChange={(e) => setManualReviewMessage(e.target.value)}
+                  placeholder="Explain why this document is equivalent..."
+                  className="w-full border-slate-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500"
+                  rows={2}
+                />
+              </div>
+            )}
+
+            <div className="flex gap-2 w-full mt-4">
               <button
                 type="submit"
                 onClick={(e) => handleUpload(e, false)}
@@ -439,6 +466,11 @@ export default function BidderSubmitPage() {
                         <span className="text-amber-600 flex items-center gap-1 font-medium"><ShieldAlert className="w-3 h-3"/> Needs Manual Review</span>
                       )}
                     </div>
+                    {doc.manualReviewRequested && doc.manualReviewMessage && (
+                      <div className="text-xs text-slate-600 mt-1 italic border-l-2 border-slate-300 pl-2">
+                        "Request: {doc.manualReviewMessage}"
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="text-right flex flex-col items-end">

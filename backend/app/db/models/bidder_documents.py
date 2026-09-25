@@ -17,9 +17,12 @@ class BidderDocument(Base):
     extracted_fields = Column(JSONB, nullable=True)
     confirmed_fields = Column(JSONB, nullable=True)
     confidence_score = Column(Numeric, nullable=True)
+    manual_review_requested = Column(Boolean, default=False)
+    manual_review_message = Column(String, nullable=True)
     source = Column(Enum('upload', 'digilocker', name='doc_source_enum'), server_default='upload')
     digilocker_request_id = Column(String, nullable=True)
     digital_signature_valid = Column(Boolean, nullable=True)
+    is_temporary = Column(Boolean, server_default='false', nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     bidder = relationship("Bidder", back_populates="documents")
