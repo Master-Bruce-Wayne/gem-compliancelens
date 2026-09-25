@@ -356,8 +356,8 @@ async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession 
     if not bid or not bid.current_evaluation_id:
         raise HTTPException(status_code=404, detail="Bid or evaluation not found")
         
-    if bid.status in ['qualified', 'disqualified']:
-        raise HTTPException(status_code=409, detail="Decision is final")
+    if bid.status in ['qualified', 'disqualified', 'pending_approval']:
+        raise HTTPException(status_code=409, detail="Decision is final or already pending")
         
     # Check for pending manual verifications
     checks_res = await db.execute(select(EvaluationCheck).where(EvaluationCheck.evaluation_id == bid.current_evaluation_id))
@@ -371,7 +371,16 @@ async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession 
     if pending:
         raise HTTPException(status_code=400, detail={"message": "Pending manual verifications", "pending_checks": pending})
         
-    bid.status = 'qualified' if req.decision == 'compliant' else 'disqualified'
+    # Check user role
+    user_res = await db.execute(select(User).where(User.id == req.officerId))
+    user = user_res.scalar_one_or_none()
+    if not user:
+        raise HTTPException(status_code=400, detail="Officer not found")
+
+    if user.role == 'junior_officer':
+        bid.status = 'pending_approval'
+    else:
+        bid.status = 'qualified' if req.decision == 'compliant' else 'disqualified'
         
     decision = Decision(
         evaluation_id=bid.current_evaluation_id,
@@ -386,7 +395,7 @@ async def submit_decision(id: uuid.UUID, req: DecisionRequest, db: AsyncSession 
         bid_id=id,
         event_type='decision_submitted',
         actor_id=req.officerId,
-        details={"decision": req.decision, "note": req.note}
+        details={"decision": req.decision, "note": req.note, "maker_checker": user.role == 'junior_officer'}
     )
     db.add(audit)
     
@@ -408,6 +417,52 @@ async def get_audit_log(id: uuid.UUID, eventType: Optional[str] = None, db: Asyn
             for e in events
         ]
     }
+
+class ApproveDecisionRequest(BaseModel):
+    decisionId: UUID
+    seniorOfficerId: UUID
+    isApproved: bool
+    note: Optional[str] = None
+
+@router.post("/{id}/decision/approve")
+async def approve_decision(id: uuid.UUID, req: ApproveDecisionRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidApplication).where(BidApplication.id == id))
+    bid = result.scalar_one_or_none()
+    if not bid or bid.status != 'pending_approval':
+        raise HTTPException(status_code=400, detail="Bid is not pending approval")
+        
+    # Validate senior officer
+    user_res = await db.execute(select(User).where(User.id == req.seniorOfficerId))
+    user = user_res.scalar_one_or_none()
+    if not user or user.role != 'senior_officer':
+        raise HTTPException(status_code=403, detail="Only senior officers can approve decisions")
+
+    # Fetch decision
+    dec_res = await db.execute(select(Decision).where(Decision.id == req.decisionId))
+    decision = dec_res.scalar_one_or_none()
+    if not decision:
+        raise HTTPException(status_code=404, detail="Decision not found")
+
+    decision.checker_id = req.seniorOfficerId
+    decision.checker_decision = 'approved' if req.isApproved else 'rejected'
+    decision.checker_note = req.note
+    decision.checked_at = datetime.datetime.now(datetime.timezone.utc)
+
+    if req.isApproved:
+        bid.status = 'qualified' if decision.final_decision == 'compliant' else 'disqualified'
+    else:
+        bid.status = 'under_evaluation' # send back to review
+        
+    audit = AuditLog(
+        bid_id=id,
+        event_type='decision_approved' if req.isApproved else 'decision_rejected',
+        actor_id=req.seniorOfficerId,
+        details={"checker_decision": decision.checker_decision, "note": req.note}
+    )
+    db.add(audit)
+    
+    await db.commit()
+    return {"status": "success", "newBidStatus": bid.status}
 
 from app.db.models.manual_verifications import ManualVerification
 

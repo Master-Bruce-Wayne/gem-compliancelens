@@ -15,6 +15,10 @@ class Decision(Base):
     ai_recommendation = Column(Enum('qualify', 'disqualify', 'clarify', name='decision_enum'))
     final_decision = Column(Enum('qualify', 'disqualify', 'clarify', name='decision_enum'))
     note = Column(String, nullable=True)
+    checker_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    checker_decision = Column(String, nullable=True)
+    checker_note = Column(String, nullable=True)
+    checked_at = Column(DateTime(timezone=True), nullable=True)
     locked_at = Column(DateTime(timezone=True), server_default=func.now())
     
     evaluation = relationship("Evaluation", back_populates="decision")
