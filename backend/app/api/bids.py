@@ -114,6 +114,7 @@ async def get_my_bids(bidderId: UUID, db: AsyncSession = Depends(get_db)):
     bids = result.all()
     return [{
         "id": b.id,
+        "tenderId": str(t.id),
         "tenderName": t.title,
         "status": b.status,
         "submittedAt": b.submitted_at

@@ -22,6 +22,7 @@ class BidderDocument(Base):
     source = Column(Enum('upload', 'digilocker', name='doc_source_enum'), server_default='upload')
     digilocker_request_id = Column(String, nullable=True)
     digital_signature_valid = Column(Boolean, nullable=True)
+    is_temporary = Column(Boolean, default=False, server_default='false')
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
     bidder = relationship("Bidder", back_populates="documents")
