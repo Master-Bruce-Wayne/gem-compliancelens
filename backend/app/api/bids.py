@@ -253,11 +253,19 @@ async def get_scorecard(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
     checks_result = await db.execute(select(EvaluationCheck).where(EvaluationCheck.evaluation_id == eval_record.id))
     checks = checks_result.scalars().all()
     
+    docs_result = await db.execute(
+        select(BidderDocument)
+        .join(BidApplicationDocument, BidApplicationDocument.document_id == BidderDocument.id)
+        .where(BidApplicationDocument.bid_application_id == id)
+    )
+    docs = docs_result.scalars().all()
+    
     return {
         "score": eval_record.overall_score,
         "riskLevel": eval_record.risk_level,
         "verdict": eval_record.verdict,
-        "checks": [{"id": c.id, "name": c.rule_name, "status": c.status, "summary": c.extracted_value} for c in checks]
+        "checks": [{"id": c.id, "name": c.rule_name, "status": c.status, "summary": c.extracted_value} for c in checks],
+        "documents": [{"id": str(d.id), "docType": d.doc_type, "fileUrl": d.file_url, "manualReviewRequested": d.manual_review_requested, "manualReviewMessage": d.manual_review_message} for d in docs]
     }
 
 @router.get("/{id}/checks/{checkId}")
