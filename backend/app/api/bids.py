@@ -31,23 +31,72 @@ class DraftRequest(BaseModel):
 
 @router.post("")
 async def create_draft(req: DraftRequest, db: AsyncSession = Depends(get_db)):
+    # Check if tender is private
+    tender_res = await db.execute(select(Tender).where(Tender.id == req.tenderId))
+    tender = tender_res.scalar_one_or_none()
+    if not tender:
+        raise HTTPException(status_code=404, detail="Tender not found")
+        
     result = await db.execute(select(BidApplication).where(
         BidApplication.tender_id == req.tenderId,
         BidApplication.bidder_id == req.bidderId
     ))
     existing = result.scalar_one_or_none()
     if existing:
+        if tender.access_type == 'private' and existing.status in ['access_pending', 'access_denied']:
+            return {"id": existing.id, "status": existing.status, "message": "Access is pending or denied"}
         return {"id": existing.id, "status": existing.status}
         
+    # If private, automatically put into access_pending
+    status = 'access_pending' if tender.access_type == 'private' else 'draft'
+    
     bid = BidApplication(
         tender_id=req.tenderId,
         bidder_id=req.bidderId,
-        status='draft'
+        status=status
     )
     db.add(bid)
     await db.commit()
     await db.refresh(bid)
     return {"id": bid.id, "status": bid.status}
+
+@router.post("/{id}/grant-access")
+async def grant_access(id: uuid.UUID, officerId: UUID = Body(..., embed=True), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidApplication).where(BidApplication.id == id))
+    bid = result.scalar_one_or_none()
+    if not bid or bid.status != 'access_pending':
+        raise HTTPException(status_code=400, detail="No pending access request found")
+    
+    bid.status = 'draft'
+    
+    audit = AuditLog(
+        bid_id=id,
+        event_type='decision_submitted',
+        actor_id=officerId,
+        details={"action": "access_granted"}
+    )
+    db.add(audit)
+    await db.commit()
+    return {"status": "success"}
+
+@router.post("/{id}/deny-access")
+async def deny_access(id: uuid.UUID, officerId: UUID = Body(..., embed=True), db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(BidApplication).where(BidApplication.id == id))
+    bid = result.scalar_one_or_none()
+    if not bid or bid.status != 'access_pending':
+        raise HTTPException(status_code=400, detail="No pending access request found")
+    
+    bid.status = 'access_denied'
+    
+    audit = AuditLog(
+        bid_id=id,
+        event_type='decision_submitted',
+        actor_id=officerId,
+        details={"action": "access_denied"}
+    )
+    db.add(audit)
+    await db.commit()
+    return {"status": "success"}
 
 class AttachDocsRequest(BaseModel):
     documentIds: List[UUID]
