@@ -72,6 +72,7 @@ export default function OfficerTenderDetailPage() {
             <div className="flex gap-4 text-sm text-slate-600">
               <span className="flex items-center gap-1"><FileText size={16}/> {tender.category}</span>
               <span className="flex items-center gap-1"><Users size={16}/> {tender.organization}</span>
+              <span className="flex items-center gap-1"><FileText size={16}/> {applications.length} Bids</span>
               <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-semibold uppercase">{tender.status}</span>
               {tender.access_type === 'private' && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase">PRIVATE</span>}
             </div>
