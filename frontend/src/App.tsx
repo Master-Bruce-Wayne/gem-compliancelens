@@ -13,6 +13,7 @@ import VendorApplicationsListPage from "./pages/VendorApplicationsListPage";
 import VendorApplicationPage from './pages/VendorApplicationPage';
 import NotificationsPage from "./pages/NotificationsPage";
 import HowItWorksPage from './pages/HowItWorksPage';
+import SIHCompliancePage from './pages/SIHCompliancePage';
 
 // Protect routes based on role
 function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allowedRole: string }) {
@@ -29,21 +30,23 @@ function ProtectedRoute({ children, allowedRole }: { children: JSX.Element, allo
 
 function AppContent() {
   const location = useLocation();
-  const isAuthPage = location.pathname === '/login';
+  const isStandalonePage = ['/', '/login', '/how-it-works', '/sih-compliance'].includes(location.pathname);
 
   return (
     <>
-      {isAuthPage ? (
+      {isStandalonePage ? (
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<HowItWorksPage />} />
+          <Route path="/sih-compliance" element={<SIHCompliancePage />} />
+          <Route path="/how-it-works" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       ) : (
         <Layout>
           <Routes>
             {/* Common / Redirects */}
-            <Route path="/how-it-works" element={<HowItWorksPage />} />
-            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
             
             {/* Officer Gateway */}
             <Route path="/officer/guide" element={<ProtectedRoute allowedRole="officer"><GuidePage /></ProtectedRoute>} />
