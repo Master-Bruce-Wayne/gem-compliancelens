@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { UploadCloud, CheckCircle, ShieldAlert, FileText, ChevronRight, AlertCircle, Loader2, X, Eye } from 'lucide-react';
 import { toast, Toaster } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function BidderSubmitPage() {
   const [docType, setDocType] = useState('pan');
@@ -14,6 +15,7 @@ export default function BidderSubmitPage() {
   const [isForcing, setIsForcing] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<any>(null);
   const [duplicateConfirm, setDuplicateConfirm] = useState<{file: File, docType: string, isForcing: boolean} | null>(null);
+  const { t } = useTranslation();
   
   // DigiLocker State
   const [showDigilockerModal, setShowDigilockerModal] = useState(false);
@@ -90,9 +92,9 @@ export default function BidderSubmitPage() {
       const data = await res.json();
       
       if (targetForce) {
-          toast.success("Document submitted for Manual Review!");
+          toast.success(t('vault.manualSuccess'));
       } else {
-          toast.success("Document verified and added to Vault!");
+          toast.success(t('vault.uploadSuccess'));
       }
       
       setFile(null);
@@ -101,7 +103,7 @@ export default function BidderSubmitPage() {
       await fetchVault();
       
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Upload failed.");
+      toast.error(err instanceof Error ? err.message : t('vault.uploadFailed'));
     } finally {
       setIsUploading(false);
       setIsForcing(false);
@@ -118,11 +120,11 @@ export default function BidderSubmitPage() {
         body: JSON.stringify({ bidderId: user.id, confirmed_fields: confirmFields })
       });
       if (!res.ok) throw new Error("Failed to confirm fields");
-      toast.success("Fields confirmed successfully.");
+      toast.success(t('vault.confirmSuccess'));
       setPendingConfirmId(null);
       await fetchVault();
     } catch(err) {
-      toast.error("Confirmation failed");
+      toast.error(t('vault.confirmFailed'));
     } finally {
       setIsConfirming(false);
     }
@@ -149,11 +151,11 @@ export default function BidderSubmitPage() {
       });
       if (!pullRes.ok) throw new Error("Failed to pull document from DigiLocker");
       
-      toast.success("Document successfully pulled from DigiLocker!");
+      toast.success(t('digilocker.success'));
       setShowDigilockerModal(false);
       await fetchVault();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "DigiLocker pull failed.");
+      toast.error(err instanceof Error ? err.message : t('digilocker.pullFailed'));
     } finally {
       setIsDigilockerPulling(false);
     }
@@ -175,22 +177,22 @@ export default function BidderSubmitPage() {
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative border-t-4 border-[#005a9e]">
             <h3 className="text-xl font-bold text-slate-900 mb-1 flex items-center gap-2">
               <img src="https://cdnbbsr.s3waas.gov.in/s3621bf66ddb7c962aa0d22ac97d69b793/uploads/2022/07/2022070183.png" alt="DigiLocker" className="h-6" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-              DigiLocker
+              {t('digilocker.title')}
             </h3>
             <span className="inline-block bg-amber-100 text-amber-800 text-xs font-semibold px-2 py-1 rounded-md mb-4 border border-amber-200">
-              Demo Mode — Partner Integration Pending
+              {t('digilocker.demoMode')}
             </span>
             
             <p className="text-slate-600 mb-6 text-sm">
-              You are about to authorize <strong>GeM ComplianceLens</strong> to access your <strong>{docType.replace('_', ' ').toUpperCase()}</strong> from your DigiLocker account.
+              {t('digilocker.description', { docType: docType.replace('_', ' ').toUpperCase() })}
             </p>
             
             <div className="bg-slate-50 p-4 rounded-lg mb-6 text-xs text-slate-500 border border-slate-200">
-              <p className="mb-2"><strong>Data to be shared:</strong></p>
+              <p className="mb-2"><strong>{t('digilocker.dataShared')}</strong></p>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Document Issuer Name</li>
-                <li>Digital Signature Validity</li>
-                <li>Document Data Payload</li>
+                <li>{t('digilocker.issuerName')}</li>
+                <li>{t('digilocker.signature')}</li>
+                <li>{t('digilocker.payload')}</li>
               </ul>
             </div>
             
@@ -200,7 +202,7 @@ export default function BidderSubmitPage() {
                 disabled={isDigilockerPulling}
                 className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded"
               >
-                Deny
+                {t('digilocker.deny')}
               </button>
               <button 
                 onClick={handleDigilockerPull}
@@ -208,7 +210,7 @@ export default function BidderSubmitPage() {
                 className="bg-[#005a9e] text-white px-4 py-2 rounded font-medium hover:bg-[#004780] flex items-center gap-2"
               >
                 {isDigilockerPulling && <Loader2 className="animate-spin w-4 h-4"/>}
-                Allow & Pull Document
+                {t('digilocker.allow')}
               </button>
             </div>
           </div>
@@ -219,23 +221,22 @@ export default function BidderSubmitPage() {
       {duplicateConfirm && (
         <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 relative">
-            <h3 className="text-lg font-bold text-slate-900 mb-2">Replace Existing Document?</h3>
+            <h3 className="text-lg font-bold text-slate-900 mb-2">{t('vault.replaceTitle')}</h3>
             <p className="text-slate-600 mb-6 text-sm">
-              You already have a <strong>{duplicateConfirm.docType.replace('_', ' ').toUpperCase()}</strong> in your vault. 
-              Are you sure you want to replace it? The existing document will be archived.
+              {t('vault.replaceMsg', { docType: duplicateConfirm.docType.replace('_', ' ').toUpperCase() })}
             </p>
             <div className="flex gap-3 justify-end">
               <button 
                 onClick={() => setDuplicateConfirm(null)}
                 className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded"
               >
-                Cancel
+                {t('common.cancel')}
               </button>
               <button 
                 onClick={() => handleUpload(null, duplicateConfirm.isForcing, true)}
                 className="bg-blue-600 text-white px-4 py-2 rounded font-medium hover:bg-blue-700"
               >
-                Yes, Replace
+                {t('vault.replaceConfirm')}
               </button>
             </div>
           </div>
@@ -264,13 +265,13 @@ export default function BidderSubmitPage() {
                      <img src={previewDoc.fileUrl} alt="Document" className="max-w-full max-h-[60vh] md:max-h-full object-contain rounded shadow-sm" />
                    )
                  ) : (
-                   <div className="text-slate-400">No preview available</div>
+                   <div className="text-slate-400">{t('vault.noPreview')}</div>
                  )}
               </div>
               
               <div className="w-full md:w-80 border-l border-slate-200 p-6 bg-slate-50 overflow-y-auto">
                  <h4 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
-                   <CheckCircle className="w-5 h-5 text-green-500" /> Extracted Credentials
+                   <CheckCircle className="w-5 h-5 text-green-500" /> {t('vault.extractedCredentials')}
                  </h4>
                  
                  {previewDoc.extractedFields && Object.keys(previewDoc.extractedFields).length > 0 ? (
@@ -283,7 +284,7 @@ export default function BidderSubmitPage() {
                      ))}
                    </div>
                  ) : (
-                   <div className="text-sm text-slate-500 italic">No fields extracted.</div>
+                   <div className="text-sm text-slate-500 italic">{t('vault.noFieldsExtracted')}</div>
                  )}
                  
                  <div className="mt-6 pt-4 border-t border-slate-200">
@@ -298,8 +299,8 @@ export default function BidderSubmitPage() {
 
       
       <header>
-        <h1 className="text-2xl font-bold text-gray-900">My Document Vault</h1>
-        <p className="text-gray-500 mt-1">Manage your centralized statutory documents. These will be attached to your bids.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('vault.title')}</h1>
+        <p className="text-gray-500 mt-1">{t('vault.subtitle')}</p>
       </header>
 
       
@@ -307,27 +308,27 @@ export default function BidderSubmitPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Upload Form */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-          <h2 className="text-lg font-semibold mb-4">Upload New Document</h2>
+          <h2 className="text-lg font-semibold mb-4">{t('vault.uploadTitle')}</h2>
           <form onSubmit={(e) => handleUpload(e, false)} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Document Type</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('vault.docType')}</label>
               <select 
                 value={docType}
                 onChange={(e) => setDocType(e.target.value)}
                 className="w-full border-slate-300 rounded-md shadow-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="pan">PAN Card</option>
-                <option value="gst_certificate">GST Registration</option>
-                <option value="udyam_certificate">Udyam/MSME Certificate</option>
-                <option value="epfo_esic">EPFO/ESIC Compliance</option>
-                <option value="startup_india">Startup India (DIPP)</option>
-                <option value="nsic_certificate">NSIC Certificate</option>
-                <option value="oem_authorization">OEM Authorization</option>
+                <option value="pan">{t('vault.docTypes.pan')}</option>
+                <option value="gst_certificate">{t('vault.docTypes.gst_certificate')}</option>
+                <option value="udyam_certificate">{t('vault.docTypes.udyam_certificate')}</option>
+                <option value="epfo_esic">{t('vault.docTypes.epfo_esic')}</option>
+                <option value="startup_india">{t('vault.docTypes.startup_india')}</option>
+                <option value="nsic_certificate">{t('vault.docTypes.nsic_certificate')}</option>
+                <option value="oem_authorization">{t('vault.docTypes.oem_authorization')}</option>
               </select>
             </div>
             
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">File (PDF or Image)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">{t('vault.fileLabel')}</label>
               <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-slate-300 border-dashed rounded-md bg-slate-50">
                 <div className="space-y-1 text-center">
                   <UploadCloud className="mx-auto h-12 w-12 text-slate-400" />
@@ -337,7 +338,7 @@ export default function BidderSubmitPage() {
                       <input type="file" className="sr-only" onChange={(e) => setFile(e.target.files?.[0] || null)} />
                     </label>
                   </div>
-                  <p className="text-xs text-slate-500">{file ? file.name : "PNG, JPG, PDF up to 10MB"}</p>
+                  <p className="text-xs text-slate-500">{file ? file.name : t('vault.filePlaceholder')}</p>
                 </div>
               </div>
             </div>
@@ -350,7 +351,7 @@ export default function BidderSubmitPage() {
                 className="flex-1 flex justify-center items-center py-2.5 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 gap-2"
               >
                 {isUploading && <Loader2 className="animate-spin w-4 h-4"/>}
-                {isUploading ? 'Extracting via AI...' : 'Secure Upload'}
+                {isUploading ? t('vault.extracting') : t('vault.uploadBtn')}
               </button>
               
               <button
@@ -358,13 +359,13 @@ export default function BidderSubmitPage() {
                 onClick={() => setShowDigilockerModal(true)}
                 className="flex-1 flex justify-center items-center py-2.5 px-4 border border-slate-300 rounded-md shadow-sm text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 gap-2"
               >
-                Fetch via DigiLocker
+                {t('vault.digilockerBtn')}
               </button>
             </div>
             
             {failCount >= 3 && (
                 <div className="mt-4 p-4 bg-amber-50 rounded-lg border border-amber-200">
-                    <p className="text-amber-800 text-sm mb-3 font-medium flex items-center gap-2"><ShieldAlert size={16}/> You have failed automated verification 3 times.</p>
+                    <p className="text-amber-800 text-sm mb-3 font-medium flex items-center gap-2"><ShieldAlert size={16}/> {t('vault.failedAttempts')}</p>
                     <button
                       type="button"
                       onClick={(e) => handleUpload(e, true)}
@@ -372,7 +373,7 @@ export default function BidderSubmitPage() {
                       className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-amber-600 hover:bg-amber-700 disabled:opacity-50 gap-2"
                     >
                       {isForcing && <Loader2 className="animate-spin w-4 h-4"/>}
-                      Force Upload (Requires Manual Officer Review)
+                      {t('vault.forceUpload')}
                     </button>
                 </div>
             )}
@@ -382,7 +383,7 @@ export default function BidderSubmitPage() {
         {/* Pre-Check Scorecard */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col items-center justify-center">
           <h2 className="text-lg font-semibold mb-6 flex items-center gap-2 w-full">
-            <ShieldAlert className="w-5 h-5 text-green-500" /> Vault Readiness Score
+            <ShieldAlert className="w-5 h-5 text-green-500" /> {t('vault.vaultReadiness')}
           </h2>
           
           <div className="relative">
@@ -402,8 +403,8 @@ export default function BidderSubmitPage() {
           
           <p className="mt-6 text-center text-sm text-slate-600 px-4">
             {calculatePreScore() === 100 
-              ? "Your vault is complete. You are ready to apply for tenders."
-              : "Upload all required verified documents to achieve a 100 readiness score."}
+              ? t('vault.vaultComplete')
+              : t('vault.vaultIncomplete')}
           </p>
         </div>
       </div>
@@ -423,10 +424,10 @@ export default function BidderSubmitPage() {
                   </div>
                   <div>
                     <div className="text-sm font-semibold uppercase flex items-center gap-2">
-                        {doc.docType.replace('_', ' ')}
+                        {doc.docType.replace(/_/g, ' ')}
                         {doc.source === 'digilocker' && (
                             <span className="text-[10px] bg-[#e6f0fa] text-[#005a9e] border border-[#b3d4f5] px-1.5 py-0.5 rounded-full font-bold">
-                                via DigiLocker
+                                {t('vault.viaDigiLocker')}
                             </span>
                         )}
                     </div>
@@ -434,16 +435,16 @@ export default function BidderSubmitPage() {
                       <span>{new Date(doc.createdAt).toLocaleDateString()}</span>
                       <span>•</span>
                       {doc.ocrStatus === 'done' ? (
-                        <span className="text-green-600 flex items-center gap-1 font-medium"><CheckCircle className="w-3 h-3"/> Verified</span>
+                        <span className="text-green-600 flex items-center gap-1 font-medium"><CheckCircle className="w-3 h-3"/> {t('common.verified')}</span>
                       ) : (
-                        <span className="text-amber-600 flex items-center gap-1 font-medium"><ShieldAlert className="w-3 h-3"/> Needs Manual Review</span>
+                        <span className="text-amber-600 flex items-center gap-1 font-medium"><ShieldAlert className="w-3 h-3"/> {t('common.needs_review')}</span>
                       )}
                     </div>
                   </div>
                 </div>
                 <div className="text-right flex flex-col items-end">
                   <div className="text-blue-600 opacity-0 group-hover:opacity-100 transition flex items-center gap-1 text-sm font-medium">
-                    <Eye size={16} /> View
+                    <Eye size={16} /> {t('common.view')}
                   </div>
                 </div>
               </div>

@@ -2,6 +2,8 @@ import { ReactNode } from 'react';
 import { FileText, ClipboardCheck, History, Settings, ShieldCheck, HelpCircle, LogOut, UploadCloud, Search, Bell, Home } from 'lucide-react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '../lib/utils';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,6 +12,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : null;
@@ -22,11 +25,11 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   const bidderNavItems = [
-    { name: 'Home', icon: Home, path: '/' },
-    { name: 'Browse Tenders', icon: Search, path: '/bidder/tenders' },
-    { name: 'My Applications', icon: FileText, path: '/bidder/applications' },
-    { name: 'My Vault', icon: UploadCloud, path: '/bidder/submit' },
-    { name: 'How to Use', icon: HelpCircle, path: '/bidder/guide' },
+    { name: t('nav.home'), icon: Home, path: '/' },
+    { name: t('nav.tenders'), icon: Search, path: '/bidder/tenders' },
+    { name: t('nav.applications'), icon: FileText, path: '/bidder/applications' },
+    { name: t('nav.vault'), icon: UploadCloud, path: '/bidder/submit' },
+    { name: t('nav.guide'), icon: HelpCircle, path: '/bidder/guide' },
   ];
 
   const navItems = role === 'officer' ? officerNavItems : bidderNavItems;
@@ -47,6 +50,9 @@ export default function Layout({ children }: LayoutProps) {
         </div>
         
         <div className="flex items-center gap-4">
+          {/* Language Switcher — only for bidder portal */}
+          {role === 'bidder' && <LanguageSwitcher />}
+
           <button onClick={() => navigate(`/${role}/notifications`)} className="relative p-2 text-slate-400 hover:bg-slate-100 rounded-full transition">
             <Bell size={20} />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
@@ -61,7 +67,7 @@ export default function Layout({ children }: LayoutProps) {
               <button 
                 onClick={handleLogout}
                 className="p-2 text-slate-400 hover:bg-slate-100 hover:text-red-600 rounded-full transition"
-                title="Logout"
+                title={t('nav.logout')}
               >
                 <LogOut size={20} />
               </button>

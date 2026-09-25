@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Upload, Play, CheckCircle, ShieldAlert, FileText, Activity } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { toast, Toaster } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 const TENDER_ID = "92254e09-4f9f-50e6-9861-d04936acc93b";
 const DEMO_BIDDERS = [
@@ -13,6 +14,7 @@ export default function SelfCheckPage() {
   const [selectedBidder, setSelectedBidder] = useState(DEMO_BIDDERS[0].id);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [result, setResult] = useState<any>(null);
+  const { t } = useTranslation();
 
   const handleSelfCheck = async () => {
     setIsEvaluating(true);
@@ -47,8 +49,8 @@ export default function SelfCheckPage() {
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-brand/10 text-brand rounded-full text-sm font-medium mb-4">
           <Activity className="w-4 h-4" /> Bidder Portal (Read-Only)
         </div>
-        <h1 className="text-3xl font-bold text-textPrimary">Pre-Bid Compliance Self-Check</h1>
-        <p className="text-textSecondary mt-2 text-lg">Verify your eligibility and catch missing documents before submitting your official bid to GeM.</p>
+        <h1 className="text-3xl font-bold text-textPrimary">{t('selfCheck.title')}</h1>
+        <p className="text-textSecondary mt-2 text-lg">{t('selfCheck.description')}</p>
       </header>
 
       <div className="bg-surface border border-border rounded-xl p-6 shadow-sm">
@@ -108,7 +110,7 @@ export default function SelfCheckPage() {
           className="flex items-center gap-2 px-8 py-3 bg-brand text-white rounded-lg font-medium text-lg hover:bg-brandHover transition-colors disabled:opacity-50"
         >
           {isEvaluating ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <Play className="w-5 h-5" />}
-          Run Self-Check
+          {isEvaluating ? t('selfCheck.running') : t('selfCheck.runCheck')}
         </button>
       </div>
 

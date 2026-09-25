@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, Check, Clock } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchNotifications();
@@ -44,16 +46,16 @@ export default function NotificationsPage() {
     <div className="space-y-6 max-w-3xl mx-auto p-4">
       <div className="flex items-center gap-3 mb-6">
         <Bell className="w-6 h-6 text-slate-800" />
-        <h1 className="text-2xl font-bold tracking-tight">Notifications</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{t('notifications.title')}</h1>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-slate-500">Loading notifications...</div>
+          <div className="p-8 text-center text-slate-500">{t('notifications.loading')}</div>
         ) : notifications.length === 0 ? (
           <div className="p-12 text-center text-slate-500 flex flex-col items-center">
             <Bell className="w-12 h-12 text-slate-300 mb-4" />
-            <p>You're all caught up!</p>
+            <p>{t('notifications.empty')}</p>
           </div>
         ) : (
           <div className="divide-y divide-slate-100">

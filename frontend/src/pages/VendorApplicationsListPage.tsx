@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function VendorApplicationsListPage() {
   const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
@@ -23,16 +25,16 @@ export default function VendorApplicationsListPage() {
     <div className="space-y-6 max-w-4xl mx-auto p-4">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">My Applications</h1>
-          <p className="text-muted-foreground">Track the status of your tender applications.</p>
+          <h1 className="text-2xl font-bold tracking-tight">{t('applications.title')}</h1>
+          <p className="text-muted-foreground">{t('applications.subtitle')}</p>
         </div>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-slate-500">Loading applications...</div>
+          <div className="p-8 text-center text-slate-500">{t('applications.loading')}</div>
         ) : apps.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">You haven't started any applications yet.</div>
+          <div className="p-8 text-center text-slate-500">{t('applications.noApplications')}</div>
         ) : (
           <div className="divide-y divide-slate-100">
             {apps.map((app: any) => (
@@ -45,7 +47,7 @@ export default function VendorApplicationsListPage() {
                   <h3 className="font-semibold text-lg">{app.tenderName}</h3>
                   <div className="flex gap-4 mt-2 text-sm text-slate-500">
                     <span>ID: {app.id.substring(0,8)}</span>
-                    {app.submittedAt && <span>Submitted: {new Date(app.submittedAt).toLocaleDateString()}</span>}
+                    {app.submittedAt && <span>{t('applications.submittedAt')}: {new Date(app.submittedAt).toLocaleDateString()}</span>}
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
