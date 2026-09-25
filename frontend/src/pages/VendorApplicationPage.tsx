@@ -167,6 +167,18 @@ export default function VendorApplicationPage() {
           </div>
         )}
 
+        {app.status === 'disqualified' && app.declineReason && (
+          <div className="mb-8 border border-red-200 bg-red-50 rounded-xl p-5">
+             <div className="flex items-center gap-2 text-red-800 font-semibold mb-3">
+                <AlertCircle size={18} /> Application Disqualified
+             </div>
+             <p className="text-red-900 text-sm mb-2 font-medium">Officer Reasoning for Rejection:</p>
+             <p className="text-red-900 text-sm bg-white p-4 rounded border border-red-100">
+               {app.declineReason}
+             </p>
+          </div>
+        )}
+
         {app.status === 'clarification_requested' && openClarification && (
           <div className="mb-8 border border-purple-200 bg-purple-50 rounded-xl p-5">
              <div className="flex items-center gap-2 text-purple-800 font-semibold mb-3">
