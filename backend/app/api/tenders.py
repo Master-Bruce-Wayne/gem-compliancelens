@@ -42,6 +42,20 @@ class TenderRuleRequest(BaseModel):
     mandatory: bool
     thresholdValue: Optional[float] = None
 
+class TenderUpdateRequest(BaseModel):
+    access_type: str
+
+@router.put("/{id}")
+async def update_tender(id: uuid.UUID, req: TenderUpdateRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Tender).where(Tender.id == id))
+    tender = result.scalar_one_or_none()
+    if not tender:
+        raise HTTPException(status_code=404, detail="Tender not found")
+        
+    tender.access_type = req.access_type
+    await db.commit()
+    return {"status": "success", "access_type": tender.access_type}
+
 class SetRulesRequest(BaseModel):
     rules: List[TenderRuleRequest]
 
