@@ -18,8 +18,18 @@ class ExplanationService:
         Do not change the status or make a judgment. Only explain what was found.
         """
         
-        if not settings.ANTHROPIC_API_KEY:
-            return f"System Explanation: The {rule_name} check resulted in {status} based on {source}."
+        if not settings.ANTHROPIC_API_KEY or settings.ANTHROPIC_API_KEY == "your-key-here":
+            # Issue 34 Implementation: Use free Pollinations.ai API if no paid key is available
+            import urllib.request
+            import urllib.parse
+            import json
+            try:
+                data = json.dumps({"messages": [{"role": "user", "content": prompt}]}).encode("utf-8")
+                req = urllib.request.Request("https://text.pollinations.ai/", data=data, headers={"Content-Type": "application/json"})
+                response = urllib.request.urlopen(req, timeout=10)
+                return response.read().decode("utf-8").strip()
+            except Exception as e:
+                return f"System Explanation: The {rule_name} check resulted in {status} based on {source}."
 
         try:
             response = self.client.messages.create(
