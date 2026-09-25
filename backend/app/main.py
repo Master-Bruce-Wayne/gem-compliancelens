@@ -39,6 +39,7 @@ async def startup_event():
             await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS digilocker_request_id VARCHAR;"))
             await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS digital_signature_valid BOOLEAN;"))
             await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS confirmed_fields JSONB;"))
+            await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS is_temporary BOOLEAN DEFAULT FALSE;"))
             try:
                 await conn.execute(text("ALTER TYPE bid_status_enum ADD VALUE IF NOT EXISTS 'access_pending';"))
             except Exception:

@@ -39,6 +39,7 @@ async def upload_document(
     force_manual: bool = Form(False),
     manual_review_requested: bool = Form(False),
     manual_review_message: str = Form(""),
+    save_to_vault: bool = Form(True),
     db: AsyncSession = Depends(get_db)
 ):
     try:
@@ -122,7 +123,8 @@ async def upload_document(
             extracted_fields=extracted_fields,
             confidence_score=95.0 if confidence_base == "high" else (70.0 if confidence_base == "medium" else 40.0),
             manual_review_requested=manual_review_requested,
-            manual_review_message=manual_review_message
+            manual_review_message=manual_review_message,
+            is_temporary=not save_to_vault
         )
         db.add(new_doc)
         await db.commit()
