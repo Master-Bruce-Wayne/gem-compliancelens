@@ -1,2 +1,21 @@
 .env
 setup_cloud.sh
+
+# Node modules
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+
+# Build artifacts
+dist/
+build/
+.DS_Store
