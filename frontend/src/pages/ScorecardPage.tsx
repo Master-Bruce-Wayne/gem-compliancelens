@@ -156,6 +156,41 @@ export default function ScorecardPage() {
         </div>
       </div>
 
+      <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden mt-6">
+        <div className="p-4 border-b border-border bg-gray-50/50">
+          <h2 className="font-semibold text-textPrimary">Submitted Documents</h2>
+        </div>
+        <div className="divide-y divide-border">
+          {data.documents && data.documents.map((doc: any, idx: number) => (
+            <div key={idx} className="p-4 flex flex-col gap-2">
+              <div className="flex items-center justify-between">
+                <div className="font-medium text-textPrimary uppercase">{doc.docType.replace('_', ' ')}</div>
+                <a 
+                  href={doc.fileUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-brand hover:underline text-sm font-medium"
+                >
+                  View Document
+                </a>
+              </div>
+              {doc.manualReviewRequested && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-900 p-3 rounded-lg text-sm mt-2 flex items-start gap-2">
+                  <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0" />
+                  <div>
+                    <div className="font-semibold">Manual Review Requested (Equivalent Document)</div>
+                    <div className="mt-1 italic">"{doc.manualReviewMessage}"</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+          {(!data.documents || data.documents.length === 0) && (
+             <div className="p-8 text-center text-textSecondary">No documents attached to this bid.</div>
+          )}
+        </div>
+      </div>
+
       <DecisionPanel evaluation={{ ...data, evaluationId: bidId }} />
 
       {selectedCheck && checkDetail && (

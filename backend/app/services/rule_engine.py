@@ -28,6 +28,9 @@ class RuleEngine:
                 if not gst_doc:
                     status = 'fail'
                     reason = "GST Certificate not uploaded"
+                elif getattr(gst_doc, 'manual_review_requested', False):
+                    status = 'needs_review'
+                    reason = f"Bidder requested manual review: {getattr(gst_doc, 'manual_review_message', '')}"
                 elif not gst_doc.extracted_fields or 'gstin' not in gst_doc.extracted_fields:
                     status = 'needs_review'
                     reason = "Failed to extract GSTIN from document"
@@ -41,6 +44,9 @@ class RuleEngine:
                 if not pan_doc:
                     status = 'fail'
                     reason = "PAN Card not uploaded"
+                elif getattr(pan_doc, 'manual_review_requested', False):
+                    status = 'needs_review'
+                    reason = f"Bidder requested manual review: {getattr(pan_doc, 'manual_review_message', '')}"
                 elif not pan_doc.extracted_fields or 'pan' not in pan_doc.extracted_fields:
                     status = 'needs_review'
                     reason = "Failed to extract PAN from document"
@@ -54,6 +60,9 @@ class RuleEngine:
                 if not udyam_doc:
                     status = 'fail'
                     reason = "Udyam Certificate not uploaded"
+                elif getattr(udyam_doc, 'manual_review_requested', False):
+                    status = 'needs_review'
+                    reason = f"Bidder requested manual review: {getattr(udyam_doc, 'manual_review_message', '')}"
                 elif not udyam_doc.extracted_fields or 'udyam_registration_number' not in udyam_doc.extracted_fields:
                     status = 'needs_review'
                     reason = "Failed to extract Udyam number from document"
@@ -101,6 +110,9 @@ class RuleEngine:
                 if not esic_doc:
                     status = 'fail'
                     reason = "EPFO/ESIC compliance document not uploaded"
+                elif getattr(esic_doc, 'manual_review_requested', False):
+                    status = 'needs_review'
+                    reason = f"Bidder requested manual review: {getattr(esic_doc, 'manual_review_message', '')}"
                 else:
                     status = 'needs_review'
                     reason = "Requires manual verification on portal"
