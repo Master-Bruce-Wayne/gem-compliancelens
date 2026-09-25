@@ -166,9 +166,9 @@ async def get_open_tenders(db: AsyncSession = Depends(get_db)):
         "est_value": float(t.est_value) if t.est_value else None,
     } for t in tenders]
 
-@router.get("/search/{tender_no}")
+@router.get("/search/{tender_no:path}")
 async def search_tender(tender_no: str, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tender).where(Tender.tender_no == tender_no).where(Tender.status == 'open'))
+    result = await db.execute(select(Tender).where(Tender.tender_no.ilike(tender_no)).where(Tender.status == 'open'))
     tender = result.scalar_one_or_none()
     if not tender:
         raise HTTPException(status_code=404, detail="Tender not found or not open for applications")

@@ -30,6 +30,11 @@ export default function VendorTendersPage() {
   };
 
   const submitApplication = async (tenderId: string, password: string | null) => {
+    if (password && password.length < 4) {
+      toast.error("Password must be at least 4 characters long.");
+      return;
+    }
+    
     const userStr = localStorage.getItem('user');
     const bidderId = userStr ? JSON.parse(userStr).id : "";
     
