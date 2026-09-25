@@ -57,6 +57,8 @@ class TenderRuleRequest(BaseModel):
 class TenderUpdateRequest(BaseModel):
     access_type: str
     private_password: Optional[str] = None
+    closing_date: Optional[str] = None
+    est_value: Optional[float] = None
 
 @router.put("/{id}")
 async def update_tender(id: uuid.UUID, req: TenderUpdateRequest, db: AsyncSession = Depends(get_db)):
@@ -66,7 +68,19 @@ async def update_tender(id: uuid.UUID, req: TenderUpdateRequest, db: AsyncSessio
         raise HTTPException(status_code=404, detail="Tender not found")
         
     tender.access_type = req.access_type
-    tender.private_password = req.private_password
+    if req.access_type == 'private':
+        tender.private_password = req.private_password
+    else:
+        tender.private_password = None
+        
+    if req.closing_date:
+        try:
+            tender.closing_date = datetime.datetime.fromisoformat(req.closing_date.replace("Z", "+00:00"))
+        except:
+            pass
+    if req.est_value is not None:
+        tender.est_value = req.est_value
+        
     await db.commit()
     return {"status": "success", "access_type": tender.access_type}
 
@@ -153,7 +167,7 @@ async def get_tender_applications(id: uuid.UUID, status: Optional[str] = None, d
 
 @router.get("/open")
 async def get_open_tenders(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tender).where(Tender.status == 'open').where(Tender.access_type == 'public'))
+    result = await db.execute(select(Tender).where(Tender.status == 'open'))
     tenders = result.scalars().all()
     return [{
         "id": t.id,
@@ -223,3 +237,14 @@ async def unlock_tender(id: uuid.UUID, req: UnlockRequest, db: AsyncSession = De
         raise HTTPException(status_code=401, detail="Incorrect password")
         
     return {"status": "success", "message": "Unlocked"}
+
+@router.post("/{id}/cancel")
+async def cancel_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Tender).where(Tender.id == id))
+    tender = result.scalar_one_or_none()
+    if not tender:
+        raise HTTPException(status_code=404, detail="Tender not found")
+        
+    tender.status = 'closed'
+    await db.commit()
+    return {"status": "success", "message": "Tender cancelled"}

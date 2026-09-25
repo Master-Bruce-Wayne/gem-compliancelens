@@ -27,6 +27,8 @@ export default function RulesConfigPage() {
 
   const [accessType, setAccessType] = useState('public');
   const [privatePassword, setPrivatePassword] = useState('');
+  const [closingDate, setClosingDate] = useState('');
+  const [estValue, setEstValue] = useState('');
 
   useEffect(() => {
     if (!tenderId) return;
@@ -40,6 +42,10 @@ export default function RulesConfigPage() {
         setTender(data);
         setAccessType(data.access_type || 'public');
         setPrivatePassword(data.private_password || '');
+        if (data.closing_date) {
+            setClosingDate(new Date(data.closing_date).toISOString().slice(0, 16));
+        }
+        setEstValue(data.est_value ? data.est_value.toString() : '');
         const savedRules = data.rules || [];
         const stateRules = catalog.map(c => {
           const saved = savedRules.find((sr: any) => sr.clauseType === c.type);
@@ -174,17 +180,44 @@ export default function RulesConfigPage() {
         </div>
         
         {accessType === 'private' && (
-          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-4">
+          <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center gap-4">
             <label className="text-sm font-medium text-slate-700 whitespace-nowrap">Access Password:</label>
             <input 
               type="text" 
-              placeholder="e.g. GEM2026-SECRET"
+              placeholder="Leave blank to keep existing, or enter new password"
               value={privatePassword}
               onChange={(e) => setPrivatePassword(e.target.value)}
               className="w-full max-w-md border-slate-300 rounded text-sm p-2 border focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
         )}
+      </div>
+
+      <div className="bg-white border border-slate-200 rounded-xl shadow-sm p-6 mb-8">
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <Settings className="text-blue-600" size={20} /> Edit Tender Details
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+           <div>
+             <label className="block text-sm font-medium text-slate-700 mb-1">Closing Date</label>
+             <input 
+               type="datetime-local" 
+               value={closingDate}
+               onChange={(e) => setClosingDate(e.target.value)}
+               className="w-full border-slate-300 rounded text-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500"
+             />
+           </div>
+           <div>
+             <label className="block text-sm font-medium text-slate-700 mb-1">Estimated Value (₹)</label>
+             <input 
+               type="number" 
+               placeholder="e.g. 50000000"
+               value={estValue}
+               onChange={(e) => setEstValue(e.target.value)}
+               className="w-full border-slate-300 rounded text-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500"
+             />
+           </div>
+        </div>
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">

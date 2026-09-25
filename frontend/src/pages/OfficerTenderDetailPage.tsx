@@ -1,11 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FileText, Users, Search, AlertCircle, Settings, CheckCircle2, Check, X } from 'lucide-react';
+import { FileText, Users, Search, AlertCircle, Settings, CheckCircle2, Check, X, XCircle } from "lucide-react";
 import { toast, Toaster } from 'sonner';
 
 export default function OfficerTenderDetailPage() {
   const { tenderId } = useParams();
   const navigate = useNavigate();
+  const handleCancelTender = async () => {
+    if (!window.confirm("Are you sure you want to cancel this tender? This will halt all applications.")) return;
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}/cancel`, { method: 'POST' });
+      if (!res.ok) throw new Error("Failed to cancel tender");
+      toast.success("Tender cancelled successfully");
+      fetchTenderData();
+    } catch (err) {
+      toast.error("Error cancelling tender");
+    }
+  };
   const [tender, setTender] = useState<any>(null);
   const [applications, setApplications] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,12 +87,22 @@ export default function OfficerTenderDetailPage() {
               {tender.access_type === 'private' && <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold uppercase">PRIVATE</span>}
             </div>
           </div>
-          <button 
-            onClick={() => navigate(`/officer/rules?tenderId=${tender.id}`)}
-            className="flex items-center gap-2 text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded transition"
-          >
-            <Settings size={18} /> Manage Rules
-          </button>
+          <div className="flex items-center gap-2">
+            {tender.status !== 'closed' && (
+               <button 
+                 onClick={handleCancelTender}
+                 className="flex items-center gap-2 text-red-600 bg-red-50 hover:bg-red-100 px-3 py-2 rounded transition"
+               >
+                 <XCircle size={18} /> Cancel Tender
+               </button>
+            )}
+            <button 
+              onClick={() => navigate(`/officer/rules?tenderId=${tender.id}`)}
+              className="flex items-center gap-2 text-slate-600 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded transition"
+            >
+              <Settings size={18} /> Manage Rules
+            </button>
+          </div>
         </div>
       </div>
 
