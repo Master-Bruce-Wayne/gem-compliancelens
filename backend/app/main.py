@@ -25,6 +25,17 @@ async def startup_event():
             await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS access_type VARCHAR DEFAULT 'public';"))
             await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_tenders_tender_no ON tenders(tender_no);"))
             try:
+                await conn.execute(text("ALTER TYPE doc_source_enum ADD VALUE IF NOT EXISTS 'upload';"))
+            except Exception:
+                try:
+                    await conn.execute(text("CREATE TYPE doc_source_enum AS ENUM ('upload', 'digilocker');"))
+                except Exception:
+                    pass
+            await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS source doc_source_enum DEFAULT 'upload';"))
+            await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS digilocker_request_id VARCHAR;"))
+            await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS digital_signature_valid BOOLEAN;"))
+            await conn.execute(text("ALTER TABLE bidder_documents ADD COLUMN IF NOT EXISTS confirmed_fields JSONB;"))
+            try:
                 await conn.execute(text("ALTER TYPE bid_status_enum ADD VALUE IF NOT EXISTS 'access_pending';"))
             except Exception:
                 pass
