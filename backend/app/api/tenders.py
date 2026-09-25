@@ -20,16 +20,30 @@ class TenderCreateRequest(BaseModel):
     description: Optional[str] = None
     deadline: Optional[str] = None
     access_type: str = "public"
+    closing_date: Optional[str] = None
+    est_value: Optional[float] = None
+    emd_amount: Optional[float] = None
 
 @router.post("")
 async def create_tender(req: TenderCreateRequest, db: AsyncSession = Depends(get_db)):
     tender_no = f"GEM/{datetime.datetime.now().year}/B/{uuid.uuid4().hex[:6].upper()}"
+    
+    closing_date_val = None
+    if req.closing_date:
+        try:
+            closing_date_val = datetime.datetime.fromisoformat(req.closing_date.replace("Z", "+00:00"))
+        except:
+            pass
+
     tender = Tender(
         tender_no=tender_no,
         title=req.title,
         organization=req.organization,
         category=req.category,
         access_type=req.access_type,
+        closing_date=closing_date_val,
+        est_value=req.est_value,
+        emd_amount=req.emd_amount,
         status='draft'
     )
     db.add(tender)
@@ -116,6 +130,9 @@ async def get_all_tenders(db: AsyncSession = Depends(get_db)):
         "category": row.Tender.category,
         "status": row.Tender.status,
         "access_type": row.Tender.access_type,
+        "closing_date": row.Tender.closing_date.isoformat() if row.Tender.closing_date else None,
+        "est_value": float(row.Tender.est_value) if row.Tender.est_value else None,
+        "emd_amount": float(row.Tender.emd_amount) if row.Tender.emd_amount else None,
         "bidsCount": row.bids_count
     } for row in rows]
 
@@ -145,7 +162,10 @@ async def get_open_tenders(db: AsyncSession = Depends(get_db)):
         "title": t.title,
         "organization": t.organization,
         "category": t.category,
-        "access_type": t.access_type
+        "access_type": t.access_type,
+        "closing_date": t.closing_date.isoformat() if t.closing_date else None,
+        "est_value": float(t.est_value) if t.est_value else None,
+        "emd_amount": float(t.emd_amount) if t.emd_amount else None
     } for t in tenders]
 
 @router.get("/search/{tender_no}")
@@ -160,26 +180,10 @@ async def search_tender(tender_no: str, db: AsyncSession = Depends(get_db)):
         "title": tender.title,
         "organization": tender.organization,
         "category": tender.category,
-        "access_type": tender.access_type
-    }
-
-@router.get("/{id}")
-async def get_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(Tender).where(Tender.id == id))
-    tender = result.scalar_one_or_none()
-    if not tender:
-        raise HTTPException(status_code=404, detail="Tender not found")
-        
-    rules_res = await db.execute(select(TenderRule).where(TenderRule.tender_id == id))
-    rules = rules_res.scalars().all()
-    
-    return {
-        "id": tender.id,
-        "tender_no": tender.tender_no,
-        "title": tender.title,
-        "organization": tender.organization,
-        "category": tender.category,
         "status": tender.status,
         "access_type": tender.access_type,
+        "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,
+        "est_value": float(tender.est_value) if tender.est_value else None,
+        "emd_amount": float(tender.emd_amount) if tender.emd_amount else None,
         "rules": [{"clauseType": r.clause_type, "mandatory": r.mandatory, "threshold": r.threshold_value} for r in rules]
     }

@@ -127,7 +127,22 @@ export default function VendorTendersPage() {
                   </div>
                   <span className="px-2 py-1 rounded bg-slate-100 text-slate-600 text-xs font-medium">{t.category}</span>
                 </div>
-                <p className="text-sm text-slate-500 mb-6">Organization: {t.organization}</p>
+                <p className="text-sm text-slate-500 mb-4">Organization: {t.organization}</p>
+                
+                <div className="grid grid-cols-3 gap-2 border-t border-slate-100 pt-4 mb-6">
+                   <div>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Closing Date</p>
+                     <p className="text-sm font-semibold text-slate-700">{t.closing_date ? new Date(t.closing_date).toLocaleDateString('en-GB') : 'N/A'}</p>
+                   </div>
+                   <div>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">EMD Guarantee</p>
+                     <p className="text-sm font-semibold text-slate-700">{t.emd_amount ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(t.emd_amount) : 'Exempt'}</p>
+                   </div>
+                   <div>
+                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Est. Value</p>
+                     <p className="text-sm font-semibold text-blue-700">{t.est_value ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(t.est_value) : 'N/A'}</p>
+                   </div>
+                </div>
               </div>
               <button 
                 onClick={() => handleApply(t.id, t.access_type === 'private')}

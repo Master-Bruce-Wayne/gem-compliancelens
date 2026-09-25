@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Enum
+from sqlalchemy import Column, String, Enum, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from app.db.session import Base
 import uuid
@@ -15,6 +15,9 @@ class Tender(Base):
     title = Column(String)
     organization = Column(String)
     category = Column(String)
+    closing_date = Column(DateTime(timezone=True), nullable=True)
+    est_value = Column(Numeric, nullable=True)
+    emd_amount = Column(Numeric, nullable=True)
     status = Column(Enum('draft', 'open', 'evaluation', 'closed', name='tender_status_enum'))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

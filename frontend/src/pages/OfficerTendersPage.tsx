@@ -11,6 +11,9 @@ export default function OfficerTendersPage() {
   const [newTitle, setNewTitle] = useState('');
   const [newOrg, setNewOrg] = useState('Ministry of Defence');
   const [newCategory, setNewCategory] = useState('IT Equipment');
+  const [newClosingDate, setNewClosingDate] = useState('');
+  const [newEstValue, setNewEstValue] = useState('');
+  const [newEmdAmount, setNewEmdAmount] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
@@ -35,7 +38,10 @@ export default function OfficerTendersPage() {
       body: JSON.stringify({
         title: newTitle,
         organization: newOrg,
-        category: newCategory
+        category: newCategory,
+        closing_date: newClosingDate ? new Date(newClosingDate).toISOString() : null,
+        est_value: newEstValue ? parseFloat(newEstValue) : null,
+        emd_amount: newEmdAmount ? parseFloat(newEmdAmount) : null
       })
     });
     
@@ -161,6 +167,39 @@ export default function OfficerTendersPage() {
                   <option value="Services">Services</option>
                   <option value="General">General</option>
                 </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Closing Date</label>
+                  <input 
+                    type="datetime-local" 
+                    value={newClosingDate} 
+                    onChange={e => setNewClosingDate(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Estimated Value (₹)</label>
+                  <input 
+                    type="number" 
+                    placeholder="e.g. 485000000"
+                    value={newEstValue} 
+                    onChange={e => setNewEstValue(e.target.value)}
+                    className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">EMD Guarantee Amount (₹)</label>
+                <input 
+                  type="number" 
+                  placeholder="e.g. 250000"
+                  value={newEmdAmount} 
+                  onChange={e => setNewEmdAmount(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                />
               </div>
 
               <div className="pt-2 flex justify-end gap-3">
