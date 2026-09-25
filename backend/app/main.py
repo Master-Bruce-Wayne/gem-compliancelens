@@ -26,6 +26,7 @@ async def startup_event():
             await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS closing_date TIMESTAMP WITH TIME ZONE;"))
             await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS est_value NUMERIC;"))
             await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS emd_amount NUMERIC;"))
+            await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS private_password VARCHAR;"))
             await conn.execute(text("ALTER TABLE bidders ADD COLUMN IF NOT EXISTS gstin VARCHAR;"))
             await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_tenders_tender_no ON tenders(tender_no);"))
             try:

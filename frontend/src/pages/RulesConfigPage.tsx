@@ -26,6 +26,7 @@ export default function RulesConfigPage() {
   ];
 
   const [accessType, setAccessType] = useState('public');
+  const [privatePassword, setPrivatePassword] = useState('');
 
   useEffect(() => {
     if (!tenderId) return;
@@ -38,6 +39,7 @@ export default function RulesConfigPage() {
       .then(data => {
         setTender(data);
         setAccessType(data.access_type || 'public');
+        setPrivatePassword(data.private_password || '');
         const savedRules = data.rules || [];
         const stateRules = catalog.map(c => {
           const saved = savedRules.find((sr: any) => sr.clauseType === c.type);
@@ -167,9 +169,22 @@ export default function RulesConfigPage() {
               onChange={() => setAccessType('private')}
               className="w-4 h-4 text-blue-600 focus:ring-blue-500"
             />
-            <span className="font-medium text-slate-700">Private (Requires Access Request)</span>
+            <span className="font-medium text-slate-700">Private (Requires Access Password)</span>
           </label>
         </div>
+        
+        {accessType === 'private' && (
+          <div className="mt-4 pt-4 border-t border-slate-100 flex items-center gap-4">
+            <label className="text-sm font-medium text-slate-700 whitespace-nowrap">Access Password:</label>
+            <input 
+              type="text" 
+              placeholder="e.g. GEM2026-SECRET"
+              value={privatePassword}
+              onChange={(e) => setPrivatePassword(e.target.value)}
+              className="w-full max-w-md border-slate-300 rounded text-sm p-2 border focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+        )}
       </div>
 
       <div className="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">

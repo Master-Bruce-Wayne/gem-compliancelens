@@ -58,6 +58,7 @@ class TenderRuleRequest(BaseModel):
 
 class TenderUpdateRequest(BaseModel):
     access_type: str
+    private_password: Optional[str] = None
 
 @router.put("/{id}")
 async def update_tender(id: uuid.UUID, req: TenderUpdateRequest, db: AsyncSession = Depends(get_db)):
@@ -67,6 +68,7 @@ async def update_tender(id: uuid.UUID, req: TenderUpdateRequest, db: AsyncSessio
         raise HTTPException(status_code=404, detail="Tender not found")
         
     tender.access_type = req.access_type
+    tender.private_password = req.private_password
     await db.commit()
     return {"status": "success", "access_type": tender.access_type}
 
@@ -209,3 +211,21 @@ async def get_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         "emd_amount": float(tender.emd_amount) if tender.emd_amount else None,
         "rules": [{"clauseType": r.clause_type, "mandatory": r.mandatory, "threshold": r.threshold_value} for r in rules]
     }
+
+class UnlockRequest(BaseModel):
+    password: str
+
+@router.post("/{id}/unlock")
+async def unlock_tender(id: uuid.UUID, req: UnlockRequest, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Tender).where(Tender.id == id))
+    tender = result.scalar_one_or_none()
+    if not tender:
+        raise HTTPException(status_code=404, detail="Tender not found")
+        
+    if tender.access_type != 'private':
+        raise HTTPException(status_code=400, detail="Tender is not private")
+        
+    if tender.private_password != req.password:
+        raise HTTPException(status_code=401, detail="Incorrect password")
+        
+    return {"status": "success", "message": "Unlocked"}

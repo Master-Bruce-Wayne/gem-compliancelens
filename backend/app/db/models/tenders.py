@@ -12,6 +12,7 @@ class Tender(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     tender_no = Column(String, unique=True, index=True, nullable=True)
     access_type = Column(String, server_default='public')
+    private_password = Column(String, nullable=True)
     title = Column(String)
     organization = Column(String)
     category = Column(String)

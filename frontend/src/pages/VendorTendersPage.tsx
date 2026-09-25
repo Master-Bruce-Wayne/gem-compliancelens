@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Search, Play, Lock, AlertCircle } from 'lucide-react';
+import { FileText, Search, Play, Lock, AlertCircle, Key } from "lucide-react";
 import { toast, Toaster } from 'sonner';
 
 export default function VendorTendersPage() {
@@ -8,6 +8,8 @@ export default function VendorTendersPage() {
   const [loading, setLoading] = useState(true);
   const [searchId, setSearchId] = useState('');
   const [isSearching, setIsSearching] = useState(false);
+  const [passwordPrompt, setPasswordPrompt] = useState<{tenderId: string, title: string} | null>(null);
+  const [tenderPassword, setTenderPassword] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,25 +21,42 @@ export default function VendorTendersPage() {
       });
   }, []);
 
-  const handleApply = async (tenderId: string, isPrivate: boolean = false) => {
+  const handleApply = async (tenderId: string, isPrivate: boolean = false, title: string = "") => {
+    if (isPrivate) {
+      setPasswordPrompt({ tenderId, title });
+      return;
+    }
+    await submitApplication(tenderId, null);
+  };
+
+  const submitApplication = async (tenderId: string, password: string | null) => {
     const userStr = localStorage.getItem('user');
     const bidderId = userStr ? JSON.parse(userStr).id : "";
     
+    if (password) {
+       // Validate password first
+       const unlockRes = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}/unlock`, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ password })
+       });
+       if (!unlockRes.ok) {
+         toast.error("Incorrect password for this private tender.");
+         return;
+       }
+    }
+
     const res = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/bids`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tenderId, bidderId })
+      body: JSON.stringify({ tenderId, bidderId, skip_approval: !!password })
     });
     
     if (res.ok) {
       const data = await res.json();
-      if (data.status === 'access_pending') {
-        toast.success("Access requested successfully! Please wait for the officer to approve.");
-      } else if (data.status === 'access_denied') {
-        toast.error("Your access request was denied for this tender.");
-      } else {
-        navigate(`/bidder/applications/${data.id}`);
-      }
+      setPasswordPrompt(null);
+      setTenderPassword('');
+      navigate(`/bidder/applications/${data.id}`);
     } else {
       toast.error("Failed to start application");
     }
@@ -145,7 +164,7 @@ export default function VendorTendersPage() {
                 </div>
               </div>
               <button 
-                onClick={() => handleApply(t.id, t.access_type === 'private')}
+                onClick={() => handleApply(t.id, t.access_type === 'private', t.title)}
                 className={`w-full py-2 rounded font-medium flex items-center justify-center gap-2 transition ${
                   t.access_type === 'private' 
                     ? 'bg-amber-600 hover:bg-amber-700 text-white' 
@@ -162,6 +181,40 @@ export default function VendorTendersPage() {
           ))
         )}
       </div>
+      {passwordPrompt && (
+        <div className="fixed inset-0 bg-slate-900/50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <div className="flex items-center gap-3 text-amber-600 mb-4">
+              <Lock size={24} />
+              <h2 className="text-xl font-bold text-slate-800">Private Tender</h2>
+            </div>
+            <p className="text-slate-600 mb-4 text-sm">
+              <strong>{passwordPrompt.title}</strong> is a limited tender. Please enter the access password provided by the inviting authority to proceed.
+            </p>
+            <input 
+              type="password" 
+              placeholder="Enter Password"
+              value={tenderPassword}
+              onChange={(e) => setTenderPassword(e.target.value)}
+              className="w-full border-slate-300 rounded-lg p-3 border focus:ring-blue-500 focus:border-blue-500 mb-6"
+            />
+            <div className="flex justify-end gap-3">
+              <button 
+                onClick={() => { setPasswordPrompt(null); setTenderPassword(''); }}
+                className="px-4 py-2 text-slate-600 font-medium hover:bg-slate-100 rounded"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => submitApplication(passwordPrompt.tenderId, tenderPassword)}
+                className="px-4 py-2 bg-blue-600 text-white font-medium hover:bg-blue-700 rounded shadow"
+              >
+                Unlock & Apply
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
