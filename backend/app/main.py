@@ -1,6 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy import text
+from app.config import settings
 from app.api import documents, tenders, bids, self_check, auth, bidders, clarifications, notifications
+import logging
 
 app = FastAPI(title="GemOne API", version="1.0.0")
 
@@ -11,6 +15,25 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_event():
+    try:
+        engine = create_async_engine(settings.DATABASE_URL, connect_args={"statement_cache_size": 0})
+        async with engine.begin() as conn:
+            await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS tender_no VARCHAR;"))
+            await conn.execute(text("ALTER TABLE tenders ADD COLUMN IF NOT EXISTS access_type VARCHAR DEFAULT 'public';"))
+            await conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_tenders_tender_no ON tenders(tender_no);"))
+            try:
+                await conn.execute(text("ALTER TYPE bid_status_enum ADD VALUE IF NOT EXISTS 'access_pending';"))
+            except Exception:
+                pass
+            try:
+                await conn.execute(text("ALTER TYPE bid_status_enum ADD VALUE IF NOT EXISTS 'access_denied';"))
+            except Exception:
+                pass
+    except Exception as e:
+        logging.error(f"Migration failed: {e}")
 
 @app.get("/health")
 async def health_check():
