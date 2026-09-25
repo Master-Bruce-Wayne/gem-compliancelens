@@ -18,7 +18,6 @@ class Tender(Base):
     category = Column(String)
     closing_date = Column(DateTime(timezone=True), nullable=True)
     est_value = Column(Numeric, nullable=True)
-    emd_amount = Column(Numeric, nullable=True)
     status = Column(Enum('draft', 'open', 'evaluation', 'closed', name='tender_status_enum'))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     

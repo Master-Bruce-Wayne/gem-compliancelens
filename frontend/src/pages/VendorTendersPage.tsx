@@ -148,14 +148,10 @@ export default function VendorTendersPage() {
                 </div>
                 <p className="text-sm text-slate-500 mb-4">Organization: {t.organization}</p>
                 
-                <div className="grid grid-cols-3 gap-2 border-t border-slate-100 pt-4 mb-6">
+                <div className="grid grid-cols-2 gap-2 border-t border-slate-100 pt-4 mb-6">
                    <div>
                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Closing Date</p>
                      <p className="text-sm font-semibold text-slate-700">{t.closing_date ? new Date(t.closing_date).toLocaleDateString('en-GB') : 'N/A'}</p>
-                   </div>
-                   <div>
-                     <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">EMD Guarantee</p>
-                     <p className="text-sm font-semibold text-slate-700">{t.emd_amount ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(t.emd_amount) : 'Exempt'}</p>
                    </div>
                    <div>
                      <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Est. Value</p>

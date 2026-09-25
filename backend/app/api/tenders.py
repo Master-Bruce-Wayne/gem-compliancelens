@@ -22,7 +22,6 @@ class TenderCreateRequest(BaseModel):
     access_type: str = "public"
     closing_date: Optional[str] = None
     est_value: Optional[float] = None
-    emd_amount: Optional[float] = None
 
 @router.post("")
 async def create_tender(req: TenderCreateRequest, db: AsyncSession = Depends(get_db)):
@@ -43,7 +42,6 @@ async def create_tender(req: TenderCreateRequest, db: AsyncSession = Depends(get
         access_type=req.access_type,
         closing_date=closing_date_val,
         est_value=req.est_value,
-        emd_amount=req.emd_amount,
         status='draft'
     )
     db.add(tender)
@@ -134,7 +132,6 @@ async def get_all_tenders(db: AsyncSession = Depends(get_db)):
         "access_type": row.Tender.access_type,
         "closing_date": row.Tender.closing_date.isoformat() if row.Tender.closing_date else None,
         "est_value": float(row.Tender.est_value) if row.Tender.est_value else None,
-        "emd_amount": float(row.Tender.emd_amount) if row.Tender.emd_amount else None,
         "bidsCount": row.bids_count
     } for row in rows]
 
@@ -167,7 +164,6 @@ async def get_open_tenders(db: AsyncSession = Depends(get_db)):
         "access_type": t.access_type,
         "closing_date": t.closing_date.isoformat() if t.closing_date else None,
         "est_value": float(t.est_value) if t.est_value else None,
-        "emd_amount": float(t.emd_amount) if t.emd_amount else None
     } for t in tenders]
 
 @router.get("/search/{tender_no}")
@@ -185,7 +181,6 @@ async def search_tender(tender_no: str, db: AsyncSession = Depends(get_db)):
         "access_type": tender.access_type,
         "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,
         "est_value": float(tender.est_value) if tender.est_value else None,
-        "emd_amount": float(tender.emd_amount) if tender.emd_amount else None
     }
 
 @router.get("/{id}")
@@ -208,7 +203,6 @@ async def get_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         "access_type": tender.access_type,
         "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,
         "est_value": float(tender.est_value) if tender.est_value else None,
-        "emd_amount": float(tender.emd_amount) if tender.emd_amount else None,
         "rules": [{"clauseType": r.clause_type, "mandatory": r.mandatory, "threshold": r.threshold_value} for r in rules]
     }
 

@@ -85,7 +85,7 @@ export default function OfficerTenderDetailPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
            <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Estimated Contract Value</h3>
            <div className="text-2xl font-bold text-slate-800">
@@ -104,12 +104,6 @@ export default function OfficerTenderDetailPage() {
              {applications.length}
            </div>
            <div className="text-xs text-slate-500 mt-1">Bids registered in vault</div>
-        </div>
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex flex-col justify-center">
-           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">EMD Guarantee</h3>
-           <div className="text-2xl font-bold text-slate-800">
-             {tender.emd_amount ? new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(tender.emd_amount) : 'Exempt'}
-           </div>
         </div>
       </div>
 
