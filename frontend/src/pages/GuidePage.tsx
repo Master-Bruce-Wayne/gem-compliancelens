@@ -6,7 +6,7 @@ export default function GuidePage() {
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
           <Info className="w-8 h-8 text-brand" />
-          How to Use GeM ComplianceLens
+          How to Use GemOne
         </h1>
         <p className="text-gray-600 mt-2 text-lg">
           A step-by-step guide to automating tender compliance checks according to the SIH Problem Statement.

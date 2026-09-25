@@ -10,6 +10,8 @@ class Tender(Base):
     __tablename__ = "tenders"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tender_no = Column(String, unique=True, index=True, nullable=True)
+    access_type = Column(String, server_default='public')
     title = Column(String)
     organization = Column(String)
     category = Column(String)

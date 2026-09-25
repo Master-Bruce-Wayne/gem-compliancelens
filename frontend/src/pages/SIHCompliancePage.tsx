@@ -61,7 +61,7 @@ export default function SIHCompliancePage() {
         <div className="text-center max-w-3xl mx-auto space-y-4">
           <h1 className="text-4xl font-extrabold text-slate-900">Prototype vs Requirements</h1>
           <p className="text-lg text-slate-600">
-            An interactive flowchart mapping the 14 Smart India Hackathon problem statement requirements directly to our working GeM ComplianceLens prototype.
+            An interactive flowchart mapping the 14 Smart India Hackathon problem statement requirements directly to our working GemOne prototype.
           </p>
         </div>
 
