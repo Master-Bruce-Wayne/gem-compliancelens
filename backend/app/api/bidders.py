@@ -26,7 +26,8 @@ async def get_bidder_documents(id: str, include_temporary: bool = False, db: Asy
             "ocrStatus": doc.ocr_status,
             "extractedFields": doc.extracted_fields,
             "confidenceScore": doc.confidence_score,
-            "createdAt": doc.created_at
+            "createdAt": doc.created_at,
+            "isTemporary": doc.is_temporary
         }
         for doc in docs
     ]

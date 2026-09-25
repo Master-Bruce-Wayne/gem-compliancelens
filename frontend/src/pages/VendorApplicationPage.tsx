@@ -308,7 +308,10 @@ export default function VendorApplicationPage() {
                            <FileText className="text-slate-400" size={20} />
                            <div>
                              <p className="font-medium text-sm uppercase">{doc.docType.replace('_', ' ')}</p>
-                             <p className="text-xs text-slate-500">Uploaded: {new Date(doc.createdAt).toLocaleDateString()}</p>
+                             <p className="text-xs text-slate-500">
+                               Uploaded: {new Date(doc.createdAt).toLocaleDateString()}
+                               {doc.isTemporary && <span className="ml-2 text-amber-600 font-semibold">(Temporary)</span>}
+                             </p>
                            </div>
                          </div>
                          <div>
