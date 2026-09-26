@@ -8,6 +8,27 @@ interface DocumentUploaderProps {
   onUploadComplete: () => void;
 }
 
+const SCAN_MESSAGES = [
+  "Initializing AI Engine...",
+  "Running OCR Extraction...",
+  "Analyzing Document Layout...",
+  "Cross-checking GeM Clauses...",
+  "Validating Authenticity..."
+];
+
+function ScanningText() {
+  const [msgIdx, setMsgIdx] = useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setMsgIdx((prev) => (prev + 1) % SCAN_MESSAGES.length);
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span className="animate-pulse">{SCAN_MESSAGES[msgIdx]}</span>;
+}
+
 export default function DocumentUploader({ bidderId, allowedDocTypes, onUploadComplete }: DocumentUploaderProps) {
   const [docType, setDocType] = useState(allowedDocTypes[0]?.value || 'pan');
   const [file, setFile] = useState<File | null>(null);
@@ -80,14 +101,36 @@ export default function DocumentUploader({ bidderId, allowedDocTypes, onUploadCo
         
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">Upload File (PDF/Image)</label>
-          <div className="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:bg-slate-50 transition cursor-pointer relative">
-            <input 
-              type="file" 
-              accept=".pdf,image/png,image/jpeg"
-              onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            />
-            {file ? (
+          <div className={`border-2 border-dashed rounded-xl text-center transition relative overflow-hidden ${
+            isUploading ? 'border-blue-400 bg-blue-50/50 p-6' : 'border-slate-300 p-8 hover:bg-slate-50 cursor-pointer'
+          }`}>
+            {!isUploading && (
+              <input 
+                type="file" 
+                accept=".pdf,image/png,image/jpeg"
+                onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                disabled={isUploading}
+              />
+            )}
+            
+            {isUploading ? (
+              <div className="flex flex-col items-center justify-center space-y-4 py-2">
+                <div className="relative w-16 h-16 rounded-xl bg-blue-100 flex items-center justify-center border-2 border-blue-200 overflow-hidden shadow-inner">
+                  <UploadCloud className="w-8 h-8 text-blue-600 relative z-10" />
+                  {/* Scanning line animation */}
+                  <div className="absolute inset-x-0 h-1 bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] animate-scan z-20" />
+                  <div className="absolute inset-x-0 h-8 bg-gradient-to-b from-transparent to-blue-300/30 animate-scan z-0" style={{ transform: 'translateY(-100%)' }} />
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="flex items-center gap-2 text-blue-700 font-semibold">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <ScanningText />
+                  </div>
+                  <p className="text-xs text-blue-600/80 mt-1">Applying AI OCR & validating against GeM guidelines...</p>
+                </div>
+              </div>
+            ) : file ? (
               <div className="text-blue-600 font-medium">{file.name}</div>
             ) : (
               <div className="flex flex-col items-center gap-2 text-slate-500">
@@ -135,7 +178,7 @@ export default function DocumentUploader({ bidderId, allowedDocTypes, onUploadCo
             disabled={!file || isUploading}
             className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            {isUploading ? <><Loader2 className="w-5 h-5 animate-spin" /> Verifying with AI...</> : 'Upload & Verify Document'}
+            {isUploading ? <><Loader2 className="w-5 h-5 animate-spin" /> Running AI Scan...</> : 'Upload & Verify Document'}
           </button>
         )}
       </form>
