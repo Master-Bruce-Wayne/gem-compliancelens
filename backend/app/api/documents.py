@@ -82,7 +82,10 @@ async def upload_document(
                 confidence_base = "low"
         else:
             extracted_fields = ocr_result["fields"]
-            confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
+            if ocr_result.get("method") in ["none", "failed"]:
+                confidence_base = "low"
+            else:
+                confidence_base = "high" if ocr_result.get("method") == "pdfplumber" else "medium"
         
         needs_confirmation = False
         if confidence_base == "low":

@@ -4,12 +4,13 @@ import pytesseract
 from pdf2image import convert_from_path
 from typing import Dict, Any, Tuple
 import os
+import logging
 
 class OCRService:
     # Regex patterns
     PATTERNS = {
-        'gstin': r'\d{2}[A-Z]{5}\d{4}[A-Z]\d[Z][A-Z\d]',
-        'pan': r'[A-Z]{5}\d{4}[A-Z]',
+        'gstin': r'[0-9O]{2}[A-Z0-9]{5}[0-9O]{4}[A-Z0-9][0-9O][Z2][A-Z0-9]',
+        'pan': r'[A-Z0-9]{5}[0-9O]{4}[A-Z0-9]',
         'udyam': r'UDYAM-[A-Z]{2}-\d{2}-\d{7}',
         'startup_dipp': r'DIPP\d{1,10}',
         'nsic_id': r'NSIC/[A-Z]+/\d+',
@@ -40,6 +41,7 @@ class OCRService:
                 tess_text += pytesseract.image_to_string(img) + "\n"
             return tess_text, 'tesseract'
         except Exception as e:
+            logging.error(f"Tesseract OCR Error (PDF fallback): {str(e)}")
             return "", 'failed'
             
     @staticmethod
@@ -50,6 +52,7 @@ class OCRService:
             text = pytesseract.image_to_string(img)
             return text, 'tesseract'
         except Exception as e:
+            logging.error(f"Tesseract OCR Error (Image): {str(e)}")
             return "", 'failed'
 
     @classmethod
