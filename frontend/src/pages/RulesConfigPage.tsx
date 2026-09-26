@@ -92,11 +92,16 @@ export default function RulesConfigPage() {
     };
 
     try {
-      // 1. Update access_type
+      // 1. Update access_type, password, closing date and estimated value together
       await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/v1/tenders/${tenderId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ access_type: accessType })
+        body: JSON.stringify({
+          access_type: accessType,
+          private_password: accessType === 'private' ? privatePassword : null,
+          closing_date: closingDate || null,
+          est_value: estValue ? parseFloat(estValue) : null,
+        })
       });
 
       // 2. Save Rules
@@ -187,6 +192,7 @@ export default function RulesConfigPage() {
               placeholder="Leave blank to keep existing, or enter new password"
               value={privatePassword}
               onChange={(e) => setPrivatePassword(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
               className="w-full max-w-md border-slate-300 rounded text-sm p-2 border focus:ring-blue-500 focus:border-blue-500"
             />
           </div>
@@ -214,6 +220,7 @@ export default function RulesConfigPage() {
                placeholder="e.g. 50000000"
                value={estValue}
                onChange={(e) => setEstValue(e.target.value)}
+               onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }}
                className="w-full border-slate-300 rounded text-sm p-2.5 border focus:ring-blue-500 focus:border-blue-500"
              />
            </div>
