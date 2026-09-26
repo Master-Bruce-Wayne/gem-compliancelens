@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { AlertCircle, CheckCircle, Clock, ShieldAlert, ArrowRight } from 'lucide-react';
+import { AlertCircle, CheckCircle, Clock, ShieldAlert, ArrowRight, Printer } from 'lucide-react';
 import { cn } from '../lib/utils';
 import CheckDetailPanel from '../components/CheckDetailPanel';
 import DecisionPanel from '../components/DecisionPanel';
@@ -72,6 +72,13 @@ export default function ScorecardPage() {
     return true;
   });
 
+  const handlePrint = () => {
+    const prev = document.title;
+    document.title = `Compliance Scorecard — Bid ${bidId}`;
+    window.print();
+    document.title = prev;
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-6 pb-20">
       <header className="flex items-center justify-between">
@@ -79,7 +86,7 @@ export default function ScorecardPage() {
           <h1 className="text-2xl font-semibold text-textPrimary">Compliance Scorecard</h1>
           <p className="text-textSecondary text-sm mt-1 text-ellipsis overflow-hidden max-w-sm whitespace-nowrap">Bid {bidId}</p>
         </div>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3">
           <div className="text-right">
             <div className="text-3xl font-bold text-brand">{data.score}/100</div>
             <div className="text-sm text-textSecondary font-medium">Overall Score</div>
@@ -91,6 +98,14 @@ export default function ScorecardPage() {
           )}>
             Risk: {data.riskLevel.toUpperCase()}
           </div>
+          <button
+            onClick={handlePrint}
+            className="no-print flex items-center gap-2 px-4 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-colors text-sm"
+            title="Export this scorecard as a PDF"
+          >
+            <Printer className="w-4 h-4" />
+            Export Report
+          </button>
         </div>
       </header>
 
@@ -110,7 +125,7 @@ export default function ScorecardPage() {
       <div className="bg-surface border border-border rounded-xl shadow-sm overflow-hidden">
         <div className="p-4 border-b border-border flex items-center justify-between bg-gray-50/50">
           <h2 className="font-semibold text-textPrimary">Per-Requirement Evaluation</h2>
-          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg">
+          <div className="flex gap-2 bg-gray-100 p-1 rounded-lg no-print">
             {['All', 'Compliant', 'Non-Compliant', 'Needs Review'].map(f => (
               <button 
                 key={f} 
@@ -191,13 +206,15 @@ export default function ScorecardPage() {
         </div>
       </div>
 
-      <DecisionPanel evaluation={{ ...data, evaluationId: bidId }} />
+      <div className="no-print">
+        <DecisionPanel evaluation={{ ...data, evaluationId: bidId }} />
+      </div>
 
       {selectedCheck && checkDetail && (
-        <>
+        <div className="no-print">
           <div className="fixed inset-0 bg-black/20 z-40" onClick={() => setSelectedCheck(null)} />
           <CheckDetailPanel check={checkDetail} onClose={() => setSelectedCheck(null)} onVerificationSaved={fetchScorecard} />
-        </>
+        </div>
       )}
     </div>
   );

@@ -26,6 +26,13 @@ export default function AuditTrailPage() {
       });
   }, [bidId]);
 
+  const handlePrint = () => {
+    const prev = document.title;
+    document.title = `Audit Trail Log — Bid ${bidId}`;
+    window.print();
+    document.title = prev;
+  };
+
   if (loading) return <div className="flex h-full items-center justify-center">Loading audit log...</div>;
 
   const filteredEvents = events.filter((e: any) => {
@@ -58,15 +65,16 @@ export default function AuditTrailPage() {
           <p className="text-textSecondary text-sm mt-1">Immutable record of all actions for Bid {bidId}</p>
         </div>
         <button 
-          onClick={() => toast.success("Exporting to PDF...")}
-          className="flex items-center gap-2 px-4 py-2 border border-border bg-surface rounded-lg font-medium hover:bg-gray-50 transition-colors"
+          onClick={handlePrint}
+          className="no-print flex items-center gap-2 px-4 py-2 border border-blue-200 bg-blue-50 text-blue-700 rounded-lg font-medium hover:bg-blue-100 transition-colors text-sm"
+          title="Export this audit trail as a PDF"
         >
           <Download className="w-4 h-4" />
           Export PDF
         </button>
       </header>
 
-      <div className="bg-surface border border-border rounded-xl shadow-sm p-2 flex items-center gap-2 mb-6">
+      <div className="bg-surface border border-border rounded-xl shadow-sm p-2 flex items-center gap-2 mb-6 no-print">
         <Filter className="w-4 h-4 text-gray-400 ml-2" />
         {['All', 'Document', 'Evaluation', 'Decision'].map(f => (
           <button 
