@@ -215,6 +215,7 @@ async def get_tender(id: uuid.UUID, db: AsyncSession = Depends(get_db)):
         "category": tender.category,
         "status": tender.status,
         "access_type": tender.access_type,
+        "private_password": tender.private_password,
         "closing_date": tender.closing_date.isoformat() if tender.closing_date else None,
         "est_value": float(tender.est_value) if tender.est_value else None,
         "rules": [{"clauseType": r.clause_type, "mandatory": r.mandatory, "threshold": r.threshold_value} for r in rules]
