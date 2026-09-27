@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GemOne ComplianceLens — Procurement Compliance, Powered by AI</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface-bright": "#fff8f1",
+            "primary-container": "#2a1b54",
+            "on-background": "#1f1b12",
+            "on-secondary-fixed-variant": "#4d3c7d",
+            "tertiary-container": "#002c27",
+            "teal-accent": "#14B8A6",
+            "on-primary-container": "#9384c3",
+            "inverse-surface": "#353026",
+            "primary-fixed-dim": "#cebdff",
+            "tertiary-fixed-dim": "#4fdbc8",
+            "on-tertiary-fixed": "#00201c",
+            "on-primary-fixed-variant": "#4c3d77",
+            "ink": "#2A1B54",
+            "secondary-fixed": "#e8ddff",
+            "on-error": "#ffffff",
+            "cream": "#FDF3E4",
+            "secondary": "#655496",
+            "inverse-on-surface": "#f9efe1",
+            "outline": "#797580",
+            "surface-container": "#f6edde",
+            "inverse-primary": "#cebdff",
+            "indigo-dark": "#241454",
+            "error": "#ba1a1a",
+            "pink-accent": "#E6396B",
+            "ink-muted": "#4C3B7C",
+            "sky-accent": "#3B5BFF",
+            "on-tertiary-fixed-variant": "#005048",
+            "error-container": "#ffdad6",
+            "white": "#FFFFFF",
+            "on-error-container": "#93000a",
+            "on-tertiary-container": "#009f8f",
+            "secondary-container": "#c7b3fe",
+            "on-secondary-fixed": "#200c4f",
+            "surface-container-high": "#f1e7d8",
+            "surface-variant": "#ebe1d3",
+            "surface-container-highest": "#ebe1d3",
+            "ink-dark": "#1F1440",
+            "surface-tint": "#645591",
+            "surface": "#fff8f1",
+            "on-secondary-container": "#534283",
+            "on-tertiary": "#ffffff",
+            "on-primary": "#ffffff",
+            "on-secondary": "#ffffff",
+            "on-primary-fixed": "#1f0f49",
+            "primary-fixed": "#e8ddff",
+            "primary": "#15023f",
+            "tertiary-fixed": "#71f8e4",
+            "secondary-fixed-dim": "#cfbdff",
+            "surface-dim": "#e2d9ca",
+            "background": "#fff8f1",
+            "on-surface-variant": "#48454f",
+            "surface-container-lowest": "#ffffff",
+            "outline-variant": "#cac4d0",
+            "success": "#10B981",
+            "on-surface": "#1f1b12",
+            "surface-container-low": "#fcf2e3",
+            "tertiary": "#001512",
+            "coral-accent": "#F2994A",
+            "danger": "#EF4444",
+            "warning": "#F59E0B"
+          },
+          borderRadius: {
+            "DEFAULT": "1rem",
+            "lg": "2rem",
+            "xl": "3rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-xl": "2.5rem",
+            "space-sm": "0.5rem",
+            "space-xs": "0.25rem",
+            "space-3xl": "6rem",
+            "gutter": "1.5rem",
+            "gutter-mobile": "1rem",
+            "margin": "3rem",
+            "margin-mobile": "1.25rem",
+            "space-lg": "1.5rem",
+            "space-md": "1rem",
+            "space-2xl": "4rem"
+          },
+          fontFamily: {
+            "headline-md": ["Plus Jakarta Sans"],
+            "display-xl": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "title-lg": ["Plus Jakarta Sans"],
+            "label-md": ["Plus Jakarta Sans"],
+            "display-lg": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "headline-lg-mobile": ["Plus Jakarta Sans"],
+            "display-xl-mobile": ["Plus Jakarta Sans"],
+            "label-sm": ["Plus Jakarta Sans"],
+            "headline-sm": ["Plus Jakarta Sans"],
+            "headline-lg": ["Plus Jakarta Sans"],
+            "display-lg-mobile": ["Plus Jakarta Sans"],
+            "title-md": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"]
+          },
+          fontSize: {
+            "headline-md": ["32px", { lineHeight: "40px", letterSpacing: "-0.015em", fontWeight: "700" }],
+            "display-xl": ["64px", { lineHeight: "72px", letterSpacing: "-0.03em", fontWeight: "800" }],
+            "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+            "title-lg": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+            "label-md": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "700" }],
+            "display-lg": ["52px", { lineHeight: "60px", letterSpacing: "-0.025em", fontWeight: "800" }],
+            "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+            "headline-lg-mobile": ["28px", { lineHeight: "36px", letterSpacing: "-0.015em", fontWeight: "800" }],
+            "display-xl-mobile": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "label-sm": ["12px", { lineHeight: "16px", letterSpacing: "0.02em", fontWeight: "700" }],
+            "headline-sm": ["24px", { lineHeight: "32px", letterSpacing: "-0.01em", fontWeight: "700" }],
+            "headline-lg": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "display-lg-mobile": ["34px", { lineHeight: "42px", letterSpacing: "-0.02em", fontWeight: "800" }],
+            "title-md": ["18px", { lineHeight: "26px", fontWeight: "600" }],
+            "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }]
+          },
+          boxShadow: {
+            "card-soft": "0 4px 32px rgba(0, 0, 0, 0.08)",
+            "card-hover": "0 8px 40px rgba(0, 0, 0, 0.12)"
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-cream text-ink font-body-md antialiased selection:bg-coral-accent/30 selection:text-ink">
+<!-- 1. STICKY NAV -->
+<header class="sticky top-0 z-50 bg-cream/95 backdrop-blur-md shadow-sm border-b border-ink/10 transition-all duration-200">
+<div class="flex justify-between items-center w-full px-6 md:px-12 max-w-7xl mx-auto h-20">
+<!-- Brand Logo / Wordmark -->
+<a class="flex items-center gap-2 font-headline-sm text-headline-sm font-extrabold text-ink tracking-tight" href="#">
+<span>GemOne</span>
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-teal-accent"></span>
+<span class="text-sm font-semibold tracking-normal text-ink-muted hidden sm:inline ml-1">ComplianceLens</span>
+</a>
+<!-- Center Links -->
+<nav class="hidden md:flex items-center gap-8">
+<a class="flex items-center gap-1 font-label-md text-label-md text-ink font-bold border-b-2 border-ink pb-1" href="#features">
+          Features
+          <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</a>
+<a class="flex items-center gap-1 font-label-md text-label-md text-ink-muted hover:text-ink font-medium transition-colors" href="#how-it-works">
+          How it Works
+          <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</a>
+<a class="flex items-center gap-1 font-label-md text-label-md text-ink-muted hover:text-ink font-medium transition-colors" href="#security">
+          Security
+          <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</a>
+<a class="flex items-center gap-1 font-label-md text-label-md text-ink-muted hover:text-ink font-medium transition-colors" href="#enterprise">
+          Enterprise
+          <span class="material-symbols-outlined text-sm">keyboard_arrow_down</span>
+</a>
+</nav>
+<!-- Right CTAs -->
+<div class="flex items-center gap-5">
+<a class="font-label-md text-label-md text-ink hover:text-ink-dark transition-colors font-bold" href="#signin">
+          Log in
+        </a>
+<a class="inline-flex items-center justify-center rounded-full bg-ink text-white font-label-md text-label-md px-6 py-2.5 hover:bg-ink-dark active:scale-95 transition-all duration-150 shadow-sm" href="#get-started">
+          Get Started Free
+        </a>
+</div>
+</div>
+</header>
+<!-- 2. HERO SECTION -->
+<section class="relative pt-16 md:pt-24 pb-16 overflow-hidden">
+<!-- Decorative Floating Accents -->
+<div class="absolute left-6 md:left-24 top-12 pointer-events-none opacity-80">
+<svg fill="none" height="42" viewbox="0 0 42 42" width="42">
+<path d="M21 0L23.5 17.5L41 21L23.5 24.5L21 42L18.5 24.5L1 21L18.5 17.5L21 0Z" fill="#F2994A"></path>
+</svg>
+</div>
+<div class="absolute right-8 md:right-32 top-28 pointer-events-none opacity-80">
+<svg fill="none" height="24" viewbox="0 0 48 24" width="48">
+<path d="M2 12C8 4 14 20 20 12C26 4 32 20 38 12C42 6.6 46 8 46 12" stroke="#14B8A6" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+</div>
+<div class="max-w-7xl mx-auto px-6 md:px-12 text-center">
+<!-- Badge -->
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-teal-accent/15 border border-teal-accent/30 text-teal-accent font-label-sm text-label-sm mb-6">
+<span class="w-2 h-2 rounded-full bg-teal-accent animate-pulse"></span>
+        AI Audit Standard v4.2 Certified for Public Tenders
+      </div>
+<!-- Main Headline -->
+<h1 class="font-display-xl text-display-xl-mobile md:text-display-xl font-extrabold text-ink tracking-tight leading-none mb-6">
+        Procurement Compliance,<br class="hidden sm:inline"/> Powered by AI
+      </h1>
+<!-- Subhead -->
+<p class="font-body-lg text-body-lg text-ink-muted max-w-[620px] mx-auto mb-10 leading-relaxed">
+        GemOne automates tender compliance checks — so procurement officers catch violations before they become liabilities, and vendors submit with confidence.
+      </p>
+<!-- Pill Buttons -->
+<div class="flex flex-wrap items-center justify-center gap-4 mb-16">
+<a class="rounded-full bg-ink text-white font-label-md text-label-md px-8 py-4 hover:bg-ink-dark active:scale-95 transition-all shadow-md flex items-center gap-2" href="#check">
+<span>Start Compliance Checks</span>
+<span class="material-symbols-outlined text-lg">arrow_forward</span>
+</a>
+<a class="rounded-full border-[1.5px] border-ink text-ink font-label-md text-label-md px-8 py-4 hover:bg-ink/5 active:scale-95 transition-all" href="#how-it-works">
+          See How It Works
+        </a>
+</div>
+<!-- Hero Visual Vector Banner -->
+<div class="max-w-5xl mx-auto bg-white rounded-2xl p-6 md:p-10 shadow-card-soft border border-ink/5 relative overflow-hidden">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+<!-- Banner Tile 1 -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-high/60 border border-ink/5">
+<div class="w-12 h-12 rounded-xl bg-teal-accent/20 flex items-center justify-center text-teal-accent">
+<span class="material-symbols-outlined text-2xl" data-weight="fill">verified_user</span>
+</div>
+<div class="text-left">
+<p class="font-label-sm text-label-sm text-ink-muted">Mandatory Clauses</p>
+<p class="font-title-md text-title-md text-ink">48 / 48 Validated</p>
+</div>
+</div>
+<!-- Banner Tile 2 (Center Hero Graphic) -->
+<div class="flex flex-col items-center justify-center py-2 px-4 border-y md:border-y-0 md:border-x border-ink/10">
+<div class="relative mb-2">
+<svg class="mx-auto" fill="none" height="84" viewbox="0 0 84 84" width="84">
+<circle cx="42" cy="42" r="38" stroke="#FDF3E4" stroke-width="8"></circle>
+<circle cx="42" cy="42" r="38" stroke="#14B8A6" stroke-dasharray="238" stroke-dashoffset="36" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="font-headline-sm text-headline-sm font-extrabold text-ink">98.4%</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm font-bold text-ink">Tender Clearance Score</span>
+<span class="font-body-sm text-body-sm text-ink-muted">Zero critical non-compliances</span>
+</div>
+<!-- Banner Tile 3 -->
+<div class="flex items-center gap-4 p-4 rounded-xl bg-surface-container-high/60 border border-ink/5">
+<div class="w-12 h-12 rounded-xl bg-coral-accent/20 flex items-center justify-center text-coral-accent">
+<span class="material-symbols-outlined text-2xl">rule</span>
+</div>
+<div class="text-left">
+<p class="font-label-sm text-label-sm text-ink-muted">Rule Engine Processing</p>
+<p class="font-title-md text-title-md text-ink">0.42s per 200pp Tender</p>
+</div>
+</div>
+</div>
+<!-- Flat-color line vector art motif underneath -->
+<div class="mt-6 pt-6 border-t border-ink/5 flex flex-wrap justify-between items-center text-ink-muted font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-success"></span>
+            Real-time GFR 2017 &amp; CVC Guidelines Parsing
+          </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-teal-accent text-sm">lock</span>
+            Hardware Security Module (HSM) Timestamped
+          </div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-coral-accent text-sm">autorenew</span>
+            Autonomous Disqualification Mitigation
+          </div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. TRUST BAR -->
+<section class="py-8 bg-cream border-y border-ink/10">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<p class="text-center font-label-sm text-label-sm uppercase tracking-wider text-ink-muted mb-6">
+        Aligned with institutional public procurement standards
+      </p>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-70">
+<!-- Institution 1: Ministry of Finance -->
+<div class="flex items-center gap-2 font-headline-sm text-headline-sm font-bold text-ink">
+<span class="material-symbols-outlined text-2xl">account_balance</span>
+<span class="tracking-tight text-base font-extrabold">MINISTRY OF FINANCE</span>
+</div>
+<!-- Institution 2: NIC -->
+<div class="flex items-center gap-2 font-headline-sm text-headline-sm font-bold text-ink">
+<span class="material-symbols-outlined text-2xl">hub</span>
+<span class="tracking-tight text-base font-extrabold">NIC • E-PROCURE</span>
+</div>
+<!-- Institution 3: DPIIT -->
+<div class="flex items-center gap-2 font-headline-sm text-headline-sm font-bold text-ink">
+<span class="material-symbols-outlined text-2xl">verified</span>
+<span class="tracking-tight text-base font-extrabold">DPIIT / MAKE IN INDIA</span>
+</div>
+<!-- Institution 4: MeitY -->
+<div class="flex items-center gap-2 font-headline-sm text-headline-sm font-bold text-ink">
+<span class="material-symbols-outlined text-2xl">memory</span>
+<span class="tracking-tight text-base font-extrabold">MeitY COMPLIANT</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. ANCHOR TAB ROW -->
+<div class="sticky top-20 z-40 bg-cream/90 backdrop-blur-md border-b border-ink/10 py-3 hidden md:block">
+<div class="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
+<div class="flex items-center gap-2 overflow-x-auto py-1">
+<a class="px-4 py-2 rounded-full bg-ink text-white font-label-sm text-label-sm" href="#ai-analysis">AI Analysis</a>
+<a class="px-4 py-2 rounded-full hover:bg-ink/10 text-ink font-label-sm text-label-sm transition-colors" href="#document-check">Document Check</a>
+<a class="px-4 py-2 rounded-full hover:bg-ink/10 text-ink font-label-sm text-label-sm transition-colors" href="#vendor-portal">Vendor Portal</a>
+<a class="px-4 py-2 rounded-full hover:bg-ink/10 text-ink font-label-sm text-label-sm transition-colors" href="#officer-dashboard">Officer Dashboard</a>
+<a class="px-4 py-2 rounded-full hover:bg-ink/10 text-ink font-label-sm text-label-sm transition-colors" href="#audit-trail">Audit Trail</a>
+<a class="px-4 py-2 rounded-full hover:bg-ink/10 text-ink font-label-sm text-label-sm transition-colors" href="#enterprise">Enterprise</a>
+</div>
+<a class="inline-flex items-center gap-1 px-4 py-2 rounded-full bg-ink text-white font-label-sm text-label-sm hover:bg-ink-dark transition-all" href="#get-started">
+        Get started →
+      </a>
+</div>
+</div>
+<!-- 5. FEATURE BLOCK 1 (Light/Cream) -->
+<section class="py-24 bg-cream" id="ai-analysis">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Text Left -->
+<div class="lg:col-span-5">
+<div class="inline-block px-3 py-1 rounded-full bg-teal-accent/15 text-teal-accent font-label-sm text-label-sm mb-4">
+            Automated Audit Intelligence
+          </div>
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-ink leading-tight mb-6">
+            Instant clause-by-clause compliance analysis
+          </h2>
+<p class="font-body-lg text-body-lg text-ink-muted mb-8 leading-relaxed">
+            GemOne extracts complex procurement stipulations across thousands of tender pages. It parses technical specifications, eligibility thresholds, and financial terms in parallel against central vigilance requirements.
+          </p>
+<a class="inline-flex items-center gap-2 font-label-md text-label-md text-ink font-bold border-b-2 border-ink pb-0.5 hover:text-ink-dark transition-all" href="#learn-more">
+            Explore AI analysis →
+          </a>
+</div>
+<!-- Scorecard Table Mockup Right -->
+<div class="lg:col-span-7">
+<div class="bg-white rounded-2xl p-6 md:p-8 shadow-card-soft border border-ink/5 relative">
+<div class="flex items-center justify-between pb-5 border-b border-ink/10 mb-6">
+<div>
+<h3 class="font-title-lg text-title-lg text-ink">Live Evaluation Matrix</h3>
+<p class="font-body-sm text-body-sm text-ink-muted">Tender REF: GEM/2025/B/90412 — Smart Grid Instrumentation</p>
+</div>
+<span class="inline-flex items-center px-3 py-1 rounded-full bg-teal-accent/10 text-teal-accent font-label-sm text-label-sm">
+                Live Verification
+              </span>
+</div>
+<!-- Responsive Table Container -->
+<div class="overflow-x-auto">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="text-ink-muted border-b border-ink/5">
+<th class="pb-3 font-semibold">Vendor Name</th>
+<th class="pb-3 font-semibold">Tender Clause</th>
+<th class="pb-3 font-semibold">Status Badge</th>
+<th class="pb-3 font-semibold">Score</th>
+<th class="pb-3 font-semibold text-right">Timestamp</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-ink/5">
+<tr>
+<td class="py-4 font-bold text-ink">Apex InfraTech Ltd</td>
+<td class="py-4 text-ink-muted">Cl. 4.1 Turn-over Criterion</td>
+<td class="py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-success/15 text-success font-label-sm text-label-sm">
+                        Compliant
+                      </span>
+</td>
+<td class="py-4 font-bold text-ink">98%</td>
+<td class="py-4 text-ink-muted text-right">10:42:01 AM</td>
+</tr>
+<tr>
+<td class="py-4 font-bold text-ink">Bharat Grid Systems</td>
+<td class="py-4 text-ink-muted">Cl. 6.3 OEM Authorization</td>
+<td class="py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-warning/15 text-warning font-label-sm text-label-sm">
+                        Under Review
+                      </span>
+</td>
+<td class="py-4 font-bold text-ink">74%</td>
+<td class="py-4 text-ink-muted text-right">10:43:18 AM</td>
+</tr>
+<tr>
+<td class="py-4 font-bold text-ink">Kavach Networks Corp</td>
+<td class="py-4 text-ink-muted">Cl. 2.1 EMD Bank Guarantee</td>
+<td class="py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-danger/15 text-danger font-label-sm text-label-sm">
+                        Disqualified
+                      </span>
+</td>
+<td class="py-4 font-bold text-ink">42%</td>
+<td class="py-4 text-ink-muted text-right">10:44:05 AM</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Footer summary pill -->
+<div class="mt-6 pt-4 border-t border-ink/5 flex items-center justify-between text-xs text-ink-muted">
+<span>Audited under GFR Rule 144(xi) protocols</span>
+<span class="font-bold text-ink">Automated Hash: #8F9A-4029CB</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. FEATURE BLOCK 2 (Light/Cream) -->
+<section class="py-24 bg-cream" id="document-check">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Document Upload & Violation Flags Mockup Left -->
+<div class="lg:col-span-7 order-2 lg:order-1">
+<div class="bg-white rounded-2xl p-6 md:p-8 shadow-card-soft border border-ink/5 relative">
+<div class="flex items-center justify-between pb-4 border-b border-ink/10 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-xl bg-ink/5 flex items-center justify-center text-ink">
+<span class="material-symbols-outlined">upload_file</span>
+</div>
+<div>
+<h3 class="font-title-md text-title-md text-ink">Tender_Submission_Dossier_Final.pdf</h3>
+<p class="font-body-sm text-body-sm text-ink-muted">Uploaded by Technical Bidder • 14.8 MB</p>
+</div>
+</div>
+<span class="px-3 py-1 rounded-full bg-coral-accent/15 text-coral-accent font-label-sm text-label-sm">
+                2 Violations Flagged
+              </span>
+</div>
+<!-- Document Inline Inspection Snippet -->
+<div class="space-y-4">
+<!-- Violation 1 -->
+<div class="p-4 rounded-xl border border-danger/30 bg-danger/5">
+<div class="flex items-start justify-between gap-3 mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-danger text-lg">error</span>
+<span class="font-title-md text-title-md text-ink text-sm">Clause 4.2: Statutory Registration Defect</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-danger/15 text-danger font-label-sm text-label-sm">
+                    Clause 4.2 missing GSTIN validation
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted ml-6">
+                  Certificate provided was issued under a canceled GST registration code. Auto-verified with NIC GST API: Status returned "INACTIVE".
+                </p>
+</div>
+<!-- Violation 2 -->
+<div class="p-4 rounded-xl border border-warning/30 bg-warning/5">
+<div class="flex items-start justify-between gap-3 mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-warning text-lg">warning</span>
+<span class="font-title-md text-title-md text-ink text-sm">Clause 8.1: Experience Certificate Validity</span>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-warning/15 text-warning font-label-sm text-label-sm">
+                    Warning: Signatory Mismatch
+                  </span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted ml-6">
+                  Authorized signatory digital seal does not match the Power of Attorney schedule attached on page 42.
+                </p>
+</div>
+<!-- Clean pass -->
+<div class="p-4 rounded-xl border border-success/30 bg-success/5 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-lg">check_circle</span>
+<span class="font-body-sm text-body-sm font-semibold text-ink">Clause 1.4: Net Worth Audited Certificate</span>
+</div>
+<span class="px-2 py-0.5 rounded-full bg-success/20 text-success text-xs font-bold">Passed (₹48.2 Cr)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Text Right -->
+<div class="lg:col-span-5 order-1 lg:order-2">
+<div class="inline-block px-3 py-1 rounded-full bg-coral-accent/15 text-coral-accent font-label-sm text-label-sm mb-4">
+            Vendor Self-Correction
+          </div>
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-ink leading-tight mb-6">
+            Catch violations before submission
+          </h2>
+<p class="font-body-lg text-body-lg text-ink-muted mb-8 leading-relaxed">
+            Eliminate non-responsive tenders before opening bids. GemOne gives prospective suppliers pre-submission screening reports, reducing avoidable disqualifications by 84% and preventing protracted bid challenges.
+          </p>
+<a class="inline-flex items-center gap-2 font-label-md text-label-md text-ink font-bold border-b-2 border-ink pb-0.5 hover:text-ink-dark transition-all" href="#learn-more">
+            Learn about self-check →
+          </a>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. SVG CURVED DIVIDER (Cream to #241454) -->
+<div class="w-full overflow-hidden leading-none -mb-1 bg-cream">
+<svg class="w-full h-20 text-indigo-dark block" fill="none" preserveaspectratio="none" viewbox="0 0 1440 80">
+<path d="M0,0 C480,80 960,80 1440,0 L1440,80 L0,80 Z" fill="#241454"></path>
+</svg>
+</div>
+<!-- 8. DARK SECTION (#241454) -->
+<section class="py-24 bg-indigo-dark text-white relative" id="officer-dashboard">
+<!-- Floating Asymmetric Teal Squiggle Accent -->
+<div class="absolute right-12 top-10 pointer-events-none opacity-90 hidden sm:block">
+<svg fill="none" height="36" viewbox="0 0 72 36" width="72">
+<path d="M4 18C16 4 28 32 40 18C52 4 64 32 68 18" stroke="#14B8A6" stroke-linecap="round" stroke-width="4"></path>
+</svg>
+</div>
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<!-- Headings -->
+<div class="max-w-3xl mb-16">
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-white mb-6">
+          Close the compliance gap for every tender.
+        </h2>
+<p class="font-body-lg text-body-lg text-white/80 leading-relaxed">
+          Public procurement requires institutional audit certainty. GemOne pairs dual-perspective dashboards with tamper-proof cryptographic ledgers so vigilance commissions and procurement officers share one objective truth.
+        </p>
+</div>
+<!-- Two White Rounded-2xl Cards Side by Side -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<!-- Card A: Officer Dashboard -->
+<div class="bg-white rounded-2xl p-6 md:p-8 shadow-card-soft text-ink relative">
+<div class="flex items-center justify-between pb-4 border-b border-ink/10 mb-6">
+<div>
+<span class="font-label-sm text-label-sm text-ink-muted">PROCUREMENT EXECUTIVE CONSOLE</span>
+<h3 class="font-title-lg text-title-lg text-ink">Active Tenders &amp; Risk Index</h3>
+</div>
+<span class="px-3 py-1 rounded-full bg-teal-accent/15 text-teal-accent font-label-sm text-label-sm">
+              Live Feed
+            </span>
+</div>
+<div class="space-y-4">
+<div class="p-4 rounded-xl bg-surface-container-high/40 flex items-center justify-between">
+<div>
+<p class="font-title-md text-title-md text-ink text-sm">GEM/2025/DEF/0821 — Radar Assemblies</p>
+<p class="font-body-sm text-body-sm text-ink-muted">6 Bids Received • Risk Priority: High</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2.5 py-1 rounded-full bg-danger/15 text-danger font-label-sm text-label-sm">
+                  3 Violations Found
+                </span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-high/40 flex items-center justify-between">
+<div>
+<p class="font-title-md text-title-md text-ink text-sm">GEM/2025/RAIL/3194 — Switchgear Units</p>
+<p class="font-body-sm text-body-sm text-ink-muted">14 Bids Received • Risk Priority: Low</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2.5 py-1 rounded-full bg-success/15 text-success font-label-sm text-label-sm">
+                  100% Cleared
+                </span>
+</div>
+</div>
+<div class="p-4 rounded-xl bg-surface-container-high/40 flex items-center justify-between">
+<div>
+<p class="font-title-md text-title-md text-ink text-sm">GEM/2025/MED/1102 — Hospital Oxygen Plants</p>
+<p class="font-body-sm text-body-sm text-ink-muted">8 Bids Received • Technical Evaluation Open</p>
+</div>
+<div class="text-right">
+<span class="inline-block px-2.5 py-1 rounded-full bg-warning/15 text-warning font-label-sm text-label-sm">
+                  Review Pending
+                </span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-ink/5 flex items-center justify-between text-xs text-ink-muted">
+<span>Automated scoring refreshed 2 mins ago</span>
+<a class="font-bold text-ink underline" href="#">View Priority Queue →</a>
+</div>
+</div>
+<!-- Card B: Immutable Audit Trail -->
+<div class="bg-white rounded-2xl p-6 md:p-8 shadow-card-soft text-ink relative" id="audit-trail">
+<div class="flex items-center justify-between pb-4 border-b border-ink/10 mb-6">
+<div>
+<span class="font-label-sm text-label-sm text-ink-muted">COMPLIANCE LEDGER</span>
+<h3 class="font-title-lg text-title-lg text-ink">Immutable Audit Trail</h3>
+</div>
+<div class="flex items-center gap-1 text-teal-accent">
+<span class="material-symbols-outlined text-sm">lock</span>
+<span class="font-label-sm text-label-sm">SHA-256 Chained</span>
+</div>
+</div>
+<div class="relative pl-6 space-y-6 before:content-[''] before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-ink/10">
+<!-- Timeline Item 1 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1.5 w-3 h-3 rounded-full bg-teal-accent border-2 border-white"></div>
+<div class="flex items-baseline justify-between mb-1">
+<h4 class="font-title-md text-title-md text-ink text-sm">Technical Bid Cleared by AI Engine</h4>
+<span class="text-xs text-ink-muted">11:15:20 IST</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted">
+                System confirmed all 32 technical mandatory certifications with SHA-256 block hash <code>9e2c4...f1a</code>.
+              </p>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1.5 w-3 h-3 rounded-full bg-ink border-2 border-white"></div>
+<div class="flex items-baseline justify-between mb-1">
+<h4 class="font-title-md text-title-md text-ink text-sm">Officer Sign-Off Recorded</h4>
+<span class="text-xs text-ink-muted">11:22:04 IST</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted">
+                Director General of Supplies approved exception report. Cryptographically signed with PKI token.
+              </p>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative">
+<div class="absolute -left-[22px] top-1.5 w-3 h-3 rounded-full bg-coral-accent border-2 border-white"></div>
+<div class="flex items-baseline justify-between mb-1">
+<h4 class="font-title-md text-title-md text-ink text-sm">CAG Audit Ready Snapshot Sealed</h4>
+<span class="text-xs text-ink-muted">11:30:00 IST</span>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted">
+                Snapshot locked into read-only institutional vault. Verifiable by central vigilance committees.
+              </p>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-ink/5 flex items-center justify-between text-xs text-ink-muted">
+<span>Non-repudiation verified</span>
+<span class="font-bold text-ink">HSM Sign-off #TX-7719</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 9. SVG CURVED DIVIDER (#241454 to Cream) -->
+<div class="w-full overflow-hidden leading-none -mb-1 bg-indigo-dark">
+<svg class="w-full h-20 text-cream block" fill="none" preserveaspectratio="none" viewbox="0 0 1440 80">
+<path d="M0,80 C480,0 960,0 1440,80 L1440,80 L0,80 Z" fill="#FDF3E4"></path>
+</svg>
+</div>
+<!-- 10. LIGHT SECTION (Cream) -->
+<section class="py-24 bg-cream">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-ink mb-4">
+          Every submission, transparently verified
+        </h2>
+<p class="font-body-lg text-body-lg text-ink-muted">
+          Our algorithmic evaluator models procurement rules into deterministic logic trees, leaving zero ambiguity for evaluators and bidders.
+        </p>
+</div>
+<!-- Centered Rule Engine Card -->
+<div class="max-w-3xl mx-auto bg-white rounded-2xl p-6 md:p-10 shadow-card-soft border border-ink/5 mb-20">
+<h3 class="font-title-lg text-title-lg text-ink mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-teal-accent">rule_settings</span>
+          Active Rule Sets Applied
+        </h3>
+<div class="space-y-6">
+<div class="flex items-start gap-4 pb-6 border-b border-ink/10">
+<div class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-ink text-base">Rule 144(xi) Cross-Border Procurement Scrutiny</h4>
+<p class="font-body-sm text-body-sm text-ink-muted mt-1">
+                Automated check for country of origin beneficial ownership declarations, scrutinizing registrar records against sanctioned jurisdictions.
+              </p>
+</div>
+</div>
+<div class="flex items-start gap-4 pb-6 border-b border-ink/10">
+<div class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-ink text-base">Make-in-India (DPIIT) Minimum Local Content (MLC)</h4>
+<p class="font-body-sm text-body-sm text-ink-muted mt-1">
+                Cross-validates manufacturer cost breakdowns and local supplier invoices to calculate verified local value addition percentages.
+              </p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="w-8 h-8 rounded-full bg-success/20 text-success flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-lg font-bold">check</span>
+</div>
+<div>
+<h4 class="font-title-md text-title-md text-ink text-base">MSME / Startup Exemption Verification</h4>
+<p class="font-body-sm text-body-sm text-ink-muted mt-1">
+                Dynamic query to Udyam database verifies active MSME certificate status to appropriately waive turnover and prior experience criteria.
+              </p>
+</div>
+</div>
+</div>
+</div>
+<!-- 2x2 Grid of Micro-feature Bullets (No icons, bold headings, 1-line descriptions) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+<div class="p-6 rounded-2xl bg-white/70 border border-ink/5">
+<h4 class="font-headline-sm text-headline-sm text-ink mb-2">Automated Scoring</h4>
+<p class="font-body-md text-body-md text-ink-muted">Generates transparent mathematical percentage clearance across technical and financial criteria.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white/70 border border-ink/5">
+<h4 class="font-headline-sm text-headline-sm text-ink mb-2">Rule Configuration</h4>
+<p class="font-body-md text-body-md text-ink-muted">Customize specialized ministry policies, threshold exemptions, and state-specific relaxations.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white/70 border border-ink/5">
+<h4 class="font-headline-sm text-headline-sm text-ink mb-2">Vendor Guidance</h4>
+<p class="font-body-md text-body-md text-ink-muted">Provides bidders with actionable remediation steps to correct clerical errors prior to cutoff.</p>
+</div>
+<div class="p-6 rounded-2xl bg-white/70 border border-ink/5">
+<h4 class="font-headline-sm text-headline-sm text-ink mb-2">Instant Reports</h4>
+<p class="font-body-md text-body-md text-ink-muted">Export comprehensive comparative evaluation statements (CST) with a single click.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 11. SVG CURVED DIVIDER (Cream to #241454) -->
+<div class="w-full overflow-hidden leading-none -mb-1 bg-cream">
+<svg class="w-full h-20 text-indigo-dark block" fill="none" preserveaspectratio="none" viewbox="0 0 1440 80">
+<path d="M0,0 C480,80 960,80 1440,0 L1440,80 L0,80 Z" fill="#241454"></path>
+</svg>
+</div>
+<!-- 12. DARK ENTERPRISE SECTION (#241454) -->
+<section class="py-24 bg-indigo-dark text-white" id="enterprise">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-white mb-4">
+          Built for government-scale procurement
+        </h2>
+<p class="font-body-lg text-body-lg text-white/80">
+          Enterprise infrastructure engineered to support mission-critical high-volume state and central tenders.
+        </p>
+</div>
+<!-- 2x2 Grid of Bold White Cards/Bullets -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+<div class="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+<h3 class="font-title-lg text-title-lg text-white mb-2">Role-based access</h3>
+<p class="font-body-md text-body-md text-white/70 leading-relaxed">
+            Granular access controls separating Tender Inviting Authorities (TIA), Technical Evaluators, Financial Officers, and Independent Vigilance Observers.
+          </p>
+</div>
+<div class="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+<h3 class="font-title-lg text-title-lg text-white mb-2">Audit-ready exports</h3>
+<p class="font-body-md text-body-md text-white/70 leading-relaxed">
+            Generates standardized, cryptographically signed dossier archives formatted specifically for parliamentary inquiries and CAG scrutiny.
+          </p>
+</div>
+<div class="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+<h3 class="font-title-lg text-title-lg text-white mb-2">SOC 2 compliant</h3>
+<p class="font-body-md text-body-md text-white/70 leading-relaxed">
+            End-to-end encrypted storage with regional data localization guarantees, certified under SOC 2 Type II and ISO/IEC 27001 parameters.
+          </p>
+</div>
+<div class="bg-white/5 border border-white/10 rounded-2xl p-8 hover:bg-white/10 transition-colors">
+<h3 class="font-title-lg text-title-lg text-white mb-2">Custom rule engine</h3>
+<p class="font-body-md text-body-md text-white/70 leading-relaxed">
+            Adaptable semantic syntax enabling agency legal counsel to codify custom procurement ordinances without writing a single line of backend code.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- 13. SVG CURVED DIVIDER (#241454 to Cream) -->
+<div class="w-full overflow-hidden leading-none -mb-1 bg-indigo-dark">
+<svg class="w-full h-20 text-cream block" fill="none" preserveaspectratio="none" viewbox="0 0 1440 80">
+<path d="M0,80 C480,0 960,0 1440,80 L1440,80 L0,80 Z" fill="#FDF3E4"></path>
+</svg>
+</div>
+<!-- 14. TRUST & SECURITY SECTION (Cream) -->
+<section class="py-24 bg-cream" id="security">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="text-center max-w-3xl mx-auto mb-16">
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-ink mb-4">
+          Trusted infrastructure for public procurement
+        </h2>
+<p class="font-body-lg text-body-lg text-ink-muted">
+          Public trust requires uncompromised data integrity. GemOne isolates all sensitive bid data in sovereign cloud enclaves.
+        </p>
+</div>
+<div class="max-w-4xl mx-auto bg-white rounded-2xl p-8 md:p-12 shadow-card-soft border border-ink/5 flex flex-col md:flex-row items-center gap-10">
+<!-- Clean Hand-Drawn Style Line Illustration of Cryptographic Shield & Vault -->
+<div class="w-full md:w-1/2 flex justify-center">
+<div class="relative p-6 rounded-2xl bg-cream/50 border border-ink/10">
+<svg class="mx-auto" fill="none" height="220" viewbox="0 0 220 220" width="220">
+<!-- Outer Shield Line -->
+<path d="M110 20L180 50V110C180 160 110 195 110 195C110 195 40 160 40 110V50L110 20Z" fill="#FFFFFF" stroke="#2A1B54" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path>
+<!-- Vault Lock Inner -->
+<circle cx="110" cy="105" r="32" stroke="#14B8A6" stroke-linecap="round" stroke-width="3"></circle>
+<path d="M110 93V117" stroke="#14B8A6" stroke-linecap="round" stroke-width="3"></path>
+<path d="M98 105H122" stroke="#14B8A6" stroke-linecap="round" stroke-width="3"></path>
+<!-- Hand-drawn style decorative stars/sparkles -->
+<path d="M175 35L178 45L188 48L178 51L175 61L172 51L162 48L172 45L175 35Z" fill="#F2994A"></path>
+<path d="M35 155L37 162L44 164L37 166L35 173L33 166L26 164L33 162L35 155Z" fill="#E6396B"></path>
+</svg>
+</div>
+</div>
+<!-- SOC 2 Type II Badge & Accreditation Details -->
+<div class="w-full md:w-1/2">
+<div class="p-6 rounded-xl border-2 border-ink bg-surface-container-high/40 mb-6">
+<div class="flex items-center gap-3 mb-2">
+<span class="material-symbols-outlined text-ink text-3xl" data-weight="fill">verified_user</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-ink text-lg leading-tight">SOC 2 TYPE II CERTIFIED</h4>
+<p class="font-label-sm text-label-sm text-ink-muted">AICPA Trust Services Criteria • Annual Audit</p>
+</div>
+</div>
+<p class="font-body-sm text-body-sm text-ink-muted mt-2">
+              Verified security, availability, and confidentiality controls. Penetration tested by CERT-In empaneled auditor.
+            </p>
+</div>
+<div class="space-y-3 font-body-sm text-body-sm text-ink">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-base">check_circle</span>
+<span>100% In-Country Data Sovereignty &amp; Localization</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-base">check_circle</span>
+<span>Hardware-level HSM FIPS 140-2 Level 3 Key Protection</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-success text-base">check_circle</span>
+<span>Role-segregated double-blind bid evaluation</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 15. FOOTER (Cream with subtle border-t) -->
+<footer class="bg-cream border-t border-ink/10 pt-16 pb-12">
+<div class="max-w-7xl mx-auto px-6 md:px-12">
+<div class="grid grid-cols-1 md:grid-cols-12 gap-10 pb-16 border-b border-ink/10">
+<!-- Left Column: Wordmark & Mission -->
+<div class="md:col-span-5">
+<a class="flex items-center gap-2 font-headline-sm text-headline-sm font-extrabold text-ink tracking-tight mb-4" href="#">
+<span>GemOne</span>
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-teal-accent"></span>
+<span class="text-sm font-semibold tracking-normal text-ink-muted">ComplianceLens</span>
+</a>
+<p class="font-body-md text-body-md text-ink-muted max-w-sm leading-relaxed mb-6">
+            Empowering procurement officers and suppliers with deterministic AI compliance, elevating transparency, and eliminating audit failure across institutional tenders.
+          </p>
+<div class="flex items-center gap-4">
+<span class="px-3 py-1 rounded-full bg-ink/5 border border-ink/10 text-xs font-bold text-ink">
+              SOC 2 Type II
+            </span>
+<span class="px-3 py-1 rounded-full bg-ink/5 border border-ink/10 text-xs font-bold text-ink">
+              ISO 27001
+            </span>
+</div>
+</div>
+<!-- 3 Column Links -->
+<div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8">
+<!-- Product Column -->
+<div>
+<h4 class="font-title-md text-title-md text-ink text-sm font-bold uppercase tracking-wider mb-4">Product</h4>
+<ul class="space-y-3 font-body-sm text-body-sm text-ink-muted">
+<li><a class="hover:text-ink transition-colors" href="#features">Features</a></li>
+<li><a class="hover:text-ink transition-colors" href="#pricing">Pricing</a></li>
+<li><a class="hover:text-ink transition-colors" href="#changelog">Changelog</a></li>
+<li><a class="hover:text-ink transition-colors" href="#roadmap">Rule Updates</a></li>
+</ul>
+</div>
+<!-- Resources Column -->
+<div>
+<h4 class="font-title-md text-title-md text-ink text-sm font-bold uppercase tracking-wider mb-4">Resources</h4>
+<ul class="space-y-3 font-body-sm text-body-sm text-ink-muted">
+<li><a class="hover:text-ink transition-colors" href="#docs">Docs</a></li>
+<li><a class="hover:text-ink transition-colors" href="#api">API</a></li>
+<li><a class="hover:text-ink transition-colors" href="#blog">Blog</a></li>
+<li><a class="hover:text-ink transition-colors" href="#guidelines">GFR 2017 Handbook</a></li>
+</ul>
+</div>
+<!-- Company Column -->
+<div>
+<h4 class="font-title-md text-title-md text-ink text-sm font-bold uppercase tracking-wider mb-4">Company</h4>
+<ul class="space-y-3 font-body-sm text-body-sm text-ink-muted">
+<li><a class="hover:text-ink transition-colors" href="#about">About</a></li>
+<li><a class="hover:text-ink transition-colors" href="#contact">Contact</a></li>
+<li><a class="hover:text-ink transition-colors" href="#privacy">Privacy</a></li>
+<li><a class="hover:text-ink transition-colors" href="#security">Security &amp; Trust</a></li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Bottom Copyright & Social Icons -->
+<div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 font-body-sm text-body-sm text-ink-muted">
+<div>
+          © 2025 GemOne Technologies Inc. All rights reserved.
+        </div>
+<div class="flex items-center gap-6">
+<!-- GitHub Icon -->
+<a aria-label="GitHub" class="hover:text-ink transition-colors" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+</a>
+<!-- LinkedIn Icon -->
+<a aria-label="LinkedIn" class="hover:text-ink transition-colors" href="#">
+<svg class="w-5 h-5 fill-current" viewbox="0 0 24 24">
+<path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"></path>
+</svg>
+</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

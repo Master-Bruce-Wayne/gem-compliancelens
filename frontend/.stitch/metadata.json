@@ -1,0 +1,39 @@
+﻿{
+  "name": "projects/5617684890226377039",
+  "projectId": "5617684890226377039",
+  "title": "GemOne ComplianceLens — Dovetail Redesign",
+  "visibility": "PRIVATE",
+  "createTime": "2026-09-27T03:00:10.847723Z",
+  "updateTime": "2026-09-27T03:41:09Z",
+  "projectType": "PROJECT_DESIGN",
+  "origin": "STITCH",
+  "deviceType": "DESKTOP",
+  "designSystemId": "assets/4a93dc38e5ef481586b05b451a13fcfb",
+  "designTheme": {
+    "colorMode": "LIGHT",
+    "font": "PLUS_JAKARTA_SANS",
+    "roundness": "ROUND_FULL",
+    "customColor": "#2A1B54",
+    "headlineFont": "PLUS_JAKARTA_SANS",
+    "bodyFont": "INTER",
+    "colorVariant": "FIDELITY",
+    "overridePrimaryColor": "#2A1B54",
+    "overrideSecondaryColor": "#4C3B7C",
+    "overrideTertiaryColor": "#14B8A6",
+    "overrideNeutralColor": "#FDF3E4"
+  },
+  "screens": {
+    "index": {
+      "id": "4583ec42caa04fcd90cf0583624a2863",
+      "sourceScreen": "projects/5617684890226377039/screens/4583ec42caa04fcd90cf0583624a2863",
+      "width": 2560,
+      "height": 14108,
+      "title": "GemOne ComplianceLens - Marketing Landing Page",
+      "localHtml": "frontend/.stitch/designs/index.html",
+      "localPng": "frontend/.stitch/designs/index.png"
+    }
+  },
+  "metadata": {
+    "userRole": "OWNER"
+  }
+}
