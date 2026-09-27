@@ -4,6 +4,8 @@
 
 ![GemOne Architecture Demo](https://img.shields.io/badge/Status-Live_Prototype-success) ![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_PostgreSQL-blue)
 
+🚀 **Live Demo:** [https://gem-compliancelens-gules.vercel.app/](https://gem-compliancelens-gules.vercel.app/)
+
 ## 📖 The Problem
 Public procurement in India involves massive transaction volumes. When vendors (bidders) apply for tenders, Procurement Officers must verify their statutory compliance documents (Udyam, GST, PAN, Income Tax, EPFO, Make in India, etc.). 
 
