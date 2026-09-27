@@ -1,46 +1,42 @@
-# 🏛️ GemOne
-**Smart India Hackathon (SIH) '26 - AI-Powered Bid Compliance Verification for Government e-Marketplace (GeM)**
+# 💎 GemOne 
+**AI-Powered Integrated Bid Compliance Verification Platform for GeM Procurement**  
+*Built for Smart India Hackathon '26 (Problem Statement: 26100)*
 
-[![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-blue?logo=react)](#)
-[![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi)](#)
-[![Database](https://img.shields.io/badge/Database-PostgreSQL%20(Async)-336791?logo=postgresql)](#)
-[![Deployment](https://img.shields.io/badge/Deployed_on-Vercel%20%26%20Render-black)](#)
-
----
+![GemOne Architecture Demo](https://img.shields.io/badge/Status-Live_Prototype-success) ![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_FastAPI_%7C_PostgreSQL-blue)
 
 ## 📖 The Problem
-Government procurement through the **Government e-Marketplace (GeM)** involves verifying multiple statutory, regulatory, and eligibility requirements (e.g., Udyam/MSME, GST, PAN, Make in India, EPFO, Debarment lists). 
+Public procurement in India involves massive transaction volumes. When vendors (bidders) apply for tenders, Procurement Officers must verify their statutory compliance documents (Udyam, GST, PAN, Income Tax, EPFO, Make in India, etc.). 
 
-Currently, this process is highly **document-intensive**, requiring procurement officers to manually cross-check information across multiple government portals. This results in significant manual effort, longer evaluation cycles, and high vulnerability to human error and forged documents.
+Currently, this process is highly **document-intensive**, requiring officers to manually cross-check information across 8-10 disconnected government portals. This results in significant manual effort (45-90 minutes per bidder), longer evaluation cycles, and a high risk of wrongly rejecting genuine MSMEs due to minor paperwork gaps rather than real ineligibility.
 
 ## 💡 Our Solution: GemOne
 **GemOne** is an end-to-end, AI-powered Bid Application Lifecycle platform. It automates the extraction and verification of statutory documents while keeping the final decision-making process strictly **deterministic** and fully auditable.
 
-Instead of relying on LLMs to make black-box decisions, our platform uses AI for what it does best (vision, OCR, explanation) and relies on a rigid, state-machine-backed Rule Engine for compliance evaluation.
+Instead of relying on Generative AI to make black-box decisions, our platform uses AI for what it does best (vision, OCR, explanation) and relies on a rigid, mathematical **Abstract Syntax Tree (AST) Rule Engine** for compliance evaluation. 
+
+**The AI verifies. The Rule Engine evaluates. The Officer decides.**
 
 ---
 
-## 📊 Current Project Status (Core MVP)
-Our core MVP is actively deployed and operational, successfully demonstrating the end-to-end lifecycle for both Vendors and Procurement Officers. While we are continuously refining edge cases, the foundational architecture is live:
+## ✨ Key Features & The "X-Factor"
 
-✅ **Fully Operational Features:**
-- **Role-Based Dashboards:** Distinct interfaces for Bidders (Vendors) and Procurement Officers.
-- **Rule Engine Execution:** Officers can dynamically create Tender rules (e.g., minimum turnover, GST compliance), and the backend strictly enforces them.
-- **Automated AI Extraction:** Documents uploaded by vendors are passed through our Python OCR pipeline to extract key metrics (PAN, GSTIN) automatically.
-- **Clarification Loop:** The complete workflow for an officer to pause an evaluation, request manual clarification/documents from a vendor, and receive their response.
-- **Manual Verification Bridge:** If the AI has low confidence in a blurry document, it safely degrades and forces a human officer to manually verify the document, recording the decision in the audit log.
-- **Cloud Infrastructure:** Integrated with Cloudinary for secure document storage and deployed live on Vercel (Frontend) and Render (Backend).
+1. **The Global Compliance Vault & Smart Gatekeeper**
+   Vendors upload core documents (PAN, GST) once to a persistent, secure vault for endless reuse. When a vendor applies to a tender, our **Smart Gatekeeper** algorithm cross-references the Officer's required rules against the Vendor's Vault. If a document is missing, submission is dynamically blocked, forcing an inline upload. This guarantees **0% incomplete applications** ever reach the officer.
 
----
+2. **Deterministic Rule Engine (No Hallucinations)**
+   Procurement Officers set dynamic threshold rules (e.g., "Minimum Local Content > 50%"). The engine mathematically evaluates these against the vendor's extracted data. No AI hallucinations during financial evaluation.
 
-## ✨ Key Features
+3. **Private Passwords & Market Exclusivity**
+   Enterprise procurement requires closed-door bidding. Officers can toggle a tender to "Private" and lock it with a cryptographic password, instantly bypassing clunky manual approval queues for restricted vendors.
 
-- 🧠 **AI-Powered OCR Extraction:** Utilizes `pdfplumber` and `pytesseract` to extract structured data (GSTIN, PAN, Udyam No.) from uploaded Vendor documents. Includes a "graceful degradation" fallback forcing manual vendor confirmation if AI confidence is low.
-- ⚙️ **Deterministic Rule Engine:** Procurement Officers set dynamic threshold rules (e.g., "Minimum Local Content 50%", "GST Active"). The engine mathematically evaluates these against the vendor's extracted data. No AI hallucinations.
-- 🚨 **Multi-Layered Forgery Detection:** Analyzes uploaded files for digital tampering by inspecting Exif metadata, PDF creation trails, and pixel-level anomalies (Error Level Analysis).
-- 🔄 **Integrated Clarification Loop:** If a bid is flagged as "Needs Review," officers can bounce the application back to the vendor with a clarification request. The vendor is notified, submits corrections/new docs, and the bid resumes evaluation.
-- 🔒 **Secure Centralized Vault:** Vendors upload their statutory documents once to an encrypted Cloudinary vault. Documents are securely attached to individual tender applications without re-uploading.
-- 📜 **Immutable Audit Trails:** Every single state transition, manual verification override, and evaluation score is securely logged in the PostgreSQL `audit_log` with the exact Timestamp and Actor ID.
+4. **Custom "Wildcard" Document Requests (AI Bypass)**
+   Officers are never restricted by the AI. They can require arbitrary custom documents (e.g., "Financial Audit 2024"). The system forces the vendor to upload it, intelligently bypasses the OCR engine, and routes it directly to a "Needs Manual Review" queue.
+
+5. **Graceful Degradation (The 3-Strike Rule)**
+   Most automated systems are binary—if the AI fails to read the document, the user is locked out. GemOne features a resilient 3-strike fallback bridge. If the AI fails to extract data 3 times due to a blurry scan, it gracefully degrades to a "Manual Review Queue" for the Officer. **Zero operational downtime.**
+
+6. **Immutable Cryptographic Audit Trail (Pseudo-Blockchain)**
+   Every single action (tender creation, application submission, evaluation) is logged in a PostgreSQL `audit_log` table. Every new row computes a **SHA-256 hash chaining the previous row's hash**. This creates an un-tamperable pseudo-blockchain, proving to CVC/CAG auditors that the platform is immune to internal data tampering.
 
 ---
 
@@ -48,30 +44,21 @@ Our core MVP is actively deployed and operational, successfully demonstrating th
 
 ### Frontend (Vendor & Officer Portals)
 - **Framework:** React 18 (TypeScript) + Vite
-- **Styling:** Tailwind CSS + Shadcn UI + Lucide Icons
-- **Routing:** React Router DOM (Role-Based Access Control)
-- **Deployment:** Vercel
+- **Styling:** Tailwind CSS + Lucide Icons
+- **State/Routing:** React Router DOM (Strict Role-Based Access Control)
+- **Deployment:** Vercel (Edge Network)
 
 ### Backend (REST API)
-- **Framework:** FastAPI (Python 3.11+)
-- **Database ORM:** SQLAlchemy 2.0 (Asyncpg) + Alembic Migrations
-- **AI / OCR:** Tesseract-OCR, Poppler, pdf2image, pdfplumber
-- **LLM Integration:** Anthropic Claude (Strictly for generating human-readable explanations of rule engine failures).
-- **Deployment:** Render (Dockerized / Native Python)
+- **Framework:** FastAPI (Python 3.11+ / ASGI Concurrency)
+- **Database ORM:** SQLAlchemy 2.0 (Asyncpg driver)
+- **AI / OCR Pipeline:** `tesseract-ocr`, `pdfplumber`, `pdf2image`, Pillow
+- **LLM Integration:** Google Gemini API (`gemini-1.5-flash` with automatic fallback to `gemini-pro`). Used *strictly* for translating math results into human-readable explanations.
+- **Deployment:** Render (Dockerized Linux Container)
 
-### Infrastructure
-- **Database:** PostgreSQL hosted on Supabase (Port 6543 PgBouncer connection pooled with `statement_cache_size=0` for async compatibility).
-- **Storage:** Cloudinary (Private asset tier requiring signed URLs for access).
-
----
-
-## 🗄️ Core Database Lifecycle
-The system is built on a strict state machine to prevent IDOR and race conditions:
-
-1. **Tenders:** (`draft` -> `open` -> `evaluation` -> `closed`)
-2. **Bid Applications:** (`draft` -> `submitted` -> `under_evaluation` -> `clarification_requested` -> `qualified` / `disqualified`)
-3. **Evaluations & Checks:** A snapshot of a Bid's compliance against the Tender Rules. Contains child `EvaluationCheck` rows for each rule.
-4. **Manual Verifications:** Records of Officers manually overriding or confirming a `needs_review` system check.
+### Infrastructure & Security
+- **Database:** PostgreSQL hosted on Supabase (Port 6543 PgBouncer connection pooled).
+- **Storage:** Cloudinary (Private asset tier requiring signed URLs).
+- **Security:** JWT (HS256) Authentication, `bcrypt` password hashing, Cryptographic Hash Chaining.
 
 ---
 
@@ -96,7 +83,7 @@ Create a `.env` file inside the `/backend` directory:
 DATABASE_URL=postgresql+asyncpg://postgres:[PASSWORD]@[HOST]:6543/postgres
 JWT_SECRET=your_super_secret_jwt_key
 CLOUDINARY_URL=cloudinary://[API_KEY]:[API_SECRET]@[CLOUD_NAME]
-ANTHROPIC_API_KEY=sk-ant-api03-...
+GEMINI_API_KEY=AIzaSyB...
 ```
 
 ### 2. Backend Setup
@@ -106,7 +93,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Run Database Migrations (Creates all tables in PostgreSQL)
+# Run Database Migrations
 alembic upgrade head
 
 # Start the FastAPI Server
@@ -128,23 +115,4 @@ npm run dev
 *Frontend available at `http://localhost:5173`*
 
 ---
-
-## 🗺️ Next Implementations (Future Roadmap)
-We have logged comprehensive architecture upgrade plans in our [GitHub Issues](https://github.com/Shubham15986/gem-compliancelens/issues). Our immediate next steps for scaling to a national level include:
-
-### 1. Security & Governance Upgrades
-- **Maker/Checker Workflow:** Implement a four-eyes principle requiring a Junior Officer to verify and a Senior Officer to approve high-value bids.
-- **PII Encryption at Rest:** Implement column-level `pgcrypto` encryption for sensitive PAN and GSTIN data in the database.
-- **Immutable Blockchain Audit:** Sync the PostgreSQL `audit_log` to an append-only ledger like Amazon QLDB to cryptographically guarantee that evaluation histories are tamper-proof.
-
-### 2. Advanced AI Integration
-- **Fine-Tuned LayoutLMv3:** Migrate from standard Tesseract OCR to a specialized LayoutLMv3 model fine-tuned specifically on Indian statutory documents (Udyam, GST, PAN) to handle severe document skew and low lighting.
-- **Cross-Bidder Collusion Detection:** Implement graph-analytics background workers to flag competing bids that share identical IP addresses, MAC addresses, or overlapping stakeholder names to prevent cartel bidding.
-
-### 3. Interoperability & DevOps
-- **DigiLocker OAuth Integration:** Allow bidders to authenticate via DigiLocker to fetch verified, digitally-signed XML payloads directly from government registries, bypassing the need for OCR entirely.
-- **AWS EC2 / ECS Migration:** Migrate the backend from Render to a dedicated AWS infrastructure to allow isolated Virtual Private Clouds (VPCs) and containerized GPU access for faster AI inference.
-- **Webhook Architecture:** Develop webhooks to push real-time status updates (Bid Qualified, Clarification Requested) directly into internal Government ERP systems (SAP, Oracle).
-
----
-*Built with ❤️ for Smart India Hackathon '26.*
+*Making Public Procurement Faster, Fairer & Fully Auditable.*
